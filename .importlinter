@@ -1,0 +1,14 @@
+[importlinter]
+root_package = ircb
+include_external_packages = True
+
+[importlinter:contract:core-isolation]
+name = ircb must not depend on fastapi, ircb_cli or ircb_api
+type = forbidden
+source_modules =
+    ircb
+forbidden_modules =
+    fastapi
+    ircb_cli
+    ircb_api
+allow_indirect_imports = True

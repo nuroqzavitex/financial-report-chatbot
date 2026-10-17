@@ -1,0 +1,36 @@
+# Local production mode (spec section 9): Qdrant server + PostgreSQL.
+# Image pins: qdrant v1.19.0 matches the minor of qdrant-client==1.19.1 (patch tag not verified
+# against the registry; bump to the newest v1.19.x if desired). postgres:16 as in the spec.
+services:
+  qdrant:
+    image: qdrant/qdrant:v1.19.0
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    healthcheck:
+      # the image ships no curl/wget: probe /readyz with bash's /dev/tcp (CMD, not CMD-SHELL: sh is dash)
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/6333 && printf 'GET /readyz HTTP/1.0\r\n\r\n' >&3 && grep -q '200 OK' <&3"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: ircb
+      POSTGRES_PASSWORD: ircb
+      POSTGRES_DB: ircb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ircb -d ircb"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  qdrant_data:
+  pg_data:

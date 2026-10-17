@@ -1,0 +1,24 @@
+var/
+.env
+__pycache__/
+*.pyc
+.venv/
+node_modules/
+.next/
+
+# Tài liệu bảo mật, không commit
+data/
+
+# Cấu hình Claude Code cá nhân
+.claude/settings.local.json
+.superpowers/
+
+# Trung gian của pipeline ingestion (artefact cuối trong index/ vẫn commit)
+index/build/
+index/.tmp/
+
+# Trace JSONL lúc chạy (TRACE_DIR)
+traces/
+
+# Spec và kế hoạch triển khai: giữ local, không đưa lên repo
+docs/superpowers/

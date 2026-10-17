@@ -1,0 +1,2 @@
+packages/core/src/ircb/answering/prompts/*.md text eol=lf
+*.sh text eol=lf

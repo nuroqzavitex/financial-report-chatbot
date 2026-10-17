@@ -1,0 +1,45 @@
+[project]
+name = "ircb-workspace"
+version = "0.1.0"
+requires-python = ">=3.11,<3.12"
+dependencies = ["ircb", "ircb-cli"]
+
+[dependency-groups]
+dev = ["pytest", "hypothesis", "ruff", "mypy", "import-linter"]
+eval = [
+    "langchain-community<0.4",
+    "ragas==0.2.15",
+]
+
+[tool.uv]
+package = false
+
+[tool.uv.workspace]
+members = ["packages/core", "apps/cli"]
+
+[tool.uv.sources]
+ircb = { workspace = true }
+ircb-cli = { workspace = true }
+
+[tool.ruff]
+line-length = 110
+target-version = "py311"
+extend-exclude = ["scripts"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.mypy]
+strict = true
+python_version = "3.11"
+files = ["packages/core/src/ircb"]
+plugins = ["pydantic.mypy"]
+
+[tool.pytest.ini_options]
+testpaths = ["packages/core/tests", "apps/cli/tests", "eval/tests"]
+pythonpath = ["."]
+markers = [
+    "requires_pdf: test needs the confidential PDF under data/ (skipped when missing)",
+    "integration: needs real external services (deselected by default)",
+]
+addopts = "-m 'not integration'"
