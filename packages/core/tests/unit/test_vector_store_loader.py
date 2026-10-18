@@ -320,3 +320,46 @@ def test_ensure_loaded_reloads_stale_chunk_payload(settings: Settings) -> None:
     finally:
         s.close()
     assert ensure_loaded(settings).loaded is True
+
+
+def test_fused_ties_order_by_id_whatever_the_engine_returns() -> None:
+    """RRF gives equal scores to symmetric ranks; embedded (float64) and server (float32) Qdrant
+    broke those ties differently, so the two modes fed the generator different context orders."""
+    from ircb.storage.vector_store import Hit, rank_fused
+
+    def hit(i: str, s: float) -> Hit:
+        return Hit(id=i, score=s, dense_score=None, branches=2, payload={})
+
+    embedded = [
+        hit("p140R_t02", 0.5),
+        hit("p40L_x01", 0.5),
+        hit("g_ees", 0.333333333),
+        hit("p3R_k", 0.333333333),
+    ]
+    server = [hit("p40L_x01", 0.5), hit("p140R_t02", 0.5), hit("p3R_k", 0.33333334), hit("g_ees", 0.33333334)]
+    expected = ["p140R_t02", "p40L_x01", "g_ees", "p3R_k"]
+    assert [h.id for h in rank_fused(embedded, 4)] == expected
+    assert [h.id for h in rank_fused(server, 4)] == expected
+    # a tie straddling the cut-off keeps the same member in both modes
+    assert [h.id for h in rank_fused(server, 3)] == expected[:3]
+    # a strictly higher score still wins over id order
+    assert [h.id for h in rank_fused([hit("a", 0.2), hit("z", 0.5)], 2)] == ["z", "a"]
+
+
+def test_branch_ties_at_the_prefetch_cut_pick_the_same_points() -> None:
+    """A dense or BM25 tie at the 30-point cut made the two modes fuse different candidates
+    (p168R_t02 vs p168R_t03 on a dev question); branches are now cut in a fixed order."""
+    from types import SimpleNamespace
+
+    from ircb.storage.vector_store import fuse_rrf, top_of_branch
+
+    def pt(cid: str, s: float) -> SimpleNamespace:
+        return SimpleNamespace(id=f"uuid-{cid}", score=s, payload={"chunk_id": cid})
+
+    a = [pt("x", 0.9), pt("t03", 0.4), pt("t02", 0.4)]
+    b = [pt("x", 0.9), pt("t02", 0.40000001), pt("t03", 0.4)]
+    assert [p.payload["chunk_id"] for p in top_of_branch(a, "chunk_id", 2)] == ["x", "t02"]
+    assert [p.payload["chunk_id"] for p in top_of_branch(b, "chunk_id", 2)] == ["x", "t02"]
+    # Qdrant's RRF: 1 / (1 + rank), rank from 1; summed over the branches a point appears in
+    scores = fuse_rrf([["x", "t02"], ["t02", "y"]])
+    assert scores == {"x": 0.5, "t02": 1 / 3 + 1 / 2, "y": 1 / 3}

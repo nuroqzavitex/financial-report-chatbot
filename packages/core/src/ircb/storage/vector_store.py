@@ -36,6 +36,47 @@ class Hit:
     payload: dict[str, Any] = field(default_factory=dict)
 
 
+# RRF scores of symmetric ranks tie exactly; embedded Qdrant returns them as float64 and the
+# server as float32 (0.333333333 vs 0.33333334), and each breaks ties in its own order.
+SCORE_DECIMALS = 6
+
+
+def rank_fused(hits: list[Hit], limit: int) -> list[Hit]:
+    """Mode-independent order: score (rounded past float32 noise) descending, then id."""
+    return sorted(hits, key=lambda h: (-round(h.score, SCORE_DECIMALS), h.id))[:limit]
+
+
+# Qdrant's RRF constant: a point ranked r (from 1) in a branch adds 1 / (RRF_K + r)
+RRF_K = 1
+# extra points fetched per branch so a tie at the PREFETCH_LIMIT cut is resolved by id, not engine
+TIE_MARGIN = 10
+# branch scores (cosine, BM25) closer than 1e-4 count as tied: float32 (server) and float64
+# (embedded) scores of near-identical chunks differ around 1e-7 and flipped their order
+BRANCH_SCORE_DECIMALS = 4
+
+
+def _point_key(p: Any, id_key: str) -> str:
+    return str((p.payload or {}).get(id_key, p.id))
+
+
+def top_of_branch(points: list[Any], id_key: str, limit: int) -> list[Any]:
+    """One branch's top ``limit`` in a mode-independent order (rounded score desc, then id)."""
+
+    def order(p: Any) -> tuple[float, str]:
+        return -round(float(p.score), BRANCH_SCORE_DECIMALS), _point_key(p, id_key)
+
+    return sorted(points, key=order)[:limit]
+
+
+def fuse_rrf(branches: list[list[str]]) -> dict[str, float]:
+    """Reciprocal rank fusion over ranked id lists."""
+    scores: dict[str, float] = {}
+    for ids in branches:
+        for rank, key in enumerate(ids, start=1):
+            scores[key] = scores.get(key, 0.0) + 1 / (RRF_K + rank)
+    return scores
+
+
 def point_id(original_id: str) -> str:
     """Deterministic Qdrant point id (UUIDv5) derived from a chunk_id / fact_id."""
     return str(uuid.uuid5(uuid.NAMESPACE_URL, original_id))
@@ -179,11 +220,12 @@ class QdrantStore:
         flt: dict[str, Any] | None,
         limit: int,
     ) -> list[Hit]:
-        """RRF fusion of a dense and a BM25 prefetch (30 each, exact) in ONE fusion ``query_points``.
+        """RRF fusion of an exact dense and an exact BM25 branch (top 30 each), fused client-side.
 
-        Qdrant does not expose per-branch scores of a fused query, so two extra exact,
-        dense-only / sparse-only ``query_points`` calls (limit 30) supply ``dense_score`` and
-        ``branches`` (2 if the id is in both branch top-30s, else 1). Cheap on a few thousand points.
+        Each branch is cut in a fixed order (``top_of_branch``) and fused with Qdrant's RRF formula
+        (``fuse_rrf``), so embedded and server Qdrant return the same hits in the same order: a
+        server-side fusion broke score ties (float32 vs float64) differently per engine. The dense
+        branch also supplies ``dense_score``; ``branches`` is 2 when a point is in both top-30s.
         """
         qfilter = self._filter(flt)
         dvec = [float(x) for x in dense]
@@ -200,58 +242,40 @@ class QdrantStore:
         limit: int,
     ) -> list[Hit]:
         name = self._name(kind)
-        exact = models.SearchParams(exact=True)
-        fused = self._client.query_points(
-            name,
-            prefetch=[
-                models.Prefetch(
-                    query=dvec, using="dense", limit=PREFETCH_LIMIT, filter=qfilter, params=exact
-                ),
-                models.Prefetch(query=svec, using="bm25", limit=PREFETCH_LIMIT, filter=qfilter, params=exact),
-            ],
-            query=models.FusionQuery(fusion=models.Fusion.RRF),
-            query_filter=qfilter,
-            limit=limit,
-            with_payload=True,
-        ).points
-        if not fused:
-            return []
-        dense_pts = self._client.query_points(
-            name,
-            query=dvec,
-            using="dense",
-            query_filter=qfilter,
-            limit=PREFETCH_LIMIT,
-            search_params=exact,
-            with_payload=False,
-        ).points
-        sparse_pts = self._client.query_points(
-            name,
-            query=svec,
-            using="bm25",
-            query_filter=qfilter,
-            limit=PREFETCH_LIMIT,
-            search_params=exact,
-            with_payload=False,
-        ).points
-        dense_scores = {str(p.id): p.score for p in dense_pts}
-        sparse_ids = {str(p.id) for p in sparse_pts}
         id_key = "chunk_id" if kind == "chunks" else "fact_id"
-        hits: list[Hit] = []
-        for p in fused:
-            pid = str(p.id)
-            payload = dict(p.payload or {})
-            branches = (pid in dense_scores) + (pid in sparse_ids)
-            hits.append(
-                Hit(
-                    id=str(payload.get(id_key, pid)),
-                    score=float(p.score),
-                    dense_score=dense_scores.get(pid),
-                    branches=branches or 1,
-                    payload=payload,
-                )
+        exact = models.SearchParams(exact=True)
+        branches = [
+            top_of_branch(
+                self._client.query_points(
+                    name,
+                    query=query,
+                    using=using,
+                    query_filter=qfilter,
+                    limit=PREFETCH_LIMIT + TIE_MARGIN,
+                    search_params=exact,
+                    with_payload=True,
+                ).points,
+                id_key,
+                PREFETCH_LIMIT,
             )
-        return hits
+            for query, using in ((dvec, "dense"), (svec, "bm25"))
+        ]
+        dense_pts, sparse_pts = branches
+        scores = fuse_rrf([[_point_key(p, id_key) for p in pts] for pts in branches])
+        points = {_point_key(p, id_key): p for pts in branches for p in pts}
+        dense_scores = {_point_key(p, id_key): float(p.score) for p in dense_pts}
+        sparse_ids = {_point_key(p, id_key) for p in sparse_pts}
+        hits = [
+            Hit(
+                id=key,
+                score=score,
+                dense_score=dense_scores.get(key),
+                branches=(key in dense_scores) + (key in sparse_ids),
+                payload=dict(points[key].payload or {}),
+            )
+            for key, score in scores.items()
+        ]
+        return rank_fused(hits, limit)
 
     def count(self, kind: Kind) -> int:
         return int(self._client.count(self._name(kind), exact=True).count)
