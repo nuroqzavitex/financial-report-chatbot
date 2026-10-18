@@ -56,7 +56,9 @@ uv workspace: `packages/core` (library `ircb`), `apps/cli` (`ircb_cli`), `apps/a
 
 **Storage (`ircb/storage/`).** The two runtime modes run the same code and are selected by environment variables:
 - grading mode: embedded Qdrant (`QDRANT_PATH`) with SQLite;
-- production-local mode: Qdrant server (`QDRANT_URL`) with Postgres (`docker-compose.yml`).
+- production-local mode: Qdrant server (`QDRANT_URL`) with Postgres. `docker compose up -d --build --wait` runs Qdrant, Postgres, the API (`infra/docker/api.Dockerfile`) and the web (`infra/docker/web.Dockerfile`, Next.js standalone); `index/` and `data/` are mounted read-only, never baked into images.
+
+Hybrid search fuses dense and BM25 client-side (`vector_store.fuse_rrf`) after cutting each branch in a fixed order (`top_of_branch`: score rounded to 4 decimals, then id), so embedded and server Qdrant return identical top-k despite float32/float64 score noise.
 
 `loader.ensure_loaded` loads `index/` into both stores on first run (`AUTO_LOAD_INDEX`), and reloads when either SQL or the Qdrant counts disagree with the manifest. Alembic migrations live in `storage/migrations`.
 

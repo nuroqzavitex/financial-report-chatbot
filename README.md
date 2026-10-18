@@ -99,17 +99,31 @@ Cùng một code, chọn bằng biến môi trường:
 | SQL | SQLite (`DATABASE_URL=sqlite:///./var/app.db`) | PostgreSQL |
 | Docker | Không | Có (`docker-compose.yml`) |
 
-Cả hai chế độ query Qdrant với `exact=True` nên top-k trùng nhau (có test tích hợp so sánh).
+Cả hai chế độ query Qdrant với `exact=True`, và RRF được gộp phía client theo thứ tự cố định (điểm hòa xếp theo id), nên top-k trùng nhau (có test tích hợp so sánh trên tập dev).
 
-Chế độ production local (`docker-compose.yml` chỉ chứa Qdrant `:6333` và PostgreSQL `:5432`; CLI chạy trên máy host):
+### Chạy toàn bộ bằng Docker
+
+`docker-compose.yml` dựng đủ bốn service: Qdrant `:6333`, PostgreSQL `:5432`, API `:8000`, web `:3000` (API và web chỉ mở trên `127.0.0.1`). Cần có sẵn trên máy: `.env` (ít nhất `OPENAI_API_KEY`, `LLM_MODEL`), `index/` đã build và PDF trong `data/`. Hai thư mục này được mount read-only lúc chạy, không bao giờ nằm trong image.
 
 ```bash
-docker compose up -d --wait
+docker compose up -d --build --wait      # lần đầu build image (~vài phút); API tự nạp index/ vào Qdrant + Postgres
+# mở http://localhost:3000
+docker compose logs -f api               # xem log API
+docker compose down                      # dừng (giữ dữ liệu); thêm -v để xóa cả volume Qdrant/Postgres
+```
+
+- API đọc `.env` qua `env_file`; các biến kết nối (`QDRANT_URL`, `DATABASE_URL`, đường dẫn index/PDF/cache) do compose đặt sẵn.
+- Web được build với `NEXT_PUBLIC_API_URL=http://localhost:8000` (địa chỉ trình duyệt gọi tới). Đổi cổng API thì sửa build arg trong `docker-compose.yml` rồi `docker compose build web`.
+- Trace JSONL được ghi ra `./traces` trên máy host.
+
+Chỉ dựng DB rồi chạy CLI trên máy host:
+
+```bash
+docker compose up -d --wait qdrant postgres
 export QDRANT_URL=http://localhost:6333
 export DATABASE_URL=postgresql+psycopg://ircb:ircb@localhost:5432/ircb
 uv run ircb index load --force
 uv run ircb chat
-docker compose down
 ```
 
 ## Batch

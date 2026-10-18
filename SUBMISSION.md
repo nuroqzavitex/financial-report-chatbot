@@ -73,7 +73,7 @@ Thiết kế (kèm sơ đồ mermaid): `docs/DESIGN.md`. Tóm tắt:
 
 **API và web** (ngoài phạm vi chấm, có sẵn để xem): `apps/api` (FastAPI, SSE chỉ stream trạng thái, câu trả lời gửi một lần sau verifier, không rò claim bị loại) và `apps/web` (Next.js: chat, thẻ trả lời có chip trích dẫn/phép tính, trình xem trang in tô sáng bằng chứng, cần PDF trong `data/`). Cách chạy: mục "API và Web" trong `README.md`. Chưa đo gì thêm cho phần này ngoài test offline và một lần chạy thử tay (xem `docs/worklog.md`).
 
-Hai chế độ chạy cùng code: chấm bài (Qdrant embedded + SQLite, không Docker) và production local (`docker-compose.yml`: Qdrant server + PostgreSQL), cả hai đều query `exact=True`.
+Hai chế độ chạy cùng code: chấm bài (Qdrant embedded + SQLite, không Docker) và production local (`docker-compose.yml`: Qdrant server + PostgreSQL + API + web), cả hai đều query `exact=True` và gộp RRF phía client theo thứ tự cố định, nên top-k trùng nhau (test tích hợp trên tập dev đã chạy với Docker).
 
 ## What I tried that did not work
 Ghi lại trong lúc làm (xem thêm `docs/worklog.md`). Mỗi mục: đã thử gì, hỏng ra sao, đã đổi gì.
@@ -110,7 +110,6 @@ Số đo offline liên quan: độ phủ con số của bảng BCTC là 2.124/2.
 ## What I deliberately did not build
 Theo thiết kế:
 - **Web UI và API là bản gọn:** đề không chấm web nên chỉ làm phần cần để kiểm chứng trích dẫn (chat, thẻ trả lời, trình xem trang). Lõi vẫn không import `fastapi` (import-linter canh).
-- **Docker image cho api/web:** chưa có; `docker-compose.yml` chỉ chứa Qdrant và PostgreSQL, API và web chạy trên máy host.
 - **Trang lịch sử phiên (sessions):** API có `GET /v1/sessions/{id}` nhưng web chưa có trang liệt kê/xem lại các phiên.
 - **Auth, nhiều người dùng, deploy cloud, CI:** ngoài phạm vi take-home.
 - **OCR hàng loạt:** thử rồi, không tìm ra số mới (xem trên).
@@ -128,7 +127,7 @@ Theo thứ tự ưu tiên:
 3. Eval lớn hơn và chấm bởi người thứ hai, thêm alt-pages cho gold nhiều trang hợp lệ; chạy lại cạnh model khác (Anthropic, Ollama) để có số cho mục "đổi provider".
 4. Chạy tích hợp trên Qdrant server + PostgreSQL thật với index thật (hiện chỉ có test trên index tổng hợp, chưa chạy với Docker daemon).
 5. Benchmark embedding và (nếu `R-miss` cao) reranker; mô tả ảnh bằng VLM.
-6. Docker image cho api/web, trang lịch sử phiên, và đo thời gian kiểm chứng trích dẫn của người dùng trên trình xem trang.
+6. Trang lịch sử phiên, và đo thời gian kiểm chứng trích dẫn của người dùng trên trình xem trang.
 7. Scale lên nhiều tài liệu: page map tổng quát, Table QA thành cổng bắt buộc, Qdrant có replication/quantization, Postgres partition theo `doc_id`, ingestion thành worker xếp hàng (spec §11).
 
 ## Demo video
