@@ -141,6 +141,38 @@ uv run python eval/runners/ragas_eval.py --judge $JUDGE_MODEL --adversarial eval
 uv run python eval/runners/judge_agreement.py eval/scoring/score_sheet.csv eval/reports/ragas_<ts>.json
 ```
 
+## API và Web
+
+Lõi `ircb` có thêm một API FastAPI (`apps/api`, gói `ircb_api`) và một giao diện Next.js (`apps/web`). Cả hai chỉ là lớp mỏng: API gọi `AnswerService`, `PageRenderer`, `SqlFactStore`, `SessionRepo` và ánh xạ sang DTO; mọi kiểm tra số liệu vẫn nằm ở lõi. Claim bị verifier loại không bao giờ xuất hiện trong phản hồi. SSE chỉ stream trạng thái các bước, câu trả lời được gửi một lần sau khi verifier chạy xong.
+
+```bash
+# Terminal 1: API (cần index/ đã nạp và OPENAI_API_KEY)
+uv run uvicorn ircb_api.main:app --port 8000          # thêm --reload khi phát triển
+# hoặc: uv run python -m ircb_api                      # chạy uvicorn trên API_HOST/API_PORT (mặc định 127.0.0.1:8000)
+
+# Terminal 2: web (Node 20+, pnpm)
+pnpm --dir apps/web install
+cp apps/web/.env.local.example apps/web/.env.local     # NEXT_PUBLIC_API_URL=http://localhost:8000
+pnpm --dir apps/web dev                                # http://localhost:3000
+```
+
+Sau khi đổi schema API, sinh lại kiểu TypeScript: `make gen-types` (không có `make`: `uv run python -m ircb_api.openapi apps/web/openapi.json` rồi `pnpm --dir apps/web gen:types`, xem `Makefile`).
+
+**Trình xem trang cần PDF.** Ảnh trang in (có tô sáng vùng chứa con số) được render từ `data/…pdf` (`PDF_PATH`). Thiếu PDF thì `/v1/pages/{n}/image` trả HTTP 503 `{"code": "pdf_missing"}` và web hiển thị đoạn bằng chứng dạng chữ thay cho ảnh. Ảnh được cache ở `PAGE_CACHE_DIR` (`./var/page_cache`, không commit).
+
+| Endpoint | Mô tả |
+|---|---|
+| `GET /v1/health` | Trạng thái, `index_version`, số chunk/fact, model, `pdf_available` |
+| `POST /v1/chat` | Hỏi đáp; trả SSE: `status` (các bước) rồi `answer` rồi `done`, hoặc `error` |
+| `GET /v1/sessions/{id}` | Lịch sử một phiên hội thoại |
+| `GET /v1/pages/{printed}/image?source=&evidence=` | PNG trang in số `printed`, tô sáng vùng bằng chứng |
+| `GET /v1/facts?q=&period=&limit=` | Tra fact (giá trị là chuỗi Decimal) |
+| `GET /v1/traces/{trace_id}` | Trace một câu; chỉ bật khi `APP_ENV=dev` |
+
+`/v1/traces` được bật khi `APP_ENV=dev` (mặc định), nên hãy đặt `APP_ENV=prod` trước khi bind API vào một host không phải máy cục bộ.
+
+Biến môi trường: `API_HOST`, `API_PORT` (dùng bởi `python -m ircb_api`), `CORS_ORIGINS` (phân tách bằng dấu phẩy, mặc định `http://localhost:3000,http://127.0.0.1:3000`), `APP_ENV`, `PDF_PATH`, `PAGE_CACHE_DIR`; phía web: `NEXT_PUBLIC_API_URL`. Test web: `pnpm --dir apps/web test` (Vitest), `pnpm --dir apps/web e2e` (Playwright, API được mock), `pnpm --dir apps/web lint`, `pnpm --dir apps/web build`.
+
 ## Test và lint
 
 ```bash
@@ -159,6 +191,8 @@ uv run lint-imports                      # ircb không được import fastapi /
 ```
 packages/core/src/ircb/   thư viện: domain, ingestion, retrieval, storage, llm, answering, service
 apps/cli/src/ircb_cli/    lệnh `ircb` (typer): ingest, index, chat, batch, eval, profile
+apps/api/src/ircb_api/    API FastAPI: routers, mapping.py (core sang DTO), SSE
+apps/web/                 giao diện Next.js: chat, thẻ trả lời, trình xem trang
 eval/                     dataset, runner chấm điểm, RAGAS, độ đồng thuận
 config/                   sections.json, images.json, glossary_extra.json
 docs/                     spec, ADR, worklog, mẫu SUBMISSION

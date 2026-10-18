@@ -34,14 +34,14 @@
   | `TRACE_DIR` | | `./traces` | Trace JSONL từng câu |
   | `LLM_PRICE_IN` / `LLM_PRICE_OUT` | | — | USD / 1M token, để tính `cost_usd` |
   | `APP_ENV` | | `dev` | |
-  | `API_HOST` / `API_PORT` / `CORS_ORIGINS` | | `127.0.0.1` / `8000` / `http://localhost:3000` | Dành cho API/web (chưa có trong bài nộp này) |
+  | `API_HOST` / `API_PORT` / `CORS_ORIGINS` | | `127.0.0.1` / `8000` / `http://localhost:3000` | Dành cho API/web (xem "API và Web" trong `README.md`) |
   | `DATABASE_URL` | | `sqlite:///./var/app.db` | Production: `postgresql+psycopg://ircb:ircb@localhost:5432/ircb` |
   | `QDRANT_URL` | | — | Đặt thì dùng Qdrant server, bỏ trống thì Qdrant embedded |
   | `QDRANT_PATH` | | `./var/qdrant` | Qdrant embedded |
   | `QDRANT_API_KEY` | | — | Nếu server bật API key |
   | `QDRANT_COLLECTION_PREFIX` | | `ircb_` | → `ircb_chunks`, `ircb_facts` |
   | `AUTO_LOAD_INDEX` | | `true` | Tự nạp artefact vào DB nếu thiếu hoặc lệch version |
-  | `PAGE_CACHE_DIR` | | `./var/page_cache` | Dành cho trình xem trang (chưa có) |
+  | `PAGE_CACHE_DIR` | | `./var/page_cache` | Cache ảnh trang của API/web |
   | `PDF_PATH` | | `./data/techcombank-…-update.pdf` | PDF nguồn |
 - Shipped index: đường dẫn dự kiến `index/` (cùng `index/manifest.json`). **Hiện chưa được commit:** việc build cần OpenAI embedding API mà môi trường làm bài không có key. Build bằng `uv run ircb ingest data/techcombank-bao-cao-thuong-nien-2025-vie-update.pdf` (cũng được `scripts/smoke_test.sh` tự gọi khi thiếu `index/`), rồi commit `index/` (trừ `index/build/` và `index/.tmp/` đã gitignore). **[CHƯA ĐO — cần chạy `uv run ircb ingest data/techcombank-bao-cao-thuong-nien-2025-vie-update.pdf` với OPENAI_API_KEY]** để có kích thước thư mục và `index_version` thật. Số đo offline (embedder giả, cùng bước extract): 1.150 chunk, 2.974 fact.
 
@@ -70,6 +70,8 @@ Thiết kế (kèm sơ đồ mermaid): `docs/DESIGN.md`. Tóm tắt:
 4. *Generator* một lần gọi (structured outputs strict): JSON gồm claims có `fact:<id>` / `chunk:<id>` và các phép tính khai báo (`calcs`); tối đa một vòng `need_fact` có kiểm soát.
 5. *Calc executor* tính bằng Decimal rồi điền chỗ trống `{cN}`, kèm chiều tăng/giảm do code render; model không bao giờ thấy kết quả (ADR 0019).
 6. *Verifier* deterministic kiểm từng claim: số có trong nguồn, đúng đơn vị và thang, trang cite chứa claim, từ chỉ chiều khớp nguồn. Claim sai bị loại và câu trả lời là `partial` với một câu cố định chỉ nêu trang, không lặp lại nội dung claim bị loại; hết claim thì từ chối (ADR 0020). Số trang chỉ lấy từ metadata, model không tự viết số trang.
+
+**API và web** (ngoài phạm vi chấm, có sẵn để xem): `apps/api` (FastAPI, SSE chỉ stream trạng thái, câu trả lời gửi một lần sau verifier, không rò claim bị loại) và `apps/web` (Next.js: chat, thẻ trả lời có chip trích dẫn/phép tính, trình xem trang in tô sáng bằng chứng, cần PDF trong `data/`). Cách chạy: mục "API và Web" trong `README.md`. Chưa đo gì thêm cho phần này ngoài test offline và một lần chạy thử tay (xem `docs/worklog.md`).
 
 Hai chế độ chạy cùng code: chấm bài (Qdrant embedded + SQLite, không Docker) và production local (`docker-compose.yml`: Qdrant server + PostgreSQL), cả hai đều query `exact=True`.
 
@@ -107,7 +109,9 @@ Số đo offline liên quan: độ phủ con số của bảng BCTC là 2.124/2.
 
 ## What I deliberately did not build
 Theo thiết kế:
-- **Web UI (Next.js) và API (FastAPI):** cấu trúc monorepo đã tách `ircb` khỏi giao diện, nhưng đề không chấm web và thứ tự cắt giảm đặt web/API sau core, verifier, eval. Lõi chưa có import `fastapi` (có import-linter canh).
+- **Web UI và API là bản gọn:** đề không chấm web nên chỉ làm phần cần để kiểm chứng trích dẫn (chat, thẻ trả lời, trình xem trang). Lõi vẫn không import `fastapi` (import-linter canh).
+- **Docker image cho api/web:** chưa có; `docker-compose.yml` chỉ chứa Qdrant và PostgreSQL, API và web chạy trên máy host.
+- **Trang lịch sử phiên (sessions):** API có `GET /v1/sessions/{id}` nhưng web chưa có trang liệt kê/xem lại các phiên.
 - **Auth, nhiều người dùng, deploy cloud, CI:** ngoài phạm vi take-home.
 - **OCR hàng loạt:** thử rồi, không tìm ra số mới (xem trên).
 - **Reranker:** chỉ thêm nếu eval cho thấy `R-miss` cao; chưa có số để biện minh.
@@ -124,7 +128,7 @@ Theo thứ tự ưu tiên:
 3. Eval lớn hơn và chấm bởi người thứ hai, thêm alt-pages cho gold nhiều trang hợp lệ; chạy lại cạnh model khác (Anthropic, Ollama) để có số cho mục "đổi provider".
 4. Chạy tích hợp trên Qdrant server + PostgreSQL thật với index thật (hiện chỉ có test trên index tổng hợp, chưa chạy với Docker daemon).
 5. Benchmark embedding và (nếu `R-miss` cao) reranker; mô tả ảnh bằng VLM.
-6. API FastAPI + web có trình xem trang in tô sáng vùng chứa con số, để kiểm chứng trích dẫn trong 5 giây.
+6. Docker image cho api/web, trang lịch sử phiên, và đo thời gian kiểm chứng trích dẫn của người dùng trên trình xem trang.
 7. Scale lên nhiều tài liệu: page map tổng quát, Table QA thành cổng bắt buộc, Qdrant có replication/quantization, Postgres partition theo `doc_id`, ingestion thành worker xếp hàng (spec §11).
 
 ## Demo video

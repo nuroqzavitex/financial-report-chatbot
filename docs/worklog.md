@@ -121,3 +121,17 @@ Index `46c78c954ba6`: 1150 chunk, 2974 fact; page map khớp, không fact nào t
 Sau sửa: 10/10 câu mẫu đúng; dev (25 câu): claim bị chặn 32% → 18,5%, citation_hit 0,36 → 0,45, refusal_ok 0,60 → 0,72, unit_ok 0,58 → 0,74, Recall@8 0,77, MRR 0,64.
 
 Còn mở: own-07, own-40 (không truy hồi được); own-22, own-29 (`number_mismatch`); own-35 (`evidence_not_substring`); own-09 (chặn an toàn vì "TCBS" không có trong ngữ cảnh ô KPI); own-45 ("hôm nay"), own-47 ("riêng lẻ") trả lời thay vì từ chối; own-42 lấy ưu tiên của khối CIB. Một số câu đúng số nhưng trích trang khác gold (own-01 tr. 14 thay vì 48, own-15, own-21, own-31): gold cần thêm trang thay thế.
+
+## 2026-10-18 - API FastAPI + web Next.js, chạy thử tay
+
+Thêm `apps/api` (FastAPI) và `apps/web` (Next.js); cách chạy nằm ở mục "API và Web" trong `README.md`. Route chỉ gọi `AnswerService`, `PageRenderer`, `SqlFactStore`, `SessionRepo` và ánh xạ ở `mapping.py`; claim `ok == False` không rò ra phản hồi.
+
+Chạy thử tay với index thật (`46c78c954ba6`) và PDF thật, một câu hỏi thật ("Dư nợ vay của Khối Ngân hàng Bán lẻ năm 2025 là bao nhiêu?"):
+
+- `GET /v1/health`: `status=ok`, 1150 chunk, 2974 fact, `pdf_available=true`.
+- `POST /v1/chat`: SSE `status` x4 (rewrite, prefetch, generate, verify), rồi `answer` (`status=answered`, 1 claim, trích `[tr. 59]`), rồi `done`.
+- `GET /v1/pages/59/image?source=chunk:...&evidence=...`: HTTP 200, `image/png`, PNG hợp lệ (mở được bằng PyMuPDF, 1192x1684). Ảnh chỉ lưu ở thư mục tạm, không vào repo. Chưa xem bằng mắt vùng tô sáng; việc đó do e2e Playwright (API mock) và lần xem tay trên web phụ trách.
+- `GET /v1/traces/{id}` (APP_ENV=dev): 200.
+- Web dev server: `GET http://localhost:3000` trả 200 với tiêu đề tiếng Việt. Chưa bấm `[tr. 59]` trên trình duyệt thật.
+
+Lưu ý: trên Git Bash/Windows, `curl -d '{"message":"...tiếng Việt..."}'` truyền thẳng trên dòng lệnh bị API trả 400 (lỗi parse body do mã hóa); dùng `--data-binary @file.json` (UTF-8) thì chạy đúng.

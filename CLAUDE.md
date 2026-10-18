@@ -23,7 +23,18 @@ uv run mypy                               # strict, covers packages/core/src/irc
 uv run lint-imports                       # ircb must not import fastapi / ircb_cli / ircb_api
 ```
 
-CLI (`ircb`, typer, `apps/cli/src/ircb_cli/`): `ingest <pdf> [--out index]`, `index load [--force]`, `index reembed`, `chat`, `batch <in> --out <out.jsonl> [--concurrency N]`, `eval --split dev|test (--run | --batch-out <file>)`, `profile <pdf>`. RAGAS lives in the optional `eval` dependency group (`uv sync --group eval`).
+CLI (`ircb`, typer, `apps/cli/src/ircb_cli/`): `ingest <pdf> [--out index]`, `index load [--force]`, `index reembed`, `chat`, `batch <in> --out <out.jsonl> [--concurrency N]`, `eval --split dev|test (--run | --batch-out <file>)`, `profile <pdf>`. API and web:
+
+```bash
+uv run uvicorn ircb_api.main:app --port 8000   # add --reload for dev; Makefile `api` target
+uv run python -m ircb_api                      # same app on API_HOST/API_PORT from Settings
+pnpm --dir apps/web install && pnpm --dir apps/web dev   # :3000, needs apps/web/.env.local (NEXT_PUBLIC_API_URL)
+uv run python -m ircb_api.openapi apps/web/openapi.json   # export the OpenAPI schema
+pnpm --dir apps/web gen:types                 # regenerate apps/web/src/lib/api/types.gen.ts (+ prettier)
+pnpm --dir apps/web test | lint | build | e2e # Vitest, ESLint, Next build, Playwright (API mocked)
+```
+
+RAGAS lives in the optional `eval` dependency group (`uv sync --group eval`).
 
 ## Hard constraints
 
@@ -39,7 +50,7 @@ CLI (`ircb`, typer, `apps/cli/src/ircb_cli/`): `ingest <pdf> [--out index]`, `in
 
 ## Architecture
 
-uv workspace: `packages/core` (library `ircb`), `apps/cli` (`ircb_cli`), and `eval/` (datasets plus runners, imported as a plain package via `pythonpath = ["."]`).
+uv workspace: `packages/core` (library `ircb`), `apps/cli` (`ircb_cli`), `apps/api` (`ircb_api`, FastAPI), and `eval/` (datasets plus runners, imported as a plain package via `pythonpath = ["."]`).
 
 **Ingestion (`ircb/ingestion/`, entry `pipeline.build_index`).** PyMuPDF splits each spread into half-pages (`spread`, `layout`). Separate extractors then handle tables with row hierarchy (`tables`), KPI tiles with arrow direction read from vector graphics (`kpi`), prose, glossary and images (driven by `config/images.json`). `facts` normalizes values to Decimal plus unit (`domain/units.py`, `domain/numbers_vn.py`), and `chunking` builds chunks. The build is staged in `index/.tmp`, gated by quality checks (page map, table coverage QA in `table_qa`, every fact has a unit), and only then promoted atomically. Embeddings are cached under `var/embed_cache` keyed by sha256(text) + model + dimensions. `config/sections.json` defines the chapters and default units.
 
@@ -60,6 +71,8 @@ period_guard → rewrite (LLM: metrics/periods/entity) → post_rewrite_guard �
 ```
 
 The verifier drops claims that fail and downgrades the answer to `partial`. The renderer never echoes the text of a failed claim and appends fixed Vietnamese sentences for partial answers and conflicts. Prompts live in `answering/prompts/*.md`. Traces are written as JSONL to `TRACE_DIR` only.
+
+**API and web (`apps/api`, `apps/web`).** `ircb_api` routes hold no business logic: they call core only through `AnswerService`, `PageRenderer`, `SqlFactStore` and `SessionRepo`, and map results to DTOs in `mapping.py`. Zero leak: no response may contain the text, evidence or sources of a claim with `ok == False`. Decimals cross the API as strings and the web never computes on numbers. SSE streams status only; the answer is sent once, after the verifier. Page images need the PDF (503 `pdf_missing` otherwise). `apps/web` is Next.js with pnpm (lockfile committed); types are generated from the OpenAPI export.
 
 **Tests.** `packages/core/tests/` has three suites:
 - `unit/`: uses the fakes in `factories.py` and in-file `Fake*` classes, never real OpenAI. `test_end_to_end.py` runs load, retrieval and answer on embedded Qdrant + SQLite.

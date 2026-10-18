@@ -559,7 +559,7 @@ JSON sai schema thì retry một lần với thông báo lỗi. Sai lần thứ 
 | `LLM_PRICE_IN` / `LLM_PRICE_OUT` | | — | USD / 1M token |
 | `APP_ENV` | | `dev` | `dev` bật `/v1/traces`, log chi tiết |
 | `API_HOST` / `API_PORT` | | `127.0.0.1` / `8000` | |
-| `CORS_ORIGINS` | | `http://localhost:3000` | |
+| `CORS_ORIGINS` | | `http://localhost:3000,http://127.0.0.1:3000` | |
 | `DATABASE_URL` | | `sqlite:///./var/app.db` | Production: `postgresql+psycopg://ircb:ircb@localhost:5432/ircb` |
 | `QDRANT_URL` | | — | Đặt (vd. `http://localhost:6333`) thì dùng **Qdrant server** |
 | `QDRANT_PATH` | | `./var/qdrant` | Dùng khi **không** có `QDRANT_URL` → Qdrant embedded |
