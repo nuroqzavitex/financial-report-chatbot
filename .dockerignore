@@ -1,0 +1,25 @@
+# Secrets and confidential inputs never enter an image (data/ and index/ are mounted at run time)
+.env
+data/
+index/
+var/
+traces/
+eval/reports/
+eval/scoring/
+
+# local tooling and build output
+.git/
+.venv/
+.superpowers/
+.claude/
+**/__pycache__/
+**/.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+.import_linter_cache/
+apps/web/node_modules/
+apps/web/.next/
+apps/web/test-results/
+apps/web/playwright-report/
+apps/web/.env.local

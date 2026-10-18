@@ -1,4 +1,4 @@
-# Local production mode (spec section 9): Qdrant server + PostgreSQL.
+# Local production mode (spec section 9): Qdrant server + PostgreSQL + API + web.
 # Image pins: qdrant v1.19.0 matches the minor of qdrant-client==1.19.1 (patch tag not verified
 # against the registry; bump to the newest v1.19.x if desired). postgres:16 as in the spec.
 services:
@@ -31,6 +31,49 @@ services:
       timeout: 3s
       retries: 20
 
+  # FastAPI on Qdrant server + PostgreSQL. On first start it loads index/ into both stores
+  # (AUTO_LOAD_INDEX), which needs no model call. OPENAI_API_KEY / LLM_MODEL come from .env.
+  api:
+    build:
+      context: .
+      dockerfile: infra/docker/api.Dockerfile
+    env_file: .env
+    environment:
+      QDRANT_URL: http://qdrant:6333
+      DATABASE_URL: postgresql+psycopg://ircb:ircb@postgres:5432/ircb
+      INDEX_DIR: /app/index
+      PDF_PATH: /app/data/techcombank-bao-cao-thuong-nien-2025-vie-update.pdf
+      PAGE_CACHE_DIR: /app/var/page_cache
+      EMBED_CACHE_DIR: /app/var/embed_cache
+      TRACE_DIR: /app/traces
+      CORS_ORIGINS: http://localhost:3000,http://127.0.0.1:3000
+    volumes:
+      - ./index:/app/index:ro
+      - ./data:/app/data:ro
+      - ./traces:/app/traces
+      - api_var:/app/var
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      qdrant:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+
+  web:
+    build:
+      context: .
+      dockerfile: infra/docker/web.Dockerfile
+      args:
+        # the browser calls the API through the host-published port
+        NEXT_PUBLIC_API_URL: http://localhost:8000
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      api:
+        condition: service_healthy
+
 volumes:
   qdrant_data:
   pg_data:
+  api_var:

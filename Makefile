@@ -19,7 +19,7 @@ test:
 	uv run pytest
 
 up:
-	docker compose up -d --wait
+	docker compose up -d --build --wait
 
 down:
 	docker compose down
