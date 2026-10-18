@@ -22,3 +22,12 @@ def test_server_mode(monkeypatch):
     monkeypatch.setenv("LLM_MODEL", "x")
     monkeypatch.setenv("QDRANT_URL", "http://localhost:6333")
     assert Settings(_env_file=None).qdrant_mode == "server"
+
+
+def test_cors_default_allows_localhost_and_loopback(monkeypatch):
+    monkeypatch.setenv("LLM_MODEL", "x")
+    monkeypatch.delenv("CORS_ORIGINS", raising=False)
+    assert Settings(_env_file=None).cors_origins.split(",") == [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ]

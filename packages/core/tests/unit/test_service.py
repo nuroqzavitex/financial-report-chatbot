@@ -356,3 +356,11 @@ def test_cited_chunk_facts_reach_the_verifier(tmp_path: Path) -> None:
     a = s.ask("Tổng tài sản năm 2025 tăng bao nhiêu?")
     assert a.status == "answered", a.text
     assert ["k1_chg"] in sql.asked
+
+
+def test_on_step_reports_pipeline_steps(tmp_path: Path) -> None:
+    s = make_service(tmp_path, gen(claim(GOOD)))
+    steps: list[str] = []
+    s.ask("Tổng tài sản năm 2025?", on_step=steps.append)
+    assert steps[:2] == ["period_guard", "rewrite"]
+    assert {"prefetch", "generate", "verify", "render"} <= set(steps)

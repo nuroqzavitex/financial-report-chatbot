@@ -8,6 +8,7 @@ import sqlalchemy as sa
 from sqlalchemy import Engine
 
 from ircb.domain.models import Fact
+from ircb.ingestion.facts import label_norm
 from ircb.storage.db import session_scope
 from ircb.storage.orm import FactRow
 
@@ -71,3 +72,13 @@ class SqlFactStore:
                         for k, v in cols.items():
                             setattr(row, k, v)
                 s.flush()
+
+    def search(self, q: str, period: str | None = None, limit: int = 50) -> list[Fact]:
+        """Facts whose normalised label contains the normalised query, ordered by ``fact_id``."""
+        norm = label_norm(q).replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+        stmt = sa.select(FactRow).where(FactRow.label_norm.like(f"%{norm}%", escape="\\"))
+        if period is not None:
+            stmt = stmt.where(FactRow.period == period)
+        stmt = stmt.order_by(FactRow.fact_id).limit(max(1, min(limit, 200)))
+        with session_scope(self._engine) as s:
+            return [_to_fact(r) for r in s.execute(stmt).scalars()]

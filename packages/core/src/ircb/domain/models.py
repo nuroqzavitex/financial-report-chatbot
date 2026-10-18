@@ -158,6 +158,8 @@ class VerifiedClaim(BaseModel):
     printed_pages: list[int]
     ok: bool
     failed_rule: str | None
+    evidence: str = ""
+    calc_ids: list[str] = []  # the {cN} placeholders of the claim's original text
 
 
 class Citation(BaseModel):

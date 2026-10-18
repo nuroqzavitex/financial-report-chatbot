@@ -75,8 +75,9 @@ def test_batch_bad_turns(tmp_path: Path, fake_service: FakeService) -> None:
 
 
 class _ClaimService(FakeService):
-    def __init__(self, status: str = "partial") -> None:
+    def __init__(self, status: str = "partial", calc_owner: str = "bad") -> None:
         super().__init__(status)
+        self.calc_owner = calc_owner  # which claim's text used {c1}
 
     def ask(self, message, prev_state=None, history=None):  # type: ignore[no-untyped-def]
         from decimal import Decimal
@@ -90,6 +91,7 @@ class _ClaimService(FakeService):
             printed_pages=[5],
             ok=True,
             failed_rule=None,
+            calc_ids=["c1"] if self.calc_owner == "ok" else [],
         )
         bad = VerifiedClaim(
             text="Lợi nhuận trước thuế đạt 45.000 tỷ đồng.",
@@ -97,6 +99,7 @@ class _ClaimService(FakeService):
             printed_pages=[5],
             ok=False,
             failed_rule="number_mismatch",
+            calc_ids=["c1"] if self.calc_owner == "bad" else [],
         )
         calc = CalcResult(
             id="c1",
@@ -122,6 +125,7 @@ def test_batch_row_never_carries_failed_claim_text(tmp_path: Path) -> None:
         "printed_pages": [5],
         "ok": False,
         "failed_rule": "number_mismatch",
+        "calc_ids": ["c1"],
     }
 
 
@@ -129,3 +133,17 @@ def test_batch_refused_row_has_no_claims_or_calcs(tmp_path: Path) -> None:
     src = write_input(tmp_path, [{"id": "a", "question": "q"}])
     (row,) = read_jsonl(run_batch(src, tmp_path / "o.jsonl", _ClaimService(status="refused")))
     assert row["status"] == "refused" and row["claims"] == [] and row["calcs"] == []
+
+
+def test_batch_drops_calc_of_failed_claim(tmp_path: Path) -> None:
+    src = write_input(tmp_path, [{"id": "a", "question": "q"}])
+    out = run_batch(src, tmp_path / "o.jsonl", _ClaimService(calc_owner="bad"))
+    (row,) = read_jsonl(out)
+    assert row["calcs"] == []
+    assert "tăng 21,8%" not in out.read_text(encoding="utf-8")
+
+
+def test_batch_keeps_calc_of_passed_claim(tmp_path: Path) -> None:
+    src = write_input(tmp_path, [{"id": "a", "question": "q"}])
+    (row,) = read_jsonl(run_batch(src, tmp_path / "o.jsonl", _ClaimService(calc_owner="ok")))
+    assert [c["id"] for c in row["calcs"]] == ["c1"]

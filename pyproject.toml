@@ -2,10 +2,17 @@
 name = "ircb-workspace"
 version = "0.1.0"
 requires-python = ">=3.11,<3.12"
-dependencies = ["ircb", "ircb-cli"]
+dependencies = ["ircb", "ircb-cli", "ircb-api"]
 
 [dependency-groups]
-dev = ["pytest", "hypothesis", "ruff", "mypy", "import-linter"]
+dev = [
+    "pytest",
+    "hypothesis",
+    "ruff",
+    "mypy",
+    "import-linter",
+    "httpx>=0.28.1",
+]
 eval = [
     "langchain-community<0.4",
     "ragas==0.2.15",
@@ -15,11 +22,12 @@ eval = [
 package = false
 
 [tool.uv.workspace]
-members = ["packages/core", "apps/cli"]
+members = ["packages/core", "apps/cli", "apps/api"]
 
 [tool.uv.sources]
 ircb = { workspace = true }
 ircb-cli = { workspace = true }
+ircb-api = { workspace = true }
 
 [tool.ruff]
 line-length = 110
@@ -36,10 +44,12 @@ files = ["packages/core/src/ircb"]
 plugins = ["pydantic.mypy"]
 
 [tool.pytest.ini_options]
-testpaths = ["packages/core/tests", "apps/cli/tests", "eval/tests"]
+testpaths = ["packages/core/tests", "apps/cli/tests", "apps/api/tests", "eval/tests"]
 pythonpath = ["."]
 markers = [
     "requires_pdf: test needs the confidential PDF under data/ (skipped when missing)",
     "integration: needs real external services (deselected by default)",
 ]
 addopts = "-m 'not integration'"
+# fastapi.testclient still uses httpx; starlette nags to switch to httpx2, which fastapi does not support yet
+filterwarnings = ["ignore:Using `httpx` with `starlette.testclient` is deprecated"]

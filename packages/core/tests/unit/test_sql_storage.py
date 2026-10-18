@@ -104,3 +104,26 @@ def test_migration_matches_orm(engine: Engine) -> None:
 def test_upgrade_idempotent(engine: Engine) -> None:
     upgrade_db(engine)
     assert count_rows(engine, "facts") == 0
+
+
+def test_session_messages_in_order(engine: Engine) -> None:
+    repo = SessionRepo(engine)
+    repo.append("s1", "user", "Câu 1", None)
+    repo.append("s1", "assistant", "Đáp 1", TurnState(metrics=[], periods=["2025"], entity=None))
+    msgs = repo.messages("s1")
+    assert [(m.role, m.content) for m in msgs] == [("user", "Câu 1"), ("assistant", "Đáp 1")]
+    assert repo.exists("s1") and not repo.exists("nope") and repo.messages("nope") == []
+
+
+def test_fact_search_by_label_and_period(engine: Engine) -> None:
+    store = SqlFactStore(engine)
+    store.upsert(
+        [
+            fact(fact_id="a", label="Tổng tài sản", label_norm="tong tai san", period="FY2025"),
+            fact(fact_id="b", label="Tổng tài sản", label_norm="tong tai san", period="FY2024"),
+            fact(fact_id="c", label="Cho vay", label_norm="cho vay", period="FY2025"),
+        ]
+    )
+    assert {f.fact_id for f in store.search("tổng tài sản")} == {"a", "b"}
+    assert [f.fact_id for f in store.search("Tổng Tài Sản", period="FY2025")] == ["a"]
+    assert store.search("", limit=2) and len(store.search("", limit=2)) == 2

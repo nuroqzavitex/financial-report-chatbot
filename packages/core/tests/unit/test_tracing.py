@@ -41,3 +41,14 @@ def test_step_records_on_exception(tmp_path: Path) -> None:
 
 def test_configure_logging_smoke() -> None:
     configure_logging("INFO")
+
+
+def test_on_step_called_at_step_start_and_errors_swallowed(tmp_path: Path) -> None:
+    seen: list[str] = []
+    t = Trace(tmp_path, on_step=seen.append)
+    with t.step("rewrite"):
+        assert seen == ["rewrite"]
+    t2 = Trace(tmp_path, on_step=lambda n: 1 / 0)
+    with t2.step("prefetch"):
+        pass
+    assert "prefetch" in t2.latency_ms

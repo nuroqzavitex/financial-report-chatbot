@@ -36,7 +36,7 @@ class Settings(BaseSettings):
     app_env: str = "dev"
     api_host: str = "127.0.0.1"
     api_port: int = 8000
-    cors_origins: str = "http://localhost:3000"
+    cors_origins: str = "http://localhost:3000,http://127.0.0.1:3000"
 
     database_url: str = "sqlite:///./var/app.db"
     qdrant_url: str | None = None

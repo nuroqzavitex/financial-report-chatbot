@@ -540,7 +540,13 @@ def _verify(claim: ClaimOut, ctx: Context, calcs: dict[str, CalcResult]) -> Veri
 
     def result(rule: str | None) -> VerifiedClaim:
         return VerifiedClaim(
-            text=filled, sources=src.ids, printed_pages=pages, ok=rule is None, failed_rule=rule
+            text=filled,
+            sources=src.ids,
+            printed_pages=pages,
+            ok=rule is None,
+            failed_rule=rule,
+            evidence=claim.evidence,
+            calc_ids=list(dict.fromkeys(_CALC_REF_RE.findall(claim.text))),
         )
 
     # 1. sources

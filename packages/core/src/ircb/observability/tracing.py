@@ -3,7 +3,7 @@
 import json
 import time
 import uuid
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 from datetime import UTC, datetime
 from decimal import Decimal
@@ -14,8 +14,9 @@ from ircb.llm.client import Usage
 
 
 class Trace:
-    def __init__(self, trace_dir: Path) -> None:
+    def __init__(self, trace_dir: Path, on_step: Callable[[str], None] | None = None) -> None:
         self.trace_dir = Path(trace_dir)
+        self._on_step = on_step
         self.trace_id = uuid.uuid4().hex
         self.created_at = datetime.now(UTC)
         self.latency_ms: dict[str, float] = {}
@@ -26,6 +27,11 @@ class Trace:
 
     @contextmanager
     def step(self, name: str) -> Iterator[None]:
+        if self._on_step is not None:
+            try:
+                self._on_step(name)
+            except Exception:  # a broken listener must never break an answer
+                pass
         start = time.perf_counter()
         try:
             yield

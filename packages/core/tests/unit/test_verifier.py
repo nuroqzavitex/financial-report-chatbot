@@ -964,3 +964,35 @@ def test_cash_outflow_in_parentheses_is_read_as_its_magnitude() -> None:
     loss = paid.model_copy(update={"label": "Lãi/(lỗ) thuần từ hoạt động khác", "fact_id": "pl1"})
     claim = "Lãi thuần từ hoạt động khác năm 2025 là 7.084.911 triệu đồng."
     assert _one(claim, Context(facts=[loss]), ["fact:pl1"]).failed_rule == "number_mismatch"
+
+
+def test_verified_claim_keeps_evidence() -> None:
+    ev = "Tổng tài sản 1.192 Nghìn tỷ đồng"
+    v = verify_claims(
+        [ClaimOut(text="Tổng tài sản đạt 1.192 nghìn tỷ đồng", sources=["chunk:p3R_k"], evidence=ev)],
+        Context(chunks=[mk_chunk()]),
+        {},
+    )[0]
+    assert v.ok and v.evidence == ev
+
+
+def test_calc_ids_come_from_original_claim_text(ctx: Context) -> None:
+    calcs = execute_calcs(
+        [
+            CalcSpec(id="c1", op="growth", a="fact:tts25", b="fact:tts24", to_unit=None),
+            CalcSpec(id="c2", op="growth", a="fact:tts25", b="fact:tts24", to_unit=None),
+        ],
+        {f.fact_id: f for f in ctx.facts},
+    )
+    passed = verify_one(
+        ctx,
+        "Tổng tài sản năm 2025 {c1} so với năm 2024",
+        ["chunk:p3R_k"],
+        "Tổng tài sản 1.192 Nghìn tỷ đồng",
+        calcs,
+    )
+    failed = verify_one(ctx, "Tổng tài sản tăng mạnh {c2} và {c1} {c2}", ["fact:tts25"], "", calcs)
+    plain = verify_one(ctx, "Tổng tài sản đạt 1.192 nghìn tỷ đồng", ["fact:tts25"], "")
+    assert passed.ok and passed.calc_ids == ["c1"]
+    assert not failed.ok and failed.calc_ids == ["c2", "c1"]
+    assert plain.calc_ids == []

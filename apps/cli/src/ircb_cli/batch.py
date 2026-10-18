@@ -27,7 +27,13 @@ def _error(row_id: Any, reason: str, turn_index: int | None = None) -> dict[str,
 
 def _claim_row(c: VerifiedClaim) -> dict[str, Any]:
     """A failed claim's text is unverified (it may hold a wrong number): never written out."""
-    return c.model_dump(mode="json", exclude=None if c.ok else {"text"})
+    return c.model_dump(mode="json", exclude=None if c.ok else {"text", "evidence"})
+
+
+def _calc_rows(a: Answer) -> list[dict[str, Any]]:
+    """Only calcs used by a passed claim: a failed claim's calc would leak its sources."""
+    used = {cid for c in a.claims if c.ok for cid in c.calc_ids}
+    return [c.model_dump(mode="json") for c in a.calcs if c.id in used]
 
 
 def _answer_row(row_id: Any, a: Answer, turn_index: int | None) -> dict[str, Any]:
@@ -38,7 +44,7 @@ def _answer_row(row_id: Any, a: Answer, turn_index: int | None) -> dict[str, Any
         "answer": a.text,
         "citations": [c.model_dump(mode="json") for c in a.citations],
         "claims": [] if refused else [_claim_row(c) for c in a.claims],
-        "calcs": [] if refused else [c.model_dump(mode="json") for c in a.calcs],
+        "calcs": [] if refused else _calc_rows(a),
         "latency_ms": dict(a.latency_ms),
         "cost_usd": str(a.cost_usd),
         "trace_id": a.trace_id,

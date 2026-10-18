@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from decimal import Decimal
 from pathlib import Path
@@ -129,6 +130,7 @@ class AnswerService:
         message: str,
         prev_state: TurnState | None = None,
         history: list[tuple[str, str]] | None = None,
+        on_step: Callable[[str], None] | None = None,
     ) -> Answer:
         """Answer one question.
 
@@ -136,7 +138,7 @@ class AnswerService:
         after the trace has been written.
         """
         started = time.perf_counter()
-        trace = Trace(self.trace_dir)
+        trace = Trace(self.trace_dir, on_step)
         meter = _Metered(self.client, trace)
         trace.record("question", message)
         trace.record("prompt_version", PROMPT_VERSION)
