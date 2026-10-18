@@ -22,3 +22,9 @@ traces/
 
 # Spec và kế hoạch triển khai: giữ local, không đưa lên repo
 docs/superpowers/
+
+# Web (apps/web)
+apps/web/node_modules/
+apps/web/.next/
+apps/web/test-results/
+apps/web/playwright-report/
