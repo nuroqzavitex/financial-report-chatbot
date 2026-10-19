@@ -1,11 +1,12 @@
 "use client";
 
-import { FileText, SquarePen } from "lucide-react";
+import { FileText, History, SquarePen } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Composer } from "@/components/chat/Composer";
 import { MessageList } from "@/components/chat/MessageList";
 import { PageViewer } from "@/components/evidence/PageViewer";
+import { HistoryPanel } from "@/components/history/HistoryPanel";
 import {
   Sheet,
   SheetContent,
@@ -14,6 +15,7 @@ import {
 } from "@/components/ui/sheet";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useChat } from "@/hooks/useChat";
+import { useSessions } from "@/hooks/useSessions";
 import type { ClaimDTO } from "@/lib/api/client";
 
 export interface Selection {
@@ -22,16 +24,58 @@ export interface Selection {
 }
 
 export default function Home() {
-  const { messages, status, send, reset, busy } = useChat();
+  const history = useSessions();
+  const { messages, status, send, reset, open, busy, sessionId } = useChat({
+    onSaved: history.refresh,
+  });
   const [selected, setSelected] = useState<Selection | null>(null);
+  const [drawer, setDrawer] = useState(false);
   const wide = useMediaQuery("(min-width: 1024px)");
+  const roomy = useMediaQuery("(min-width: 1280px)");
   const close = () => setSelected(null);
 
+  const startNew = () => {
+    close();
+    setDrawer(false);
+    reset();
+  };
+  const panel = (
+    <HistoryPanel
+      sessions={history.sessions}
+      activeId={sessionId}
+      failed={history.failed}
+      onOpen={(id) => {
+        close();
+        setDrawer(false);
+        void open(id);
+      }}
+      onNew={startNew}
+      onDelete={(id) => {
+        if (id === sessionId) startNew();
+        void history.remove(id);
+      }}
+      onRetry={() => void history.refresh()}
+    />
+  );
+
   return (
-    <main className="grid h-dvh grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,46%)]">
+    <main className="grid h-dvh grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,46%)] xl:grid-cols-[16rem_minmax(0,1fr)_minmax(0,42%)]">
+      <aside className="bg-desk/50 border-rule hidden min-h-0 border-r xl:block">
+        {roomy && panel}
+      </aside>
       <section className="flex min-h-0 flex-col">
         <header className="border-rule flex items-center justify-between gap-3 border-b px-4 py-3 sm:px-6">
-          <div className="min-w-0">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            aria-label="Lịch sử trò chuyện"
+            className="xl:hidden"
+            onClick={() => setDrawer(true)}
+          >
+            <History />
+          </Button>
+          <div className="min-w-0 flex-1">
             <h1 className="truncate text-[0.95rem] font-semibold">
               Báo cáo thường niên Techcombank 2025
             </h1>
@@ -43,10 +87,8 @@ export default function Home() {
             type="button"
             variant="outline"
             size="sm"
-            onClick={() => {
-              close();
-              reset();
-            }}
+            className="xl:hidden"
+            onClick={startNew}
           >
             <SquarePen />
             <span className="max-sm:sr-only">Cuộc trò chuyện mới</span>
@@ -87,6 +129,21 @@ export default function Home() {
           </div>
         )}
       </aside>
+      {!roomy && (
+        <Sheet open={drawer} onOpenChange={setDrawer}>
+          <SheetContent
+            side="left"
+            showCloseButton={false}
+            className="bg-paper gap-0 data-[side=left]:w-[85vw] data-[side=left]:sm:max-w-xs"
+          >
+            <SheetTitle className="sr-only">Lịch sử trò chuyện</SheetTitle>
+            <SheetDescription className="sr-only">
+              Các cuộc trò chuyện đã lưu trên trình duyệt này
+            </SheetDescription>
+            {panel}
+          </SheetContent>
+        </Sheet>
+      )}
       {!wide && (
         <Sheet open={selected !== null} onOpenChange={(o) => !o && close()}>
           <SheetContent

@@ -79,6 +79,13 @@ export function MessageList({
             selected={selected}
             onCite={onCite}
           />
+        ) : m.role === "legacy" ? (
+          <article
+            key={i}
+            className="bg-card border-rule rounded-lg border px-4 py-3 font-serif text-[1.05rem] leading-relaxed whitespace-pre-wrap sm:px-5"
+          >
+            {m.text}
+          </article>
         ) : (
           <p
             key={i}

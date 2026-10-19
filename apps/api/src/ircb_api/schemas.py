@@ -83,11 +83,26 @@ class MessageOut(BaseModel):
     role: str
     content: str
     created_at: datetime
+    # the answer exactly as it was sent (assistant turns stored since history was added), else None
+    answer: ChatAnswerOut | None = None
 
 
 class SessionOut(BaseModel):
     id: str
+    title: str
     messages: list[MessageOut]
+
+
+class SessionSummaryOut(BaseModel):
+    id: str
+    title: str
+    created_at: datetime
+    updated_at: datetime
+    n_messages: int
+
+
+class SessionListOut(BaseModel):
+    sessions: list[SessionSummaryOut]
 
 
 class FactOut(BaseModel):

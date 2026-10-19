@@ -16,8 +16,9 @@ from ircb.storage.session_repo import StoredMessage
 from pydantic import BaseModel
 from sse_starlette import EventSourceResponse, ServerSentEvent
 
-from ircb_api.errors import INTERNAL_MESSAGE
+from ircb_api.errors import INTERNAL_MESSAGE, ApiError
 from ircb_api.mapping import to_chat_answer
+from ircb_api.owner import get_owner
 from ircb_api.schemas import ChatAnswerOut, ChatIn, StatusOut
 from ircb_api.state import AppState, get_state
 
@@ -66,9 +67,10 @@ class _Emit:
             pass
 
 
-def _run_turn(st: AppState, sid: str, message: str, emit: _Emit) -> ChatAnswerOut:
+def _run_turn(st: AppState, sid: str, owner: str, message: str, emit: _Emit) -> ChatAnswerOut:
     """Worker thread: one turn under the global lock. Persistence happens here, after ``ask``,
-    so a client disconnect cannot skip it; an error answer is not persisted."""
+    so a client disconnect cannot skip it; an error answer is not persisted. The assistant turn
+    keeps the answer exactly as sent, so a reopened session shows the same claims and chips."""
     with st.lock:
         history = _history(st.sessions.messages(sid))
         prev_state = st.sessions.last_state(sid)
@@ -79,20 +81,23 @@ def _run_turn(st: AppState, sid: str, message: str, emit: _Emit) -> ChatAnswerOu
                 emit(("status", StatusOut(step=name, label=label)))
 
         answer = st.service.ask(message, prev_state=prev_state, history=history, on_step=on_step)
+        out = to_chat_answer(answer, sid, st.facts, st.chunks)
         if answer.status != "error":
-            st.sessions.append(sid, "user", message, None)
-            st.sessions.append(sid, "assistant", answer.text, answer.state)
-        return to_chat_answer(answer, sid, st.facts, st.chunks)
+            st.sessions.append(sid, "user", message, None, owner=owner)
+            st.sessions.append(
+                sid, "assistant", answer.text, answer.state, out.model_dump_json(), owner=owner
+            )
+        return out
 
 
-async def _stream(st: AppState, sid: str, message: str) -> AsyncIterator[ServerSentEvent]:
+async def _stream(st: AppState, sid: str, owner: str, message: str) -> AsyncIterator[ServerSentEvent]:
     loop = asyncio.get_running_loop()
     queue: asyncio.Queue[_Item] = asyncio.Queue()
     emit = _Emit(loop, queue)
 
     async def worker() -> None:
         try:
-            out = await anyio.to_thread.run_sync(_run_turn, st, sid, message, emit)
+            out = await anyio.to_thread.run_sync(_run_turn, st, sid, owner, message, emit)
         except Exception:
             log.exception("chat turn failed (session %s)", sid)
             queue.put_nowait(("error", None))
@@ -121,6 +126,13 @@ async def _stream(st: AppState, sid: str, message: str) -> AsyncIterator[ServerS
     response_class=EventSourceResponse,
     responses={200: {"model": ChatAnswerOut, "content": {"text/event-stream": {}}}},
 )
-async def chat(body: ChatIn, st: Annotated[AppState, Depends(get_state)]) -> EventSourceResponse:
+def chat(
+    body: ChatIn,
+    st: Annotated[AppState, Depends(get_state)],
+    owner: Annotated[str, Depends(get_owner)],
+) -> EventSourceResponse:
+    """A new id starts a session for the caller; continuing someone else's session is a 404."""
     sid = body.session_id or uuid4().hex
-    return EventSourceResponse(_stream(st, sid, body.message))
+    if body.session_id is not None and st.sessions.exists(sid) and not st.sessions.owned_by(sid, owner):
+        raise ApiError(404, "session_not_found", "Không tìm thấy phiên hội thoại.")
+    return EventSourceResponse(_stream(st, sid, owner, body.message))

@@ -178,10 +178,14 @@ Sau khi đổi schema API, sinh lại kiểu TypeScript: `make gen-types` (khôn
 |---|---|
 | `GET /v1/health` | Trạng thái, `index_version`, số chunk/fact, model, `pdf_available` |
 | `POST /v1/chat` | Hỏi đáp; trả SSE: `status` (các bước) rồi `answer` rồi `done`, hoặc `error` |
-| `GET /v1/sessions/{id}` | Lịch sử một phiên hội thoại |
+| `GET /v1/sessions` | Các phiên của người gọi, mới nhất trước (tiêu đề là câu hỏi đầu) |
+| `GET /v1/sessions/{id}` | Một phiên, kèm nguyên câu trả lời đã gửi (claim, trang, phép tính) |
+| `DELETE /v1/sessions/{id}` | Xoá một phiên |
 | `GET /v1/pages/{printed}/image?source=&evidence=` | PNG trang in số `printed`, tô sáng vùng bằng chứng |
 | `GET /v1/facts?q=&period=&limit=` | Tra fact (giá trị là chuỗi Decimal) |
 | `GET /v1/traces/{trace_id}` | Trace một câu; chỉ bật khi `APP_ENV=dev` |
+
+**Lịch sử trò chuyện.** Web gửi header `X-Client-Id` (mã ngẫu nhiên lưu trong trình duyệt), nên mỗi trình duyệt chỉ thấy lịch sử của mình; mở phiên của người khác trả 404. Đây là tách lịch sử, chưa phải đăng nhập: ai có mã đó đều xem được các phiên ấy. Request không có header dùng chung một nhóm công khai.
 
 `/v1/traces` được bật khi `APP_ENV=dev` (mặc định), nên hãy đặt `APP_ENV=prod` trước khi bind API vào một host không phải máy cục bộ.
 

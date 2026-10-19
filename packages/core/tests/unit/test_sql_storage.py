@@ -127,3 +127,57 @@ def test_fact_search_by_label_and_period(engine: Engine) -> None:
     assert {f.fact_id for f in store.search("tổng tài sản")} == {"a", "b"}
     assert [f.fact_id for f in store.search("Tổng Tài Sản", period="FY2025")] == ["a"]
     assert store.search("", limit=2) and len(store.search("", limit=2)) == 2
+
+
+def test_session_owner_title_and_listing(engine: Engine) -> None:
+    repo = SessionRepo(engine)
+    long_q = "Tổng tài sản " + "rất " * 40 + "năm 2025?"
+    repo.append("a", "user", long_q, None, owner="alice")
+    repo.append("a", "assistant", "Đáp", None, payload='{"status": "answered"}', owner="alice")
+    repo.append("b", "user", "  RBG\nlà gì?  ", None, owner="alice")
+    repo.append("c", "user", "Câu của Bob", None, owner="bob")
+
+    mine = repo.list_sessions("alice")
+    assert [s.id for s in mine] == ["b", "a"]  # most recently updated first
+    assert mine[0].title == "RBG là gì?"
+    assert len(mine[1].title) == 80 and mine[1].title.endswith("…")
+    assert [s.n_messages for s in mine] == [1, 2]
+    assert [s.id for s in repo.list_sessions("bob")] == ["c"]
+    assert repo.list_sessions(None) == []
+
+    assert repo.owned_by("a", "alice") and not repo.owned_by("a", "bob") and not repo.owned_by("x", "alice")
+    assert [m.payload for m in repo.messages("a")] == [None, '{"status": "answered"}']
+
+
+def test_session_without_owner_is_only_visible_without_owner(engine: Engine) -> None:
+    repo = SessionRepo(engine)
+    repo.append("cli", "user", "q", None)
+    assert repo.owned_by("cli", None) and not repo.owned_by("cli", "alice")
+    assert [s.id for s in repo.list_sessions(None)] == ["cli"]
+
+
+def test_session_delete_removes_messages(engine: Engine) -> None:
+    repo = SessionRepo(engine)
+    repo.append("a", "user", "q", None, owner="alice")
+    repo.append("a", "assistant", "đáp", None, owner="alice")
+    repo.delete("a")
+    assert not repo.exists("a") and repo.messages("a") == []
+    assert count_rows(engine, "messages") == 0
+
+
+def test_migration_0002_backfills_titles(tmp_path: Path) -> None:
+    eng = make_engine(f"sqlite:///{(tmp_path / 'old.db').as_posix()}")
+    upgrade_db(eng, "0001")
+    with eng.begin() as c:
+        c.execute(sa.text("INSERT INTO sessions (id, created_at) VALUES ('s', '2026-01-01 00:00:00')"))
+        c.execute(
+            sa.text(
+                "INSERT INTO messages (session_id, role, content, created_at) VALUES "
+                "('s', 'user', 'Câu đầu', '2026-01-01 00:00:01'), "
+                "('s', 'assistant', 'Đáp', '2026-01-01 00:00:02')"
+            )
+        )
+    upgrade_db(eng)
+    [summary] = SessionRepo(eng).list_sessions(None)
+    assert summary.title == "Câu đầu" and summary.n_messages == 2
+    assert summary.updated_at.isoformat() == "2026-01-01T00:00:02+00:00"

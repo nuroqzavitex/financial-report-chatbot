@@ -1,13 +1,24 @@
+import { clientId } from "@/lib/clientId";
 import { parseSse } from "@/lib/sse";
-import type { ChatAnswer, Health, SourceDTO, StatusEvent } from "./types";
+import type {
+  ChatAnswer,
+  Health,
+  SessionDetail,
+  SessionSummary,
+  SourceDTO,
+  StatusEvent,
+} from "./types";
 
 export type {
   CalcDTO,
   ChatAnswer,
   ClaimDTO,
   Health,
+  SessionDetail,
+  SessionSummary,
   SourceDTO,
   StatusEvent,
+  StoredMessage,
 } from "./types";
 
 export interface ChatHandlers {
@@ -22,6 +33,10 @@ const NETWORK_ERROR = "Không kết nối được máy chủ, vui lòng thử l
 export function apiUrl(path: string): string {
   const base = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
   return base.replace(/\/+$/, "") + path;
+}
+
+function owner(): Record<string, string> {
+  return { "X-Client-Id": clientId() };
 }
 
 export async function health(): Promise<Health> {
@@ -52,6 +67,7 @@ export async function streamChat(
       headers: {
         "content-type": "application/json",
         accept: "text/event-stream",
+        ...owner(),
       },
       body: JSON.stringify(body),
       signal,
@@ -106,6 +122,32 @@ export async function streamChat(
     if (signal?.aborted) return;
     handlers.onError(NETWORK_ERROR);
   }
+}
+
+export class NotFound extends Error {}
+
+async function getJson<T>(path: string): Promise<T> {
+  const res = await fetch(apiUrl(path), { headers: owner() });
+  if (res.status === 404) throw new NotFound(await errorMessage(res));
+  if (!res.ok) throw new Error(await errorMessage(res));
+  return (await res.json()) as T;
+}
+
+export async function listSessions(): Promise<SessionSummary[]> {
+  return (await getJson<{ sessions: SessionSummary[] }>("/v1/sessions"))
+    .sessions;
+}
+
+export function getSession(id: string): Promise<SessionDetail> {
+  return getJson<SessionDetail>(`/v1/sessions/${encodeURIComponent(id)}`);
+}
+
+export async function deleteSession(id: string): Promise<void> {
+  const res = await fetch(apiUrl(`/v1/sessions/${encodeURIComponent(id)}`), {
+    method: "DELETE",
+    headers: owner(),
+  });
+  if (!res.ok && res.status !== 404) throw new Error(await errorMessage(res));
 }
 
 export function pageImageUrl(printed: number, source?: SourceDTO): string {

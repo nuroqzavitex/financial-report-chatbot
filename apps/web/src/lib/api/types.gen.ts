@@ -13,7 +13,10 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Chat */
+    /**
+     * Chat
+     * @description A new id starts a session for the caller; continuing someone else's session is a 404.
+     */
     post: operations["chat_v1_chat_post"];
     delete?: never;
     options?: never;
@@ -72,6 +75,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/v1/sessions": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** List Sessions */
+    get: operations["list_sessions_v1_sessions_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/v1/sessions/{session_id}": {
     parameters: {
       query?: never;
@@ -83,7 +103,8 @@ export interface paths {
     get: operations["get_session_v1_sessions__session_id__get"];
     put?: never;
     post?: never;
-    delete?: never;
+    /** Delete Session */
+    delete: operations["delete_session_v1_sessions__session_id__delete"];
     options?: never;
     head?: never;
     patch?: never;
@@ -230,6 +251,7 @@ export interface components {
     };
     /** MessageOut */
     MessageOut: {
+      answer?: components["schemas"]["ChatAnswerOut"] | null;
       /** Content */
       content: string;
       /**
@@ -257,12 +279,38 @@ export interface components {
       /** Value */
       value: string;
     };
+    /** SessionListOut */
+    SessionListOut: {
+      /** Sessions */
+      sessions: components["schemas"]["SessionSummaryOut"][];
+    };
     /** SessionOut */
     SessionOut: {
       /** Id */
       id: string;
       /** Messages */
       messages: components["schemas"]["MessageOut"][];
+      /** Title */
+      title: string;
+    };
+    /** SessionSummaryOut */
+    SessionSummaryOut: {
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+      /** Id */
+      id: string;
+      /** N Messages */
+      n_messages: number;
+      /** Title */
+      title: string;
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string;
     };
     /** SourceOut */
     SourceOut: {
@@ -428,6 +476,37 @@ export interface operations {
       };
     };
   };
+  list_sessions_v1_sessions_get: {
+    parameters: {
+      query?: {
+        limit?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SessionListOut"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
   get_session_v1_sessions__session_id__get: {
     parameters: {
       query?: never;
@@ -447,6 +526,35 @@ export interface operations {
         content: {
           "application/json": components["schemas"]["SessionOut"];
         };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  delete_session_v1_sessions__session_id__delete: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        session_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
       };
       /** @description Validation Error */
       422: {

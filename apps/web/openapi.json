@@ -392,6 +392,16 @@
       },
       "MessageOut": {
         "properties": {
+          "answer": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ChatAnswerOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "content": {
             "title": "Content",
             "type": "string"
@@ -474,6 +484,22 @@
         "title": "OperandOut",
         "type": "object"
       },
+      "SessionListOut": {
+        "properties": {
+          "sessions": {
+            "items": {
+              "$ref": "#/components/schemas/SessionSummaryOut"
+            },
+            "title": "Sessions",
+            "type": "array"
+          }
+        },
+        "required": [
+          "sessions"
+        ],
+        "title": "SessionListOut",
+        "type": "object"
+      },
       "SessionOut": {
         "properties": {
           "id": {
@@ -486,13 +512,53 @@
             },
             "title": "Messages",
             "type": "array"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
           }
         },
         "required": [
           "id",
+          "title",
           "messages"
         ],
         "title": "SessionOut",
+        "type": "object"
+      },
+      "SessionSummaryOut": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "n_messages": {
+            "title": "N Messages",
+            "type": "integer"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "created_at",
+          "updated_at",
+          "n_messages"
+        ],
+        "title": "SessionSummaryOut",
         "type": "object"
       },
       "SourceOut": {
@@ -598,6 +664,7 @@
   "paths": {
     "/v1/chat": {
       "post": {
+        "description": "A new id starts a session for the caller; continuing someone else's session is a 404.",
         "operationId": "chat_v1_chat_post",
         "requestBody": {
           "content": {
@@ -793,7 +860,79 @@
         "summary": "Page Image"
       }
     },
+    "/v1/sessions": {
+      "get": {
+        "operationId": "list_sessions_v1_sessions_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionListOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Sessions"
+      }
+    },
     "/v1/sessions/{session_id}": {
+      "delete": {
+        "operationId": "delete_session_v1_sessions__session_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "title": "Session Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Session"
+      },
       "get": {
         "operationId": "get_session_v1_sessions__session_id__get",
         "parameters": [
