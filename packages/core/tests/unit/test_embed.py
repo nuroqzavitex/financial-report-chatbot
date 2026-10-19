@@ -1,7 +1,7 @@
 import sys
 import types
 
-from ircb.retrieval.embed import Embedder, LiteLLMEmbedBackend
+from ircb.retrieval.embed import RETRIES, Embedder, LiteLLMEmbedBackend
 from ircb.settings import Settings
 
 
@@ -50,7 +50,7 @@ def test_litellm_backend_batches(monkeypatch):
     s = Settings(llm_model="x")
     out = LiteLLMEmbedBackend(s).embed([str(i) for i in range(300)])
     assert len(out) == 300
-    assert [len(c["input"]) for c in calls] == [256, 44]
+    assert [len(c["input"]) for c in calls] == [100, 100, 100]
     assert calls[0]["model"] == "openai/text-embedding-3-large"
     assert calls[0]["dimensions"] == 1024
 
@@ -109,4 +109,4 @@ def test_retries_stop(monkeypatch):
     calls = _install(monkeypatch, [_Err(503)])
     with pytest.raises(_Err):
         LiteLLMEmbedBackend(Settings(llm_model="x")).embed(["a"])
-    assert len(calls) == 3
+    assert len(calls) == RETRIES + 1

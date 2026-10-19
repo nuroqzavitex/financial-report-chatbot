@@ -92,10 +92,10 @@ def test_schema_error_twice_raises(settings: Settings) -> None:
     assert c._attempts == 2
 
 
-def capture_kwargs(settings: Settings) -> dict[str, Any]:
+def capture_kwargs(settings: Settings, model: str = "openai/m") -> dict[str, Any]:
     calls: list[dict[str, Any]] = []
     c = LLMClient(settings, completion_fn=sequence([valid_generator_json()], calls))
-    c.complete_json("openai/m", [], GeneratorOutput)
+    c.complete_json(model, [], GeneratorOutput)
     return calls[0]
 
 
@@ -109,7 +109,7 @@ def test_temperature_zero_when_supported(settings: Settings, monkeypatch: pytest
     monkeypatch.setattr(client, "_supports_temperature", lambda m: True)
     kwargs = capture_kwargs(settings)
     assert kwargs["temperature"] == 0 and "seed" not in kwargs
-    assert kwargs["timeout"] == 30
+    assert kwargs["timeout"] == settings.llm_timeout_s == 60
 
 
 def test_response_format_strict(settings: Settings) -> None:
@@ -202,3 +202,16 @@ def test_litellm_float_cost_drops_binary_noise(settings: Settings, monkeypatch: 
     c = LLMClient(settings, completion_fn=sequence([valid_generator_json()]))
     _, usage = c.complete_json("openai/m", [], GeneratorOutput)
     assert usage.cost_usd == Decimal("0.0178025")
+
+
+def test_ollama_models_get_the_configured_base_and_key(settings: Settings) -> None:
+    s = settings.model_copy(
+        update={"ollama_api_base": "http://host.docker.internal:11434", "ollama_api_key": "k"}
+    )
+    kwargs = capture_kwargs(s, model="ollama_chat/gpt-oss:120b-cloud")
+    assert kwargs["api_base"] == "http://host.docker.internal:11434" and kwargs["api_key"] == "k"
+
+
+def test_other_providers_get_no_ollama_base(settings: Settings) -> None:
+    kwargs = capture_kwargs(settings)
+    assert "api_base" not in kwargs and "api_key" not in kwargs

@@ -12,7 +12,6 @@ from ircb.llm.retry import retryable
 from ircb.retrieval.embed import LiteLLMEmbedBackend
 from ircb.settings import Settings
 
-TIMEOUT_S = 30
 TRANSPORT_RETRIES = 2
 _PER_MILLION = Decimal(1_000_000)
 
@@ -128,8 +127,13 @@ class LLMClient:
             "model": model,
             "messages": list(messages),
             "response_format": _response_format(schema),
-            "timeout": TIMEOUT_S,
+            "timeout": self.settings.llm_timeout_s,
         }
+        if model.startswith(("ollama/", "ollama_chat/")):
+            # local Ollama (or ollama.com); a signed-in local Ollama also serves the "*-cloud" models
+            kwargs["api_base"] = self.settings.ollama_api_base
+            if self.settings.ollama_api_key:
+                kwargs["api_key"] = self.settings.ollama_api_key
         if _supports_temperature(model):
             kwargs["temperature"] = 0
         else:

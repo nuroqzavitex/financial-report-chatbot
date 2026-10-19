@@ -21,6 +21,10 @@ class Settings(BaseSettings):
     anthropic_api_key: str | None = None
     gemini_api_key: str | None = None
     ollama_api_base: str = "http://localhost:11434"
+    ollama_api_key: str | None = (
+        None  # only for https://ollama.com directly; a signed-in local Ollama needs none
+    )
+    llm_timeout_s: int = 60  # per call; hosted open models answer slower than OpenAI
 
     embed_model: str = "openai/text-embedding-3-large"
     embed_dimensions: int = 1024

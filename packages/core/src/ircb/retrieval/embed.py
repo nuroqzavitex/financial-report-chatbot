@@ -9,8 +9,8 @@ from typing import Any, Protocol
 from ircb.llm.retry import retryable as _retryable
 from ircb.settings import Settings
 
-BATCH = 256
-RETRIES = 2
+BATCH = 100  # Gemini's batchEmbedContents takes at most 100 texts; OpenAI takes far more
+RETRIES = 5  # with doubling waits (2 s … 32 s): enough to ride out a per-minute rate limit
 
 
 class EmbedBackend(Protocol):
@@ -35,7 +35,7 @@ class LiteLLMEmbedBackend:
             except Exception as exc:
                 if attempt == RETRIES or not _retryable(exc):
                     raise
-                time.sleep(2**attempt)
+                time.sleep(2 ** (attempt + 1))
         raise RuntimeError("unreachable")
 
     def embed(self, texts: list[str]) -> list[list[float]]:
@@ -65,9 +65,10 @@ class Embedder:
                 found[t] = json.loads(p.read_text(encoding="utf-8"))
             else:
                 missing.append(t)
-        if missing:
-            vecs = self.backend.embed(missing)
-            for t, v in zip(missing, vecs, strict=True):
+        # one batch at a time, cached as it lands: a run stopped by a rate limit resumes where it was
+        for i in range(0, len(missing), BATCH):
+            batch = missing[i : i + BATCH]
+            for t, v in zip(batch, self.backend.embed(batch), strict=True):
                 p = self._path(t)
                 p.parent.mkdir(parents=True, exist_ok=True)
                 p.write_text(json.dumps(v), encoding="utf-8")
