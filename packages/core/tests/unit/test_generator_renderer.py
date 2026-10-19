@@ -248,9 +248,13 @@ def test_prompt_examples_survive_verifier():
         f("b2", "Cho vay khách hàng", "2024", "100"),
         f("t25", "Tổng tài sản", "2025", "1200"),
         f("t24", "Tổng tài sản", "2024", "1000"),
-    ]
+        fact(fact_id="ta", label="Tổng tài sản", label_norm="tổng tài sản", period="2025",
+             value=Decimal("1192344"), unit="tỷ đồng", printed_pages=[14]),
+        fact(fact_id="tk", label="Tổng tài sản", label_norm="tổng tài sản", period="2025",
+             value=Decimal("1192"), unit="nghìn tỷ đồng", printed_pages=[5]),
+    ]  # fmt: skip
     examples = _prompt_examples()
-    assert len(examples) == 3  # ex.1, ex.2 first round, ex.2 second round
+    assert len(examples) == 4  # ex.1, ex.2 first round, ex.2 second round, ex.3
     checked = 0
     for out in examples:
         if not out.claims:
@@ -260,7 +264,7 @@ def test_prompt_examples_survive_verifier():
         for v in verify_claims(out.claims, context, results):
             assert v.ok, (v.text, v.failed_rule)
             checked += 1
-    assert checked == 4
+    assert checked == 5
 
 
 def test_prompt_direction_words_listed():
@@ -278,7 +282,6 @@ def test_render_generator_partial_appends_fixed_note():
 @pytest.mark.parametrize(
     ("kind", "sentence"),
     [
-        ("rounding", "Số liệu tổng quan đã được làm tròn từ số kiểm toán."),
         ("definition", "Hai số liệu khác nhau do khác định nghĩa chỉ tiêu."),
         ("genuine", "Hai nguồn trong báo cáo cho số liệu khác nhau — cần kiểm tra."),
     ],
@@ -288,6 +291,13 @@ def test_render_conflict_fixed_sentence_ignores_model_note(kind, sentence):
     status, text, _ = render([vc(text="Một.", pages=[5])], {}, conflict, "answered")
     assert status == "answered" and text == f"Một. [tr. 5]\n{sentence}"
     assert "9.999" not in text
+
+
+def test_render_rounding_conflict_adds_no_sentence():
+    status, text, _ = render(
+        [vc(text="Một.", pages=[5, 297])], {}, Conflict(kind="rounding", note="x"), "answered"
+    )
+    assert status == "answered" and text == "Một. [tr. 5, 297]"
 
 
 def test_render_no_conflict_sentence_when_kind_none():

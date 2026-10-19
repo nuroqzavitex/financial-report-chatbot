@@ -16,7 +16,7 @@ from ircb.answering.generator import PROMPT_VERSION, generate
 from ircb.answering.guard import GuardRefusal, period_guard, post_rewrite_guard
 from ircb.answering.renderer import render
 from ircb.answering.rewriter import rewrite
-from ircb.answering.verifier import verify_claims
+from ircb.answering.verifier import merge_duplicates, verify_claims
 from ircb.domain.models import (
     Answer,
     CalcResult,
@@ -249,7 +249,15 @@ class AnswerService:
         with trace.step("verify"):
             ctx.chunk_facts = self._cited_chunk_facts(gen.claims, ctx)
             verified = verify_claims(gen.claims, ctx, calcs)
-        trace.record("verifier", [{"ok": v.ok, "failed_rule": v.failed_rule} for v in verified])
+        # cited ids (never claim text): enough to replay why a claim failed or which sources it kept
+        trace.record(
+            "verifier",
+            [
+                {"ok": v.ok, "failed_rule": v.failed_rule, "cited": c.sources, "kept": v.sources}
+                for c, v in zip(gen.claims, verified, strict=True)
+            ],
+        )
+        verified = merge_duplicates(verified)
 
         with trace.step("render"):
             suggest = ctx.chunks[0].printed_pages if ctx.chunks else None

@@ -93,6 +93,7 @@ _STOPWORDS = frozenset(
         *("của", "và", "so", "với", "năm", "là", "đạt", "được", "này", "đó", "các", "những"),
         *("trong", "tại", "từ", "đến", "đã", "đang", "vẫn", "cũng", "đều", "ở", "vào", "kỳ", "cùng"),
         *("suy", "mạnh", "nhẹ"),  # "suy giảm"; degree words
+        *("techcombank", "cuối"),  # the reporting bank itself; "tại cuối năm 2025"
     }
 )
 # period phrases are dropped only after "so với" / "cùng" (round-5 ruling)
@@ -113,6 +114,9 @@ _PLACEHOLDER_RE = re.compile(r"\{[^{}]*\}")
 _CALC_REF_RE = re.compile(r"\{(c\d+)\}")
 _DATE_RE = re.compile(r"(?<!\d)(\d{1,2})/(\d{1,2})/(\d{4})(?!\d)")
 _FOOTNOTE_RE = re.compile(r"^\(\d{1,2}\)$")
+# a table row whose label carries its own unit: "| Lợi nhuận trước thuế (tỷ đồng) | 22.888 | 32.538 |"
+_ROW_UNIT_RE = re.compile(r"^\s*\|?\s*[^|\n]*\(([^()|\n]+)\)\s*\|")
+_ROW_JOIN_RE = re.compile(r"\|\s*\|")
 _DECIMALS_RE = re.compile(r",(\d+)")
 _WS_RE = re.compile(r"\s+")
 _HALF = Decimal("0.5")
@@ -341,9 +345,25 @@ def _resolve(claim: ClaimOut, ctx: Context, calcs: dict[str, CalcResult]) -> _So
     return out
 
 
+def _row_unit(evidence: str) -> str | None:
+    """Unit in the label of a single quoted table row; a multi-row quote has no one row unit.
+
+    The evidence arrives whitespace-normalised, so two rows show up as "... | | ..." (an empty
+    cell looks the same and also gets no row unit: fail closed).
+    """
+    if "\n" in evidence or _ROW_JOIN_RE.search(evidence):
+        return None
+    m = _ROW_UNIT_RE.match(evidence)
+    return normalize_unit(m.group(1)) if m else None
+
+
 def _check_numbers(text: str, src: _Sources, evidence_chunk: Chunk | None, evidence: str) -> bool:
     fact_texts = [_fact_text(f) for f in src.facts]
-    evidence_nums = _numbers(evidence, normalize_unit(evidence_chunk.unit or "")) if evidence_chunk else []
+    evidence_nums = (
+        _numbers(evidence, normalize_unit(evidence_chunk.unit or "") or _row_unit(evidence))
+        if evidence_chunk
+        else []
+    )
     trusted_texts = fact_texts + ([evidence] if evidence_chunk else [])
     all_texts = trusted_texts + [c.text for c in src.chunks]
 
@@ -534,18 +554,19 @@ def _direction_rule(
 def _verify(claim: ClaimOut, ctx: Context, calcs: dict[str, CalcResult]) -> VerifiedClaim:
     src = _resolve(claim, ctx, calcs)
     filled, _ = fill_placeholders(claim.text, calcs)
-    pages = sorted(
-        {p for f in src.facts for p in f.printed_pages} | {p for c in src.chunks for p in c.printed_pages}
-    )
+    quoted = claim.evidence
 
     def result(rule: str | None) -> VerifiedClaim:
+        pages = {p for f in src.facts for p in f.printed_pages} | {
+            p for c in src.chunks for p in c.printed_pages
+        }
         return VerifiedClaim(
             text=filled,
             sources=src.ids,
-            printed_pages=pages,
+            printed_pages=sorted(pages),
             ok=rule is None,
             failed_rule=rule,
-            evidence=claim.evidence,
+            evidence=quoted,
             calc_ids=list(dict.fromkeys(_CALC_REF_RE.findall(claim.text))),
         )
 
@@ -559,7 +580,13 @@ def _verify(claim: ClaimOut, ctx: Context, calcs: dict[str, CalcResult]) -> Veri
     if src.chunks:
         evidence_chunk = next((c for c in src.chunks if evidence and evidence in _norm(c.text)), None)
         if evidence_chunk is None:
-            return result("evidence_not_substring")
+            # A misquoted chunk vouches for nothing. When the claim also cites facts, drop the chunks
+            # (with their pages and their own facts) and check the claim on those facts alone.
+            cited = [f for f in src.facts if f"fact:{f.fact_id}" in src.ids]
+            if not cited:
+                return result("evidence_not_substring")
+            src = _Sources([i for i in src.ids if i.startswith("fact:")], cited, [], missing=False)
+            evidence, quoted = "", ""
 
     # 3. hand-written numbers
     handwritten = _blank_placeholders(normalize_chars(claim.text))
@@ -583,3 +610,56 @@ def _verify(claim: ClaimOut, ctx: Context, calcs: dict[str, CalcResult]) -> Veri
 def verify_claims(claims: list[ClaimOut], ctx: Context, calcs: dict[str, CalcResult]) -> list[VerifiedClaim]:
     """Verify every claim independently; one ``VerifiedClaim`` per input, same order."""
     return [_verify(c, ctx, calcs) for c in claims]
+
+
+# --- duplicate claims: one figure restated from several sources --------------------------------
+
+_UNIT_WORDS = frozenset({"nghìn", "ngàn", "tỷ", "tỉ", "triệu", "đồng", "vnd", "phần", "trăm"})
+
+
+def _skeleton(text: str) -> tuple[str, ...]:
+    """What a claim says once its numbers and their units are taken out."""
+    return tuple(w for w in _LETTERS_RE.findall(_norm(text).lower()) if w not in _UNIT_WORDS)
+
+
+def _same_figure(a: _Num, b: _Num) -> bool:
+    """Equal values; money in different units may differ by the rounding of the coarser one."""
+    if a.vnd is not None and b.vnd is not None:
+        return abs(a.vnd - b.vnd) <= max(_rounding_vnd(a), _rounding_vnd(b))
+    return a.unit == b.unit and a.value == b.value
+
+
+def _rounding_vnd(n: _Num) -> Decimal:
+    """Half of the last displayed digit, in đồng."""
+    return _HALF * Decimal(10) ** -n.decimals * _MONEY_SCALE.get(n.unit or "", 0)
+
+
+def _duplicates(a: VerifiedClaim, b: VerifiedClaim) -> bool:
+    if a.calc_ids or b.calc_ids or _skeleton(a.text) != _skeleton(b.text):
+        return False
+    na, nb = _numbers(a.text), _numbers(b.text)
+    return bool(na) and len(na) == len(nb) and all(_same_figure(x, y) for x, y in zip(na, nb, strict=True))
+
+
+def merge_duplicates(verified: list[VerifiedClaim]) -> list[VerifiedClaim]:
+    """Fold passed claims that restate the same figure into the first one, citing every page.
+
+    The model often writes one sentence per source ("1.192 nghìn tỷ đồng", "1.192.344 tỷ đồng",
+    "1.192.344.137 triệu đồng"). Each passed on its own, so the merged claim keeps the first text
+    and adds the others' sources and pages. Failed claims and claims with calcs are left alone.
+    """
+    out: list[VerifiedClaim] = []
+    for v in verified:
+        keep = next((k for k in out if k.ok and v.ok and _duplicates(k, v)), None) if v.ok else None
+        if keep is None:
+            out.append(v)
+            continue
+        i = out.index(keep)
+        out[i] = keep.model_copy(
+            update={
+                "sources": list(dict.fromkeys([*keep.sources, *v.sources])),
+                "printed_pages": sorted({*keep.printed_pages, *v.printed_pages}),
+                "evidence": keep.evidence or v.evidence,
+            }
+        )
+    return out

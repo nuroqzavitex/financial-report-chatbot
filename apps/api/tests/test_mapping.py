@@ -77,7 +77,7 @@ def test_renderer_contract_passed_claim_lines_then_notes(facts_store, chunks):
         failed_rule="x",
         evidence="SECRET",
     )
-    conflict = Conflict(kind="rounding", note="free text")
+    conflict = Conflict(kind="definition", note="free text")
     status, text, _ = render([passed[0], failed, passed[1]], {}, conflict, "partial")
     a = answer_with(claims=[passed[0], failed, passed[1]], text=text, status=status, conflict=conflict)
     out = to_chat_answer(a, "s", facts_store, chunks)
@@ -85,11 +85,11 @@ def test_renderer_contract_passed_claim_lines_then_notes(facts_store, chunks):
     assert [c.text for c in out.claims] == ["Tổng tài sản đạt 1.192", "Dư nợ đạt 328,1"]
     assert [c.citation for c in out.claims] == ["[tr. 5]", "[tr. 6, 7]"]
     assert out.notes == [
-        "Số liệu tổng quan đã được làm tròn từ số kiểm toán.",
+        "Hai số liệu khác nhau do khác định nghĩa chỉ tiêu.",
         "Chưa xác minh được một phần nội dung, xem [tr. 9].",
         PARTIAL_TEXT,
     ]
-    assert out.conflict_kind == "rounding"
+    assert out.conflict_kind == "definition"
     assert "SECRET" not in out.model_dump_json()
 
 

@@ -10,8 +10,8 @@ REFUSED_TEXT = "Không tìm thấy thông tin này trong Báo cáo thường ni�
 UNVERIFIED_TEXT = "Chưa xác minh được một phần nội dung"
 PARTIAL_TEXT = "Một phần câu hỏi không có thông tin trong Báo cáo thường niên 2025."
 # The model's free-text conflict note is never shown (it is unverified): one fixed sentence per kind.
+# A rounding conflict gets none: it is one figure, written once and citing every page that shows it.
 CONFLICT_TEXT = {
-    "rounding": "Số liệu tổng quan đã được làm tròn từ số kiểm toán.",
     "definition": "Hai số liệu khác nhau do khác định nghĩa chỉ tiêu.",
     "genuine": "Hai nguồn trong báo cáo cho số liệu khác nhau — cần kiểm tra.",
 }
@@ -39,7 +39,7 @@ def render(
     gen_status: str,
     suggest_pages: list[int] | None = None,
 ) -> tuple[Literal["answered", "partial", "refused"], str, list[Citation]]:
-    """Claim order is kept as the generator returned it (rounding conflicts: overview figure first).
+    """Claim order is kept as the generator returned it.
 
     Only code-written text is added to verified claims: the conflict sentence for ``conflict.kind``,
     the unverified note (pages only) and, for a generator "partial", the missing-part note.
@@ -52,7 +52,7 @@ def render(
             text += f" Có thể tham khảo {_cite(suggest_pages)}."
         return "refused", text, []
     lines = [_sentence(c) for c in passed]
-    if conflict is not None and conflict.kind is not None:
+    if conflict is not None and conflict.kind in CONFLICT_TEXT:
         lines.append(CONFLICT_TEXT[conflict.kind])
     if failed:
         lines.append(_unverified(failed))

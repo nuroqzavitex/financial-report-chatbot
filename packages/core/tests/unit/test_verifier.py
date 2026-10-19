@@ -996,3 +996,127 @@ def test_calc_ids_come_from_original_claim_text(ctx: Context) -> None:
     assert passed.ok and passed.calc_ids == ["c1"]
     assert not failed.ok and failed.calc_ids == ["c2", "c1"]
     assert plain.calc_ids == []
+
+
+# --- a table row label carrying its own unit; merging claims that restate one figure ---
+
+FIVE_YEAR = (
+    "Lợi nhuận trước thuế\n| Chỉ tiêu | 2023 | 2024 | 2025 |\n|---|---|---|---|\n"
+    "| Lợi nhuận trước thuế (tỷ đồng) | 22.888 | 27.538 | 32.538 |\n"
+    "| Số khách hàng (triệu) | 13,1 | 15,3 | 18,0 |"
+)
+
+
+def test_row_label_unit_vouches_for_bare_row_numbers() -> None:
+    c = Context(chunks=[mk_chunk(content_type="table", unit=None, text=FIVE_YEAR)])
+    ev = "| Lợi nhuận trước thuế (tỷ đồng) | 22.888 | 27.538 | 32.538 |"
+    ok = verify_one(c, "Lợi nhuận trước thuế năm 2025 đạt 32.538 tỷ đồng.", ["chunk:p3R_k"], ev)
+    wrong_scale = verify_one(c, "Lợi nhuận trước thuế năm 2025 đạt 32.538 triệu đồng.", ["chunk:p3R_k"], ev)
+    assert ok.ok, ok.failed_rule
+    assert wrong_scale.failed_rule == "number_mismatch"
+
+
+def test_row_unit_not_taken_from_a_multi_row_quote() -> None:
+    c = Context(chunks=[mk_chunk(content_type="table", unit=None, text=FIVE_YEAR)])
+    ev = FIVE_YEAR.split("\n", 3)[3]  # both data rows
+    v = verify_one(c, "Lợi nhuận trước thuế năm 2025 đạt 32.538 tỷ đồng.", ["chunk:p3R_k"], ev)
+    assert v.failed_rule == "number_mismatch"
+
+
+def _vc(
+    text: str, pages: list[int], sources: list[str], ok: bool = True, calc_ids: list[str] | None = None
+) -> Any:
+    from ircb.domain.models import VerifiedClaim
+
+    return VerifiedClaim(
+        text=text, sources=sources, printed_pages=pages, ok=ok,
+        failed_rule=None if ok else "number_mismatch", calc_ids=calc_ids or [],
+    )  # fmt: skip
+
+
+def test_merge_folds_one_figure_restated_in_three_units() -> None:
+    from ircb.answering.verifier import merge_duplicates
+
+    out = merge_duplicates(
+        [
+            _vc("Tổng tài sản năm 2025 là 1.192.344 tỷ đồng.", [14], ["fact:a"]),
+            _vc("Tổng tài sản năm 2025 là 1.192 nghìn tỷ đồng.", [5], ["fact:b"]),
+            _vc("Tổng tài sản năm 2025 là 1.192.344.137 triệu đồng.", [297], ["chunk:c"]),
+        ]
+    )
+    assert len(out) == 1
+    assert out[0].text == "Tổng tài sản năm 2025 là 1.192.344 tỷ đồng."
+    assert out[0].printed_pages == [5, 14, 297]
+    assert out[0].sources == ["fact:a", "fact:b", "chunk:c"]
+
+
+@pytest.mark.parametrize(
+    ("first", "second"),
+    [
+        ("Tổng tài sản năm 2025 là 1.192 nghìn tỷ đồng.", "Tổng tài sản năm 2024 là 1.192 nghìn tỷ đồng."),
+        ("Tổng tài sản năm 2025 là 1.192 nghìn tỷ đồng.", "Tổng tài sản năm 2025 là 1.198 nghìn tỷ đồng."),
+        ("Tổng tài sản năm 2025 là 1.192 nghìn tỷ đồng.", "Vốn chủ sở hữu năm 2025 là 1.192 nghìn tỷ đồng."),
+        ("Tỷ lệ CASA năm 2025 là 40,4%.", "Tỷ lệ CASA năm 2025 là 40%."),
+    ],
+)
+def test_merge_keeps_different_figures_apart(first: str, second: str) -> None:
+    from ircb.answering.verifier import merge_duplicates
+
+    assert len(merge_duplicates([_vc(first, [5], ["fact:a"]), _vc(second, [14], ["fact:b"])])) == 2
+
+
+def test_merge_leaves_failed_and_calc_claims_alone() -> None:
+    from ircb.answering.verifier import merge_duplicates
+
+    text = "Tổng tài sản năm 2025 là 1.192 nghìn tỷ đồng."
+    failed = merge_duplicates([_vc(text, [5], ["fact:a"]), _vc(text, [14], ["fact:b"], ok=False)])
+    calc = merge_duplicates([_vc(text, [5], ["fact:a"]), _vc(text, [14], ["fact:b"], calc_ids=["c1"])])
+    assert len(failed) == 2 and len(calc) == 2
+
+
+@pytest.mark.parametrize(
+    "claim",
+    [
+        "Tổng tài sản so với năm trước tăng 21,8%",
+        "Tổng tài sản của Techcombank so với năm trước tăng 21,8%",
+        "Tổng tài sản của Techcombank tại cuối năm so với năm trước tăng 21,8%",
+    ],
+)
+def test_reporting_bank_name_does_not_change_the_subject(ctx: Context, claim: str) -> None:
+    v = verify_one(ctx, claim, ["chunk:p10R_p01"], "Tổng tài sản so với năm trước tăng 21,8%")
+    assert v.ok, v.failed_rule
+
+
+def test_other_subject_words_still_block_the_direction(ctx: Context) -> None:
+    v = verify_one(
+        ctx, "Tổng tài sản có rủi ro so với năm trước tăng 21,8%", ["chunk:p10R_p01"],
+        "Tổng tài sản so với năm trước tăng 21,8%",
+    )  # fmt: skip
+    assert v.failed_rule == "direction_mismatch"
+
+
+# --- a misquoted chunk next to cited facts: the chunk is dropped, the facts alone decide ---
+
+MISQUOTE = "Tổng tài sản đạt mức kỷ lục trong năm"  # not in any chunk
+
+
+def test_misquoted_chunk_is_dropped_when_cited_facts_vouch(ctx: Context) -> None:
+    v = verify_one(ctx, "Tổng tài sản đạt 1.192 nghìn tỷ đồng", ["fact:tts25", "chunk:p3R_k"], MISQUOTE)
+    assert v.ok, v.failed_rule
+    assert v.sources == ["fact:tts25"] and v.evidence == ""
+    assert 5 not in v.printed_pages  # the KPI chunk's page went with it
+
+
+def test_misquoted_chunk_vouches_for_no_number(ctx: Context) -> None:
+    v = verify_one(ctx, "Tổng thu nhập hoạt động 53,4 nghìn tỷ đồng", ["fact:tts25", "chunk:p3R_k"], MISQUOTE)
+    assert v.failed_rule == "number_mismatch"
+
+
+def test_misquoted_chunk_vouches_for_no_direction(ctx: Context) -> None:
+    v = verify_one(ctx, "Tổng tài sản tăng 21,8%", ["fact:tts25", "chunk:p3R_k"], MISQUOTE)
+    assert not v.ok
+
+
+def test_misquoted_chunk_alone_still_fails(ctx: Context) -> None:
+    v = verify_one(ctx, "Tổng tài sản đạt 1.192 nghìn tỷ đồng", ["chunk:p3R_k"], MISQUOTE)
+    assert v.failed_rule == "evidence_not_substring"
