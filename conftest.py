@@ -10,5 +10,7 @@ Settings.model_config["env_file"] = None
 
 @pytest.fixture(autouse=True)
 def _no_developer_env(monkeypatch: pytest.MonkeyPatch) -> None:
-    for name in Settings.model_fields:
-        monkeypatch.delenv(name.upper(), raising=False)
+    for name, field in Settings.model_fields.items():
+        aliases = getattr(field.validation_alias, "choices", [])
+        for env in (name.upper(), *(str(a).upper() for a in aliases)):
+            monkeypatch.delenv(env, raising=False)

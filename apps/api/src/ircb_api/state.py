@@ -18,6 +18,8 @@ from ircb.storage.fact_repo import SqlFactStore
 from ircb.storage.loader import ManifestMismatchError
 from ircb.storage.session_repo import SessionRepo
 
+from ircb_api.auth import ClerkAuth
+
 
 class ServiceLike(Protocol):
     def ask(
@@ -39,6 +41,7 @@ class AppState:
     renderer: PageRenderer
     manifest: artefacts.Manifest
     lock: threading.Lock
+    auth: ClerkAuth | None = None  # None: no sign-in, sessions are per browser (X-Client-Id)
 
 
 def get_state(request: Request) -> AppState:
@@ -76,4 +79,15 @@ def build_state(settings: Settings) -> AppState:
         renderer=PageRenderer(settings.pdf_path, page_map, settings.page_cache_dir),
         manifest=artefacts.read_manifest(index_dir),
         lock=threading.Lock(),
+        auth=_auth(settings),
     )
+
+
+def _auth(settings: Settings) -> ClerkAuth | None:
+    if not settings.clerk_publishable_key:
+        return None
+    origins = [o.strip() for o in settings.cors_origins.split(",") if o.strip()]
+    try:
+        return ClerkAuth(settings.clerk_publishable_key, origins)
+    except ValueError as exc:
+        raise RuntimeError(f"CLERK_PUBLISHABLE_KEY: {exc}") from exc

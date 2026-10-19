@@ -11,7 +11,10 @@ FROM node:24-alpine AS build
 WORKDIR /web
 RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
 ARG NEXT_PUBLIC_API_URL=http://localhost:8000
+# empty: no sign-in; a Clerk publishable key turns it on (CLERK_SECRET_KEY is a run-time variable)
+ARG NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL \
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=$NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY \
     NEXT_TELEMETRY_DISABLED=1
 COPY --from=deps /web/node_modules ./node_modules
 COPY apps/web ./

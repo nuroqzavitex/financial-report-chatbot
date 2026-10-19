@@ -187,6 +187,8 @@ Sau khi đổi schema API, sinh lại kiểu TypeScript: `make gen-types` (khôn
 
 **Lịch sử trò chuyện.** Web gửi header `X-Client-Id` (mã ngẫu nhiên lưu trong trình duyệt), nên mỗi trình duyệt chỉ thấy lịch sử của mình; mở phiên của người khác trả 404. Đây là tách lịch sử, chưa phải đăng nhập: ai có mã đó đều xem được các phiên ấy. Request không có header dùng chung một nhóm công khai.
 
+**Đăng nhập (Clerk, tuỳ chọn).** Tạo application trên [Clerk](https://dashboard.clerk.com), rồi điền `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` và `CLERK_SECRET_KEY` vào `.env` (Docker đọc từ đây) và vào `apps/web/.env.local` (khi chạy `pnpm dev`). Khi có key, chat và lịch sử bắt buộc đăng nhập: web gửi session token của Clerk, API tự kiểm tra chữ ký bằng JWKS của Clerk, hạn dùng và origin (`CORS_ORIGINS`), và mỗi tài khoản chỉ thấy lịch sử của mình. Ảnh trang, tra fact và health vẫn công khai. Để trống hai key thì hệ thống chạy ẩn danh như trên. Đổi key thì build lại web (`docker compose up -d --build web`) vì publishable key được nhúng lúc build.
+
 `/v1/traces` được bật khi `APP_ENV=dev` (mặc định), nên hãy đặt `APP_ENV=prod` trước khi bind API vào một host không phải máy cục bộ.
 
 Biến môi trường: `API_HOST`, `API_PORT` (dùng bởi `python -m ircb_api`), `CORS_ORIGINS` (phân tách bằng dấu phẩy, mặc định `http://localhost:3000,http://127.0.0.1:3000`), `APP_ENV`, `PDF_PATH`, `PAGE_CACHE_DIR`; phía web: `NEXT_PUBLIC_API_URL`. Test web: `pnpm --dir apps/web test` (Vitest), `pnpm --dir apps/web e2e` (Playwright, API được mock), `pnpm --dir apps/web lint`, `pnpm --dir apps/web build`.

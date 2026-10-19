@@ -1,4 +1,4 @@
-import { clientId } from "@/lib/clientId";
+import { ownerHeaders } from "@/lib/auth";
 import { parseSse } from "@/lib/sse";
 import type {
   ChatAnswer,
@@ -35,10 +35,6 @@ export function apiUrl(path: string): string {
   return base.replace(/\/+$/, "") + path;
 }
 
-function owner(): Record<string, string> {
-  return { "X-Client-Id": clientId() };
-}
-
 export async function health(): Promise<Health> {
   const res = await fetch(apiUrl("/v1/health"));
   if (!res.ok) throw new Error(`health ${res.status}`);
@@ -67,7 +63,7 @@ export async function streamChat(
       headers: {
         "content-type": "application/json",
         accept: "text/event-stream",
-        ...owner(),
+        ...(await ownerHeaders()),
       },
       body: JSON.stringify(body),
       signal,
@@ -127,7 +123,7 @@ export async function streamChat(
 export class NotFound extends Error {}
 
 async function getJson<T>(path: string): Promise<T> {
-  const res = await fetch(apiUrl(path), { headers: owner() });
+  const res = await fetch(apiUrl(path), { headers: await ownerHeaders() });
   if (res.status === 404) throw new NotFound(await errorMessage(res));
   if (!res.ok) throw new Error(await errorMessage(res));
   return (await res.json()) as T;
@@ -145,7 +141,7 @@ export function getSession(id: string): Promise<SessionDetail> {
 export async function deleteSession(id: string): Promise<void> {
   const res = await fetch(apiUrl(`/v1/sessions/${encodeURIComponent(id)}`), {
     method: "DELETE",
-    headers: owner(),
+    headers: await ownerHeaders(),
   });
   if (!res.ok && res.status !== 404) throw new Error(await errorMessage(res));
 }

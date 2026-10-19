@@ -4,7 +4,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
-from pydantic import Field
+from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 DEFAULT_PDF = "./data/techcombank-bao-cao-thuong-nien-2025-vie-update.pdf"
@@ -41,6 +41,11 @@ class Settings(BaseSettings):
     api_host: str = "127.0.0.1"
     api_port: int = 8000
     cors_origins: str = "http://localhost:3000,http://127.0.0.1:3000"
+    # set => the API requires a Clerk sign-in for chat and history (the web's key works as is)
+    clerk_publishable_key: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("CLERK_PUBLISHABLE_KEY", "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY"),
+    )
 
     database_url: str = "sqlite:///./var/app.db"
     qdrant_url: str | None = None
