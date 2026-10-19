@@ -145,6 +145,7 @@ REWRITE = RewriteResult(
     metrics=["tổng tài sản"],
     periods=["2025", "2024"],
     entity=None,
+    topic=None,
     needs_comparison=True,
     needs_calc=True,
     is_forecast=False,

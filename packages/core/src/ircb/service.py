@@ -75,7 +75,7 @@ class _Outcome:
 
 
 def _state_of(rw: RewriteResult) -> TurnState:
-    return TurnState(metrics=list(rw.metrics), periods=list(rw.periods), entity=rw.entity)
+    return TurnState(metrics=list(rw.metrics), periods=list(rw.periods), entity=rw.entity, topic=rw.topic)
 
 
 class AnswerService:
@@ -198,7 +198,7 @@ class AnswerService:
             return self._guarded(refusal, prev_state, trace)
 
         with trace.step("rewrite"):
-            rw = rewrite(message, prev_state, client, s.llm_model_small)
+            rw = rewrite(message, prev_state, client, s.llm_model_small, history)
         trace.record("rewrite", rw.model_dump())
         state = _state_of(rw)
 

@@ -97,6 +97,7 @@ def rw_for(q: str, **kw: Any) -> RewriteResult:
         "needs_comparison": False,
         "needs_calc": False,
         "is_forecast": False,
+        "topic": None,
     }
     base.update(kw)
     return RewriteResult(**base)

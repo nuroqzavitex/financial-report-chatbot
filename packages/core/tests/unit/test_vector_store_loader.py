@@ -228,6 +228,7 @@ def test_loaded_chunk_payload_rebuilds_chunk_through_prefetch(
         metrics=[],
         periods=[],
         entity=None,
+        topic=None,
         needs_comparison=False,
         needs_calc=False,
         is_forecast=False,

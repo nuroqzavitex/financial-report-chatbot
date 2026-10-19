@@ -57,6 +57,7 @@ def rw(**kw: Any) -> RewriteResult:
         "needs_comparison": False,
         "needs_calc": False,
         "is_forecast": False,
+        "topic": None,
     }
     base.update(kw)
     return RewriteResult(**base)
@@ -86,6 +87,7 @@ class FakeClient:
         self.models: list[str] = []
         self.down_on: str | None = None
         self.boom: Exception | None = None
+        self.rewrite_messages: list[dict[str, Any]] = []
 
     def complete_json(
         self, model: str, messages: list[dict[str, Any]], schema: type[BaseModel]
@@ -98,6 +100,7 @@ class FakeClient:
             raise LLMError("down")
         usage = Usage(10, 5, Decimal("0.001"))
         if schema is RewriteResult:
+            self.rewrite_messages = messages
             return self.rewrite_out, usage
         self.gen_calls += 1
         return self.gen_out, usage
@@ -232,6 +235,16 @@ def test_non_llm_exception_propagates_and_trace_written(tmp_path: Path) -> None:
 def test_state_carried(svc: AnswerService) -> None:
     a = svc.ask("Tổng tài sản 2025?")
     assert a.state is not None and a.state.metrics == ["tổng tài sản"]
+
+
+def test_history_reaches_the_rewriter_and_topic_is_kept(svc: AnswerService) -> None:
+    fake(svc).rewrite_out = fake(svc).rewrite_out.model_copy(update={"topic": "Techcombank Mobile"})
+    a = svc.ask("nó có tác dụng gì?", history=[("Techcombank Mobile là gì?", "Ứng dụng ngân hàng số.")])
+    payload = json.loads(fake(svc).rewrite_messages[1]["content"])
+    assert payload["recent_turns"] == [
+        {"question": "Techcombank Mobile là gì?", "answer": "Ứng dụng ngân hàng số."}
+    ]
+    assert a.state is not None and a.state.topic == "Techcombank Mobile"
 
 
 def test_models_split_between_rewriter_and_generator(svc: AnswerService) -> None:

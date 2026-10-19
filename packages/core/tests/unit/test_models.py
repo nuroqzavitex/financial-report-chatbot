@@ -38,6 +38,7 @@ def test_rewrite_caps_lists():
         metrics=list("abcd"),
         periods=["2025", "2024", "2023", "2022"],
         entity=None,
+        topic=None,
         needs_comparison=False,
         needs_calc=False,
         is_forecast=False,

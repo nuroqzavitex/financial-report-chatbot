@@ -23,6 +23,7 @@ def rw(**kw: Any) -> RewriteResult:
         "needs_comparison": False,
         "needs_calc": False,
         "is_forecast": False,
+        "topic": None,
     }
     return RewriteResult(**{**base, **kw})
 
@@ -178,3 +179,35 @@ def test_post_guard_skips_non_year_periods() -> None:
     assert post_rewrite_guard(rw(periods=["năm ngoái", "cuối kỳ"]), SEEN) is None
     r = post_rewrite_guard(rw(periods=["Q1", "2028"]), SEEN)
     assert r is not None and "2028" in r.reason
+
+
+def test_rewrite_sees_recent_turns_clipped(fake_client: FakeClient) -> None:
+    fake_client.reply(rw(topic="Techcombank Mobile"))
+    history = [(f"Câu {i}", f"Đáp {i}") for i in range(5)] + [("Techcombank Mobile là gì?", "A " * 400)]
+    out = rewrite("nó có tác dụng gì?", None, fake_client, "m", history)  # type: ignore[arg-type]
+    turns = json.loads(fake_client.last_messages[1]["content"])["recent_turns"]
+    assert [t["question"] for t in turns] == ["Câu 3", "Câu 4", "Techcombank Mobile là gì?"]
+    assert turns[0]["answer"] == "Đáp 3"
+    assert len(turns[-1]["answer"]) == 300 and turns[-1]["answer"].endswith("…")
+    assert out.topic == "Techcombank Mobile"
+
+
+def test_rewrite_first_turn_has_empty_recent_turns(fake_client: FakeClient) -> None:
+    fake_client.reply(rw())
+    rewrite("Tổng tài sản?", None, fake_client, "m")  # type: ignore[arg-type]
+    assert json.loads(fake_client.last_messages[1]["content"])["recent_turns"] == []
+
+
+def test_rewriter_prompt_examples_match_the_schema() -> None:
+    """Every "Đầu ra" line of the prompt parses as a RewriteResult (so the examples carry topic)."""
+    from pathlib import Path
+
+    text = (Path(rewrite.__code__.co_filename).parent / "prompts" / "rewriter.md").read_text(encoding="utf-8")
+    outs = [line.removeprefix("Đầu ra: ") for line in text.splitlines() if line.startswith("Đầu ra: ")]
+    assert len(outs) == 6
+    parsed = [RewriteResult.model_validate_json(o) for o in outs]
+    assert [p.topic for p in parsed][3:] == ["Techcombank Mobile", "Khối Ngân hàng Bán lẻ (RBG)", None]
+
+
+def test_stored_state_without_topic_still_loads() -> None:
+    assert TurnState.model_validate_json('{"metrics": [], "periods": ["2025"], "entity": null}').topic is None

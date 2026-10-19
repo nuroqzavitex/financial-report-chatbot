@@ -85,6 +85,9 @@ class RewriteResult(_Strict):
     metrics: list[str]
     periods: list[str]
     entity: str | None
+    # what the conversation is about ("Techcombank Mobile", "Khối Ngân hàng Bán lẻ (RBG)"), so a
+    # later "nó" / "khối đó" resolves to it; null when the question names no subject
+    topic: str | None
     needs_comparison: bool
     needs_calc: bool
     is_forecast: bool
@@ -99,6 +102,7 @@ class TurnState(BaseModel):
     metrics: list[str]
     periods: list[str]
     entity: str | None
+    topic: str | None = None  # absent from states stored before it existed
 
 
 # --- Generator output (LLM-facing, strict) ----------------------------------
