@@ -135,3 +135,22 @@ Chạy thử tay với index thật (`46c78c954ba6`) và PDF thật, một câu 
 - Web dev server: `GET http://localhost:3000` trả 200 với tiêu đề tiếng Việt. Chưa bấm `[tr. 59]` trên trình duyệt thật.
 
 Lưu ý: trên Git Bash/Windows, `curl -d '{"message":"...tiếng Việt..."}'` truyền thẳng trên dòng lệnh bị API trả 400 (lỗi parse body do mã hóa); dùng `--data-binary @file.json` (UTF-8) thì chạy đúng.
+
+## 2026-10-20 - Chunking: infographic và câu trích chữ to
+
+Kiểm tra offline toàn bộ `index/` và PDF trước khi chốt model embedding. Ba lỗi trích xuất, mỗi lỗi có test (unit với PDF giả, golden với PDF thật):
+
+- **Số infographic tách khỏi nhãn** (tr. 47, 53, 71, 72, 117): số lớn có đuôi ("13% N/N", "1,5x") bị coi là tiêu đề, nhãn nhỏ rơi sang block khác, chunk chỉ còn "13% N/N 24% N/N …". `prose._pair_stats` ghép mỗi số với chú thích sát trên hoặc sát dưới cùng cột (tối đa 3 dòng; dài hơn là đoạn văn) thành một dòng "Số dư tiền gửi: 24% N/N"; đơn vị đặt cạnh ("13,1 Triệu") đi kèm số. `kpi.is_figure` nhận dạng dạng số này, dùng chung cho prose và KPI.
+- **Câu trích chữ to thành tiêu đề:** một loạt span cùng cỡ chữ dài hơn 120 ký tự, hoặc dài hơn 80 ký tự và kết thúc bằng dấu chấm, là nội dung chứ không phải tiêu đề. Chunk prose có tiêu đề dài hơn 100 ký tự: 63 → 24 (phần còn lại là nhiều tiêu đề ngắn liền nhau).
+- **Ô KPI không có nhãn phía trên** (79 ô, bố cục chú thích nằm dưới số): câu chunk chỉ còn ": 7.109 tỷ đồng". Nay nhãn lấy từ mô tả bên dưới ("Lợi nhuận trước thuế năm 2025, hoàn thành 123% kế hoạch cả năm: 7.109 tỷ đồng"). Số infographic như "1,5x" không còn được coi là tiêu đề vùng của ô bên cạnh (tr. 117).
+
+Index mới: 1145 chunk (prose 601 → 596), 2974 fact, embed lại bằng `ollama/qwen3-embedding:0.6b` local. So tìm kiếm trên 22 câu dev, dùng lại các câu viết lại đã trace (không gọi LLM): câu viết lại bằng GPT-4o Recall@8 0,773 → 0,818, MRR 0,655 → 0,661 (own-31 tìm ra, không câu nào tụt); câu viết lại bằng gpt-oss không đổi (0,636 / 0,494).
+
+Còn mở:
+
+- own-07 vẫn trượt: chunk tr. 71 đã có "Số dư tiền gửi: 24% N/N" nhưng trang không ghi tên khối CIBG (tên nằm ở tr. 68). Cần mang tên khối từ trang mở đầu sang các trang sau.
+- Bảng dự phòng của QA độ phủ chạy trên mọi nửa trang có độ phủ dưới 95%, nên dựng "bảng" từ cả trang infographic (101 chunk trên 39 trang, 16 fact). Phần lớn các fact này sai nhãn, ví dụ tr. 246 "1.000.000 tỷ đồng" là số thẻ.
+
+## 2026-10-20 - Embedding đổi sang qwen3-embedding:4b
+
+Dự án chạy local trên GPU RTX 4060. Embed lại bằng `ollama/qwen3-embedding:4b` (1024 chiều, cắt từ 2560): index `def472d744b6`, khoảng 1 phút. Với câu viết lại bằng gpt-oss, Recall@8 0,636 → 0,773, MRR 0,494 → 0,555; với GPT-4o thì ngang nhau (0,818). Độ trễ embed câu hỏi không đổi (~0,5 giây). Chi tiết ở ADR 0023.

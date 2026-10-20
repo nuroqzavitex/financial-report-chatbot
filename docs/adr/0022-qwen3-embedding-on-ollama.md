@@ -1,6 +1,6 @@
 # ADR 0022: Embedding bằng qwen3-embedding:0.6b trên Ollama
 
-- Trạng thái: Chấp nhận (2026-10-20; thay phần embedding của ADR 0021, giữ phần LLM)
+- Trạng thái: Chấp nhận (2026-10-20; thay phần embedding của ADR 0021, giữ phần LLM). Model được thay bằng `qwen3-embedding:4b` ở ADR 0023.
 
 ## Bối cảnh
 

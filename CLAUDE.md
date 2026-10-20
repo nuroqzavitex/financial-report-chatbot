@@ -14,7 +14,7 @@ Windows host without `make`; use the `uv run` equivalents (the `Makefile` just a
 
 ```bash
 uv sync                                   # install workspace (Python 3.11, single uv.lock at root)
-ollama pull qwen3-embedding:0.6b          # embedding model of the shipped index (served by local Ollama)
+ollama pull qwen3-embedding:4b            # embedding model of the shipped index (served by local Ollama)
 uv run pytest                             # default suite: no API key, no Docker; PDF tests self-skip
 uv run pytest packages/core/tests/unit/test_verifier.py::test_name   # single test
 uv run pytest -m integration              # real Qdrant server + Postgres (docker compose up -d --wait first)

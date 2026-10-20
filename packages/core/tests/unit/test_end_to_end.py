@@ -120,7 +120,7 @@ def build_index(d: Path) -> Path:
     artefacts.write_chunks(d, chunks)
     artefacts.write_facts(d, facts)
     artefacts.write_glossary(d, {"entries": [], "extra": {}})
-    run_embed(d, Embedder(HashBackend(), d.parent / "build_cache", "ollama/qwen3-embedding:0.6b", DIM))
+    run_embed(d, Embedder(HashBackend(), d.parent / "build_cache", "ollama/qwen3-embedding:4b", DIM))
     artefacts.write_manifest(
         d,
         Manifest(
@@ -128,7 +128,7 @@ def build_index(d: Path) -> Path:
             doc_id="tcb-ar-2025",
             pdf_sha256="0",
             embed_provider="openai",
-            embed_model="ollama/qwen3-embedding:0.6b",
+            embed_model="ollama/qwen3-embedding:4b",
             embed_dimensions=DIM,
             tokenizer_version="t1",
             periods_seen=["2024", "2025"],

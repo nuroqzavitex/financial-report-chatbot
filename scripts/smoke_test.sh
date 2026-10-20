@@ -4,7 +4,7 @@
 #
 # Exit codes: 0 OK | 1 assertion failed | 2 data/ files missing | 3 OPENAI_API_KEY missing
 #             | 4 Ollama or its embedding model missing
-# Needs: uv, Python 3.11 (uv fetches it if absent), Ollama with qwen3-embedding:0.6b, OPENAI_API_KEY
+# Needs: uv, Python 3.11 (uv fetches it if absent), Ollama with qwen3-embedding:4b, OPENAI_API_KEY
 # in the environment for the default LLM, and the
 # data/ files (shipped in the repository, see README.md). Uses the real OpenAI API (about the cost of one index
 # build plus 10 questions).
@@ -35,10 +35,10 @@ MSG
   exit 2
 fi
 
-# 2. embeddings run on Ollama (the shipped index was embedded with qwen3-embedding:0.6b)
+# 2. embeddings run on Ollama (the shipped index was embedded with qwen3-embedding:4b)
 OLLAMA="${OLLAMA_API_BASE:-http://localhost:11434}"
-if ! curl -fsS "$OLLAMA/api/tags" 2>/dev/null | grep -q '"qwen3-embedding:0.6b"'; then
-  echo "MISSING: Ollama at $OLLAMA with qwen3-embedding:0.6b (install Ollama, then: ollama pull qwen3-embedding:0.6b)" >&2
+if ! curl -fsS "$OLLAMA/api/tags" 2>/dev/null | grep -q '"qwen3-embedding:4b"'; then
+  echo "MISSING: Ollama at $OLLAMA with qwen3-embedding:4b (install Ollama, then: ollama pull qwen3-embedding:4b)" >&2
   exit 4
 fi
 

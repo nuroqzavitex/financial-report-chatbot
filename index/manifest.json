@@ -1,9 +1,9 @@
 {
-  "index_version": "63623ba38ee1",
+  "index_version": "def472d744b6",
   "doc_id": "tcb-ar-2025",
   "pdf_sha256": "2db3dfe6e7a05f889ec2e93bf16dda4b6a7f3334df440b7cb0761df2e89344d9",
   "embed_provider": "ollama",
-  "embed_model": "ollama/qwen3-embedding:0.6b",
+  "embed_model": "ollama/qwen3-embedding:4b",
   "embed_dimensions": 1024,
   "tokenizer_version": "vi-1",
   "periods_seen": [
@@ -55,7 +55,7 @@
     "2045",
     "2050"
   ],
-  "n_chunks": 1150,
+  "n_chunks": 1145,
   "n_facts": 2974,
-  "created_at": "2026-10-20T00:26:14+00:00"
+  "created_at": "2026-10-20T16:15:51+00:00"
 }

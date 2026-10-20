@@ -6,7 +6,7 @@ def test_defaults(monkeypatch):
     for k in ("QDRANT_URL", "LLM_MODEL_SMALL", "TOP_K"):
         monkeypatch.delenv(k, raising=False)
     s = Settings(_env_file=None)
-    assert s.embed_model == "ollama/qwen3-embedding:0.6b"
+    assert s.embed_model == "ollama/qwen3-embedding:4b"
     assert s.embed_dimensions == 1024
     assert s.top_k == 8
     assert s.database_url == "sqlite:///./var/app.db"

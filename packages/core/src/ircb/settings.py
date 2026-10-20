@@ -20,13 +20,14 @@ class Settings(BaseSettings):
     openai_api_key: str | None = None
     anthropic_api_key: str | None = None
     gemini_api_key: str | None = None
-    ollama_api_base: str = "http://localhost:11434"
+    ollama_api_base: str = "http://localhost:11434"  # LLM only: local Ollama or https://ollama.com
     ollama_api_key: str | None = (
         None  # only for https://ollama.com directly; a signed-in local Ollama needs none
     )
+    embed_api_base: str = "http://localhost:11434"  # Ollama serving EMBED_MODEL (ollama.com has none)
     llm_timeout_s: int = 60  # per call; hosted open models answer slower than OpenAI
 
-    embed_model: str = "ollama/qwen3-embedding:0.6b"  # what the shipped index/ was embedded with
+    embed_model: str = "ollama/qwen3-embedding:4b"  # what the shipped index/ was embedded with
     embed_dimensions: int = 1024
     embed_cache_dir: Path = Path("./var/embed_cache")
     llm_seed: int = 42
