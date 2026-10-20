@@ -10,7 +10,7 @@ Thiết kế: [`docs/DESIGN.md`](docs/DESIGN.md). Bài nộp: [`SUBMISSION.md`](
 
 - Python 3.11 (`uv` tự tải nếu máy chưa có)
 - [uv](https://docs.astral.sh/uv/)
-- [Ollama](https://ollama.com) và model embedding `qwen3-embedding:0.6b` (`ollama pull qwen3-embedding:0.6b`, ~640 MB). `index/` ship cùng repo được embed bằng model này, nên câu hỏi cũng phải được embed bằng chính nó
+- [Ollama](https://ollama.com) và model embedding `qwen3-embedding:4b` (`ollama pull qwen3-embedding:4b`, ~2,5 GB). `index/` ship cùng repo được embed bằng model này, nên câu hỏi cũng phải được embed bằng chính nó
 - Một LLM: mặc định `openai/gpt-4o` (cần `OPENAI_API_KEY`), hoặc model trên Ollama Cloud qua Ollama đã đăng nhập (`LLM_MODEL=ollama_chat/gpt-oss:120b-cloud`, không cần key; chất lượng thấp hơn, xem phần Đổi provider)
 - Docker: **không bắt buộc**, chỉ cho chế độ production local (bên dưới)
 
@@ -30,7 +30,7 @@ PDF cần cho bước build index và cho các test golden (tự skip khi thiế
 Chế độ chấm bài: chỉ cần Python, không Docker (Qdrant embedded + SQLite).
 
 ```bash
-ollama pull qwen3-embedding:0.6b         # embedding, chạy local
+ollama pull qwen3-embedding:4b         # embedding, chạy local
 export OPENAI_API_KEY=sk-...             # PowerShell: $env:OPENAI_API_KEY = "sk-..."
 cp .env.example .env                     # LLM_MODEL mặc định openai/gpt-4o; key lấy từ môi trường hoặc điền vào .env
 uv sync
@@ -49,7 +49,7 @@ Lần đầu `ircb chat` / `ircb batch` tự nạp `index/` vào `var/qdrant` v�
 
 ## Build index
 
-`index/` là artefact ship cùng repo (chunks, facts, vector, `manifest.json`), embed bằng `ollama/qwen3-embedding:0.6b` 1024 chiều. Build lại từ PDF (cần Ollama với model trên):
+`index/` là artefact ship cùng repo (chunks, facts, vector, `manifest.json`), embed bằng `ollama/qwen3-embedding:4b` 1024 chiều. Build lại từ PDF (cần Ollama với model trên):
 
 ```bash
 uv run ircb ingest data/techcombank-bao-cao-thuong-nien-2025-vie-update.pdf          # ghi vào ./index
@@ -72,12 +72,18 @@ Mọi thứ đi qua LiteLLM, đổi bằng biến môi trường (hoặc `.env`)
 
 ```bash
 # Mặc định: embedding Qwen3 trên Ollama local, LLM OpenAI
-EMBED_MODEL=ollama/qwen3-embedding:0.6b
+EMBED_MODEL=ollama/qwen3-embedding:4b
 LLM_MODEL=openai/gpt-4o
 OPENAI_API_KEY=sk-...
 
+# LLM trên Ollama Cloud bằng API key (https://ollama.com/settings/keys), tên model không có "-cloud";
+# embedding vẫn chạy trên Ollama local (EMBED_API_BASE, mặc định http://localhost:11434)
+LLM_MODEL=ollama_chat/gemma4:31b
+OLLAMA_API_BASE=https://ollama.com
+OLLAMA_API_KEY=...
+
 # Không cần key: LLM trên Ollama Cloud qua Ollama local đã đăng nhập (`ollama signin`)
-LLM_MODEL=ollama_chat/gpt-oss:120b-cloud
+LLM_MODEL=ollama_chat/gemma4:31b-cloud
 OLLAMA_API_BASE=http://localhost:11434
 
 # Embedding OpenAI thay cho Qwen3 (đổi embedding thì phải reembed)

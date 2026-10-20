@@ -5,7 +5,7 @@
 > **Đọc trước (trung thực về trạng thái).** Toàn bộ mã, test offline và bộ dữ liệu eval đã xong. **Chưa có lần chạy nào với OpenAI API thật** (môi trường làm bài không có key): chưa có số liệu eval, chưa đo chi phí/độ trễ, chưa quay video. Mọi chỗ cần số đo thật được đánh dấu **`[CHƯA ĐO ...]`** kèm đúng lệnh để chạy. Không có con số nào trong tài liệu này được ước lượng hay bịa; những số có ở đây đều đo được offline và ghi rõ nguồn.
 
 ## How to run
-- Clean machine: cần Python 3.11 (`uv` tự tải), [uv](https://docs.astral.sh/uv/), Ollama với `qwen3-embedding:0.6b` (`ollama pull qwen3-embedding:0.6b`) và `OPENAI_API_KEY` cho LLM mặc định. Hai file đầu vào có sẵn trong repo: `data/techcombank-bao-cao-thuong-nien-2025-vie-update.pdf` và `data/sample_questions.json`. Rồi chạy một lệnh:
+- Clean machine: cần Python 3.11 (`uv` tự tải), [uv](https://docs.astral.sh/uv/), Ollama với `qwen3-embedding:4b` (`ollama pull qwen3-embedding:4b`) và `OPENAI_API_KEY` cho LLM mặc định. Hai file đầu vào có sẵn trong repo: `data/techcombank-bao-cao-thuong-nien-2025-vie-update.pdf` và `data/sample_questions.json`. Rồi chạy một lệnh:
   ```bash
   export OPENAI_API_KEY=sk-... && bash scripts/smoke_test.sh     # in "OK 10/10"
   ```
@@ -23,8 +23,10 @@
   | `VLM_MODEL` | | — | Mô tả ảnh lúc ingest (tùy chọn, chưa dùng) |
   | `OPENAI_API_KEY` | có (LLM mặc định) | — | Cho `LLM_MODEL=openai/...`; embedding chạy trên Ollama |
   | `ANTHROPIC_API_KEY` / `GEMINI_API_KEY` | nếu đổi provider | — | |
-  | `OLLAMA_API_BASE` | nếu chạy local | `http://localhost:11434` | |
-  | `EMBED_MODEL` | | `ollama/qwen3-embedding:0.6b` | Phải khớp `index/manifest.json`; lệch thì chạy `ircb index reembed` |
+  | `OLLAMA_API_BASE` | nếu LLM là `ollama_chat/...` | `http://localhost:11434` | Chỉ cho LLM: Ollama local, hoặc `https://ollama.com` kèm `OLLAMA_API_KEY` |
+  | `OLLAMA_API_KEY` | nếu `OLLAMA_API_BASE=https://ollama.com` | — | Không gửi cho embedding |
+  | `EMBED_API_BASE` | | `http://localhost:11434` | Ollama phục vụ `EMBED_MODEL` (ollama.com không có model embedding) |
+  | `EMBED_MODEL` | | `ollama/qwen3-embedding:4b` | Phải khớp `index/manifest.json`; lệch thì chạy `ircb index reembed` |
   | `EMBED_DIMENSIONS` | | `1024` | Phải khớp manifest |
   | `EMBED_CACHE_DIR` | | `./var/embed_cache` | Cache embedding theo `sha256(text) + model + dimensions` |
   | `LLM_SEED` | | `42` | Dùng khi model không hỗ trợ `temperature=0` |
@@ -43,7 +45,7 @@
   | `AUTO_LOAD_INDEX` | | `true` | Tự nạp artefact vào DB nếu thiếu hoặc lệch version |
   | `PAGE_CACHE_DIR` | | `./var/page_cache` | Cache ảnh trang của API/web |
   | `PDF_PATH` | | `./data/techcombank-…-update.pdf` | PDF nguồn |
-- Shipped index: `index/` đã được commit (22,4 MB; `index/build/` và `index/.tmp/` gitignore), `index_version` `63623ba38ee1`, embedding `ollama/qwen3-embedding:0.6b` 1024 chiều (embed lại toàn bộ mất 3 phút 45 giây trên máy dev), 1.150 chunk, 2.974 fact. `index/manifest.json` được kiểm tra lúc khởi động; đổi `EMBED_MODEL` / `EMBED_DIMENSIONS` thì chạy `uv run ircb index reembed`. Build lại từ PDF: `uv run ircb ingest data/techcombank-bao-cao-thuong-nien-2025-vie-update.pdf`.
+- Shipped index: `index/` đã được commit (22,4 MB; `index/build/` và `index/.tmp/` gitignore), `index_version` `def472d744b6`, embedding `ollama/qwen3-embedding:4b` 1024 chiều (embed lại toàn bộ trên GPU RTX 4060 mất khoảng 1 phút), 1.145 chunk, 2.974 fact. `index/manifest.json` được kiểm tra lúc khởi động; đổi `EMBED_MODEL` / `EMBED_DIMENSIONS` thì chạy `uv run ircb index reembed`. Build lại từ PDF: `uv run ircb ingest data/techcombank-bao-cao-thuong-nien-2025-vie-update.pdf`.
 
 ## Depth track(s) chosen
 **Chính: Document Intelligence. Phụ: Retrieval & Reasoning (gọn).**
@@ -61,7 +63,7 @@ Thiết kế (kèm sơ đồ mermaid): `docs/DESIGN.md`. Tóm tắt:
 3. *Bảng:* PyMuPDF `find_tables` theo nửa trang (bảng vắt gutter trích trên cả spread, cite `[tr. N, N+1]`), thêm bước kiểm tra độ phủ số và fallback gom từ theo tọa độ cho nửa trang phủ thấp; suy ra cấp dòng cha/con từ x0 và bold, đơn vị từ header cột hoặc dòng "Đơn vị".
 4. *Ô KPI:* parser theo tọa độ (nhãn, số lớn, đơn vị bên phải hoặc bên dưới, mô tả) và đọc chiều tăng/giảm từ hình học vector của mũi tên; không đọc được thì `direction=unknown`.
 5. *Chuẩn hóa:* số kiểu Việt Nam (`1.192,34`), đơn vị bắt buộc trên mọi fact, `decimal.Decimal` xuyên suốt. Ra `chunks.jsonl` (mỗi chunk thuộc một trang in), `facts.jsonl`, glossary từ bảng viết tắt tr. 386–387.
-6. *Embed:* `qwen3-embedding:0.6b` qua Ollama, 1024 chiều (cache theo hash) cộng BM25 sparse tự tính, nạp vào Qdrant (embedded hoặc server) và SQL (SQLite hoặc PostgreSQL). Giá trị số của fact chỉ nằm trong SQL.
+6. *Embed:* `qwen3-embedding:4b` qua Ollama, 1024 chiều (cache theo hash) cộng BM25 sparse tự tính, nạp vào Qdrant (embedded hoặc server) và SQL (SQLite hoặc PostgreSQL). Giá trị số của fact chỉ nằm trong SQL.
 
 **Query** (code lấy trước dữ liệu, LLM gọi một lần, không agent loop, ADR 0018):
 1. *Period guard* xác định (không LLM): kỳ ngoài tài liệu (ví dụ năm 2027) bị từ chối ngay, kèm trang gợi ý.
@@ -105,7 +107,7 @@ Số đo offline liên quan: độ phủ con số của bảng BCTC là 2.124/2.
 ## Cost and latency
 - Ingestion: **[CHƯA ĐO — cần chạy `uv run ircb ingest data/techcombank-bao-cao-thuong-nien-2025-vie-update.pdf` với OPENAI_API_KEY (ghi chi phí embedding từ dashboard OpenAI và wall-clock bước embed)]**. Đo offline (embedder giả): bước extract ~78 giây, ra 1.150 chunk và 2.974 fact; số này chưa gồm thời gian gọi API embedding. Khảo sát M0 mất ~62 giây CPU (container cloud, 1 lõi). Re-embed khi đổi model có cache nên rẻ hơn lần build đầu.
 - Per query: **[CHƯA ĐO — cần chạy `uv run ircb batch data/sample_questions.json --out eval/reports/sample_run.jsonl` với OPENAI_API_KEY và `LLM_PRICE_IN` / `LLM_PRICE_OUT` đã đặt; đọc `cost_usd` và `latency_ms` từng dòng để tính chi phí/câu và p50, p95]**. Theo thiết kế, mỗi câu gồm một lần rewriter (model nhỏ), một request embedding và một lần generator; hiếm khi thêm một lần do `need_fact`.
-- Models used: embedding `ollama/qwen3-embedding:0.6b` (1024 chiều, cosine; trước đây `openai/text-embedding-3-large`, xem ADR 0022). Generation và rewriter: mặc định `LLM_MODEL=openai/gpt-4o` trong `.env.example`; **chọn model cụ thể là quyết định tạm thời**, chốt sau khi đo latency và chi phí trên tập dev (spec §15.6). RAGAS judge: `JUDGE_MODEL` (một model OpenAI khác, chưa đặt).
+- Models used: embedding `ollama/qwen3-embedding:4b` (1024 chiều, cosine; trước đây `openai/text-embedding-3-large`, xem ADR 0022 và 0023). Generation và rewriter: mặc định `LLM_MODEL=openai/gpt-4o` trong `.env.example`; **chọn model cụ thể là quyết định tạm thời**, chốt sau khi đo latency và chi phí trên tập dev (spec §15.6). RAGAS judge: `JUDGE_MODEL` (một model OpenAI khác, chưa đặt).
 
 ## What I deliberately did not build
 Theo thiết kế:

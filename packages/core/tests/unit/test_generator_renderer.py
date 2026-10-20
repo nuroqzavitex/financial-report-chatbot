@@ -321,3 +321,19 @@ def test_fact_line_shows_the_direction_of_a_reported_change():
     assert line == "[fact:k1_chg] Dư nợ vay | N/N | 26,9% N/N % | chiều: tăng (tr. 59)"
     assert "chiều: giảm" in generator._fact_line(up.model_copy(update={"direction": "down"}))
     assert "chiều" not in generator._fact_line(up.model_copy(update={"direction": "unknown"}))
+
+
+def test_fact_line_without_column_shows_the_period():
+    """Real run sq-04: "Tỷ lệ CASA |  | 40,4 %" had no year, so the model quoted a chunk instead."""
+    casa = fact(
+        fact_id="k8",
+        label="Tỷ lệ CASA",
+        col_path=None,
+        value=Decimal("40.4"),
+        raw="40,4",
+        unit="%",
+        period="FY2025",
+        printed_pages=[5],
+    )
+    assert generator._fact_line(casa) == "[fact:k8] Tỷ lệ CASA | năm 2025 | 40,4 % (tr. 5)"
+    assert "| N/N |" in generator._fact_line(casa.model_copy(update={"col_path": "N/N"}))

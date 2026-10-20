@@ -92,6 +92,20 @@ def test_schema_error_twice_raises(settings: Settings) -> None:
     assert c._attempts == 2
 
 
+@pytest.mark.parametrize("fence", ["```json\n{}\n```", "```\n{}\n```", "\n```JSON\n{}```\n"])
+def test_reply_wrapped_in_a_markdown_fence_is_unwrapped(settings: Settings, fence: str) -> None:
+    c = LLMClient(settings, completion_fn=sequence([fence.replace("{}", valid_generator_json())]))
+    out, _ = c.complete_json("ollama_chat/gemma4:31b", [], GeneratorOutput)
+    assert isinstance(out, GeneratorOutput) and c._attempts == 1
+
+
+def test_fence_with_text_around_it_still_fails_validation(settings: Settings) -> None:
+    text = f"Here it is:\n```json\n{valid_generator_json()}\n```"
+    c = LLMClient(settings, completion_fn=sequence([text, text]))
+    with pytest.raises(LLMError):
+        c.complete_json("openai/m", [], GeneratorOutput)
+
+
 def capture_kwargs(settings: Settings, model: str = "openai/m") -> dict[str, Any]:
     calls: list[dict[str, Any]] = []
     c = LLMClient(settings, completion_fn=sequence([valid_generator_json()], calls))

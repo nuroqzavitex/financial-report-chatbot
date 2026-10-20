@@ -51,7 +51,7 @@ def test_litellm_backend_batches(monkeypatch):
     out = LiteLLMEmbedBackend(s).embed([str(i) for i in range(300)])
     assert len(out) == 300
     assert [len(c["input"]) for c in calls] == [100, 100, 100]
-    assert calls[0]["model"] == "ollama/qwen3-embedding:0.6b"
+    assert calls[0]["model"] == "ollama/qwen3-embedding:4b"
     assert calls[0]["dimensions"] == 1024
 
 
@@ -114,10 +114,21 @@ def test_retries_stop(monkeypatch):
 
 def test_ollama_embedding_uses_the_configured_server(monkeypatch):
     calls = _install(monkeypatch, [None])
-    s = Settings(llm_model="x", embed_model="ollama/qwen3-embedding:0.6b", ollama_api_base="http://h:11434")
+    s = Settings(llm_model="x", embed_model="ollama/qwen3-embedding:0.6b", embed_api_base="http://h:11434")
     LiteLLMEmbedBackend(s).embed(["a"])
     assert calls[0]["api_base"] == "http://h:11434" and "api_key" not in calls[0]
     assert calls[0]["model"] == "ollama/qwen3-embedding:0.6b" and calls[0]["dimensions"] == 1024
+
+
+def test_ollama_embedding_stays_local_when_the_llm_uses_ollama_com(monkeypatch):
+    calls = _install(monkeypatch, [None])
+    s = Settings(
+        llm_model="ollama_chat/gemma4:31b",
+        ollama_api_base="https://ollama.com",
+        ollama_api_key="k",
+    )
+    LiteLLMEmbedBackend(s).embed(["a"])
+    assert calls[0]["api_base"] == "http://localhost:11434" and "api_key" not in calls[0]
 
 
 def test_other_embedding_providers_get_no_ollama_base(monkeypatch):

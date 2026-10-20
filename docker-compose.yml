@@ -47,9 +47,11 @@ services:
       EMBED_CACHE_DIR: /app/var/embed_cache
       TRACE_DIR: /app/traces
       CORS_ORIGINS: http://localhost:3000,http://127.0.0.1:3000
-      # an ollama_chat/* LLM_MODEL is served by the Ollama running on the host (signed in, it also
-      # proxies the *-cloud models); change it to https://ollama.com and set OLLAMA_API_KEY to skip it
-      OLLAMA_API_BASE: http://host.docker.internal:11434
+      # embeddings always run on the Ollama of the host; an ollama_chat/* LLM_MODEL goes there too
+      # (signed in, it proxies the *-cloud models) unless .env sets OLLAMA_API_BASE=https://ollama.com
+      # with OLLAMA_API_KEY
+      EMBED_API_BASE: http://host.docker.internal:11434
+      OLLAMA_API_BASE: ${OLLAMA_API_BASE:-http://host.docker.internal:11434}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:

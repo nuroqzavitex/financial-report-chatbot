@@ -1,5 +1,6 @@
 """LiteLLM client: strict structured output, retries, cost accounting."""
 
+import re
 import time
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -65,6 +66,16 @@ def _response_format(schema: type[BaseModel]) -> dict[str, Any]:
         "type": "json_schema",
         "json_schema": {"name": schema.__name__, "schema": js, "strict": True},
     }
+
+
+_FENCE_RE = re.compile(r"\s*```(?:json)?\s*\n(.*?)\n?\s*```\s*", re.DOTALL | re.IGNORECASE)
+
+
+def _unfence(content: str) -> str:
+    """The JSON inside a whole-reply markdown fence: hosted open models (gemma4, gpt-oss on
+    ollama.com) ignore ``response_format`` and wrap the object in ```json … ```."""
+    m = _FENCE_RE.fullmatch(content)
+    return m.group(1) if m else content
 
 
 def _get(obj: Any, key: str) -> Any:
@@ -157,7 +168,7 @@ class LLMClient:
             ct += rct
             cost += self._cost(resp, rpt, rct)
             try:
-                out = schema.model_validate_json(content)
+                out = schema.model_validate_json(_unfence(content))
                 return out, Usage(pt, ct, cost)
             except ValidationError as exc:
                 error = exc

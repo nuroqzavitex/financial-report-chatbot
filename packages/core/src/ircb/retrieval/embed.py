@@ -25,10 +25,9 @@ class LiteLLMEmbedBackend:
         s = self.settings
         kwargs: dict[str, Any] = {"model": s.embed_model, "input": batch, "dimensions": s.embed_dimensions}
         if s.embed_model.startswith("ollama/"):
-            # the Ollama that embedded the index embeds every question too (local, or on the server)
-            kwargs["api_base"] = s.ollama_api_base
-            if s.ollama_api_key:
-                kwargs["api_key"] = s.ollama_api_key
+            # the Ollama that embedded the index embeds every question too; it is the local one even
+            # when the LLM goes to ollama.com, so the LLM's key is never sent here
+            kwargs["api_base"] = s.embed_api_base
         return kwargs
 
     def _call(self, batch: list[str]) -> list[list[float]]:

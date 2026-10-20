@@ -25,9 +25,17 @@ def _chunk_line(c: Chunk) -> str:
     return f"[chunk:{c.chunk_id}] (tr. {_pages(c.printed_pages)}) {c.text}"
 
 
+def _period(period: str | None) -> str:
+    """Show ``FY2025`` as "năm 2025"; other period shapes are shown as stored."""
+    if period and period.startswith("FY") and period[2:].isdigit():
+        return f"năm {period[2:]}"
+    return period or ""
+
+
 def _fact_line(f: Fact) -> str:
     shown = f.raw if f.raw is not None else str(f.value)
-    head = f"[fact:{f.fact_id}] {f.label} | {f.col_path or ''}"
+    # a KPI tile has no column header: its period stands there, or the model cannot tell the year
+    head = f"[fact:{f.fact_id}] {f.label} | {f.col_path or _period(f.period)}"
     # a KPI arrow is the only source of a reported change's direction; "unknown" stays unshown
     way = {"up": " | chiều: tăng", "down": " | chiều: giảm"}.get(f.direction or "", "")
     return f"{head} | {shown} {f.unit}{way} (tr. {_pages(f.printed_pages)})"
