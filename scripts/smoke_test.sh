@@ -4,7 +4,7 @@
 #
 # Exit codes: 0 OK | 1 assertion failed | 2 data/ files missing | 3 OPENAI_API_KEY missing
 # Needs: uv, Python 3.11 (uv fetches it if absent), OPENAI_API_KEY in the environment, and the
-# confidential data/ files (see README.md). Uses the real OpenAI API (about the cost of one index
+# data/ files (shipped in the repository, see README.md). Uses the real OpenAI API (about the cost of one index
 # build plus 10 questions).
 set -euo pipefail
 
@@ -14,7 +14,7 @@ cd "$ROOT"
 PDF="data/techcombank-bao-cao-thuong-nien-2025-vie-update.pdf"
 QUESTIONS="data/sample_questions.json"
 
-# 1. confidential inputs
+# 1. inputs under data/
 missing=0
 for f in "$PDF" "$QUESTIONS"; do
   if [ ! -f "$f" ]; then
@@ -25,7 +25,7 @@ done
 if [ "$missing" -eq 1 ]; then
   cat >&2 <<MSG
 
-data/ is confidential and is not part of the repository. Copy the two files you were given into data/:
+data/ files are missing (they ship with the repository; restore them with git checkout -- data/):
   $PDF
   $QUESTIONS
 then run this script again.

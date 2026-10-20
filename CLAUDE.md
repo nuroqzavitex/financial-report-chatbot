@@ -38,7 +38,7 @@ RAGAS lives in the optional `eval` dependency group (`uv sync --group eval`).
 
 ## Hard constraints
 
-- `data/` (the PDF and `sample_questions.json`) is confidential and gitignored. Never `git add` anything under it. Tests that need the PDF use the `requires_pdf` marker and skip when it is missing.
+- `data/` (the PDF and `sample_questions.json`) is committed; the bank publishes the report, so it is not confidential. Tests that need the PDF use the `requires_pdf` marker and skip when it is missing.
 - `index/` (chunks, facts, vectors, `manifest.json`) is a committed artefact; `index/build/` and `var/` are not.
 - All financial arithmetic uses `decimal.Decimal`; no floats in facts, calcs or the verifier. `ExactNumeric` in `storage/orm.py` stores Decimals as strings on SQLite and `NUMERIC` on Postgres.
 - Page map: PDF page 1 → printed [1]; PDF page p ≥ 2 → left half 2p−2, right half 2p−1. Any mismatch fails the build.

@@ -13,9 +13,9 @@ Thiết kế: [`docs/DESIGN.md`](docs/DESIGN.md). Bài nộp: [`SUBMISSION.md`](
 - `OPENAI_API_KEY` (mặc định dùng OpenAI cho cả LLM và embedding, không phải tải model nào)
 - Docker: **không bắt buộc**, chỉ cho chế độ production local (bên dưới)
 
-## Dữ liệu bảo mật: `data/`
+## Dữ liệu: `data/`
 
-`data/` nằm trong `.gitignore` và **không có trong repository**. Hãy tự đặt hai file được cung cấp vào đó, đúng tên:
+`data/` có sẵn trong repository: báo cáo thường niên (Techcombank công bố công khai) và 10 câu hỏi mẫu.
 
 ```
 data/techcombank-bao-cao-thuong-nien-2025-vie-update.pdf

@@ -6,9 +6,6 @@ __pycache__/
 node_modules/
 .next/
 
-# Tài liệu bảo mật, không commit
-data/
-
 # Cấu hình Claude Code cá nhân
 .claude/settings.local.json
 .superpowers/

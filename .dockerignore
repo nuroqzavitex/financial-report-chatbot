@@ -1,4 +1,4 @@
-# Secrets and confidential inputs never enter an image (data/ and index/ are mounted at run time)
+# Secrets never enter an image; data/ and index/ are mounted at run time, not baked in
 .env
 data/
 index/

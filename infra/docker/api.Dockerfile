@@ -1,6 +1,6 @@
 # API image: FastAPI app (ircb_api) on the core library, installed from the workspace lock.
 # Build context is the repo root (see docker-compose.yml). index/ and data/ are mounted at run time,
-# never baked in: data/ is confidential and index/ is built locally.
+# never baked in: both are large and change independently of the code.
 FROM python:3.11-slim
 
 COPY --from=ghcr.io/astral-sh/uv:0.11.28 /uv /usr/local/bin/uv

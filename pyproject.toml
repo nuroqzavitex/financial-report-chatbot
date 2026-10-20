@@ -47,7 +47,7 @@ plugins = ["pydantic.mypy"]
 testpaths = ["packages/core/tests", "apps/cli/tests", "apps/api/tests", "eval/tests"]
 pythonpath = ["."]
 markers = [
-    "requires_pdf: test needs the confidential PDF under data/ (skipped when missing)",
+    "requires_pdf: test needs the report PDF under data/ (skipped when missing)",
     "integration: needs real external services (deselected by default)",
 ]
 addopts = "-m 'not integration'"

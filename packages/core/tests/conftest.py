@@ -10,7 +10,7 @@ PDF_FILE = Path(__file__).resolve().parents[3] / "data" / PDF_NAME
 
 
 def pytest_configure(config: pytest.Config) -> None:
-    config.addinivalue_line("markers", "requires_pdf: test needs the confidential PDF under data/")
+    config.addinivalue_line("markers", "requires_pdf: test needs the report PDF under data/")
 
 
 @pytest.fixture(scope="session")

@@ -5,7 +5,7 @@
 > **Đọc trước (trung thực về trạng thái).** Toàn bộ mã, test offline và bộ dữ liệu eval đã xong. **Chưa có lần chạy nào với OpenAI API thật** (môi trường làm bài không có key): chưa có số liệu eval, chưa đo chi phí/độ trễ, chưa quay video. Mọi chỗ cần số đo thật được đánh dấu **`[CHƯA ĐO ...]`** kèm đúng lệnh để chạy. Không có con số nào trong tài liệu này được ước lượng hay bịa; những số có ở đây đều đo được offline và ghi rõ nguồn.
 
 ## How to run
-- Clean machine: cần Python 3.11 (`uv` tự tải), [uv](https://docs.astral.sh/uv/), và `OPENAI_API_KEY`. Đặt hai file bảo mật vào `data/` (không có trong repo): `data/techcombank-bao-cao-thuong-nien-2025-vie-update.pdf` và `data/sample_questions.json`. Rồi chạy một lệnh:
+- Clean machine: cần Python 3.11 (`uv` tự tải), [uv](https://docs.astral.sh/uv/), và `OPENAI_API_KEY`. Hai file đầu vào có sẵn trong repo: `data/techcombank-bao-cao-thuong-nien-2025-vie-update.pdf` và `data/sample_questions.json`. Rồi chạy một lệnh:
   ```bash
   export OPENAI_API_KEY=sk-... && bash scripts/smoke_test.sh     # in "OK 10/10"
   ```
