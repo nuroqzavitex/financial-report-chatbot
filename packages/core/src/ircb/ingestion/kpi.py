@@ -38,6 +38,9 @@ ARROW_DY = 6.0  # centre-y offset < 6pt
 # A big span is a KPI value only if it *is* a number (or "TOP n"): section headings such
 # as "Điểm nhấn 2025" are big and contain digits but also letters, so they are rejected.
 _VALUE_RE = re.compile(r"(?P<num>[~#]?\d[\d.,]*)\s*(?P<pct>%)?|TOP\s*\d+", re.IGNORECASE)
+_FIGURE_RE = re.compile(
+    r"[~#+\-]?\d[\d.,]*\s*(?:%|x|lần)?(?:\s*(?:N/N|so với .{1,20}|\*))?|TOP\s*\d+", re.IGNORECASE
+)
 _CHANGE_RE = re.compile(
     r"(?:(?P<verb>Tăng|Giảm)\s+)?(?P<pct>[~]?\d[\d.,]*\s*%)\s*"
     r"(?P<basis>N/N|so với năm trước|so với năm \d{4})",
@@ -87,6 +90,11 @@ class _Line:
 def is_kpi_value(text: str) -> bool:
     """True for a big-number text ("1.192", "40,4%", "TOP 1"); False for headings."""
     return _VALUE_RE.fullmatch(text.strip()) is not None
+
+
+def is_figure(text: str) -> bool:
+    """True for any infographic figure: a KPI value or one with a tail ("13% N/N", "1,5x")."""
+    return _FIGURE_RE.fullmatch(text.strip()) is not None
 
 
 def _union(boxes: list[BBox]) -> BBox:
@@ -246,10 +254,10 @@ def parse_kpi_tiles(page: fitz.Page, half: HalfPage) -> list[KpiTile]:
     headings_all = [
         s
         for s in spans_in(page, page.rect)
-        if s.size >= HEADING_FACTOR * med and not is_kpi_value(s.text) and s.text.strip()
+        if s.size >= HEADING_FACTOR * med and not is_figure(s.text) and s.text.strip()
     ]
     section = _heading_text(headings_all, max(s.size for s in headings_all)) if headings_all else ""
-    region_heads = [s for s in spans if s.size >= HEADING_FACTOR * med and not is_kpi_value(s.text)]
+    region_heads = [s for s in spans if s.size >= HEADING_FACTOR * med and not is_figure(s.text)]
 
     drafts: list[_Draft] = []
     consumed: set[int] = set()
@@ -346,7 +354,8 @@ def parse_kpi_tiles(page: fitz.Page, half: HalfPage) -> list[KpiTile]:
             unit_raw = " ".join(unit_raw.split())
             unit = normalize_unit(unit_raw) or unit_raw.lower()
 
-        label_text = " ".join(ln.text for ln in dr.label)
+        # no label above: the tile is captioned below (p.117), and the caption names the figure
+        label_text = " ".join(ln.text for ln in dr.label) or description
         label_top = dr.label[0].top if dr.label else big.bbox[1]
         region = _region_heading(region_heads, label_top)
         parts: list[str] = []

@@ -100,3 +100,66 @@ def test_exclude_bboxes_exclude_only_part_of_half() -> None:
     text = " ".join(b.text for b in extract_prose(page, half, [box]))
     assert "giu lai" in text and "giu nua" in text
     assert "bo di" not in text and "bo nua" not in text
+
+
+def test_figure_joins_caption_above_in_its_column() -> None:
+    page, half = _make(
+        [
+            _body(60, "doan mo dau"),
+            _body(72, "doan mo dau hai"),
+            (20, 110, "So du tien gui", BODY, False),
+            (220, 110, "So khach moi", BODY, False),
+            (24, 136, "24% N/N", 22.0, False),
+            (224, 136, "65% N/N", 22.0, False),
+        ]
+    )
+    blocks = extract_prose(page, half, [])
+    assert len(blocks) == 1 and blocks[0].heading is None  # figures are not headings
+    assert "So du tien gui: 24% N/N" in blocks[0].text
+    assert "So khach moi: 65% N/N" in blocks[0].text
+    assert blocks[0].text.count("24% N/N") == 1
+
+
+def test_figure_joins_multiline_caption_below_and_unit_beside() -> None:
+    page, half = _make(
+        [
+            (20, 100, "Tong quan", BIG, False),
+            (20, 140, "1,5x", 22.0, False),
+            _body(158, "khach hang moi"),
+            _body(169, "so voi 2024"),
+            (20, 220, "13,1", 22.0, False),
+            (70, 214, "Trieu", BODY, False),
+            _body(236, "hoi vien"),
+        ]
+    )
+    blocks = extract_prose(page, half, [])
+    assert [b.heading for b in blocks] == ["Tong quan"]
+    assert "khach hang moi so voi 2024: 1,5x" in blocks[0].text
+    assert "hoi vien: 13,1 Trieu" in blocks[0].text
+
+
+def test_figure_next_to_a_paragraph_keeps_the_paragraph() -> None:
+    lines = [_body(100 + 11 * i, f"dong van ban {i}") for i in range(5)]
+    page, half = _make([*lines, (20, 176, "17%", 22.0, False)])
+    text = " ".join(b.text for b in extract_prose(page, half, []))
+    assert ":" not in text  # five contiguous lines are a paragraph, not a caption
+    assert text.startswith("dong van ban 0") and "17%" in text
+
+
+def test_numbered_heading_is_not_a_figure() -> None:
+    page, half = _make([(20, 100, "4.21. Thue", BIG, False), _body(120, "noi dung")])
+    assert [b.heading for b in extract_prose(page, half, [])] == ["4.21. Thue"]
+
+
+def test_pull_quote_in_large_type_is_body_not_heading() -> None:
+    quote = [
+        (20, 140, "Nhung buoc tien nay dong vai tro then chot trong viec", 10.5, True),
+        (20, 153, "cai thien trai nghiem khach hang va khang dinh vi the", 10.5, True),
+        (20, 166, "cua ngan hang nhu mot doi tac chinh duoc uu tien.", 10.5, True),
+    ]
+    page, half = _make(
+        [(20, 100, "Diem nhan", BIG, False), _body(120, "doan mot"), *quote, _body(186, "doan hai")]
+    )
+    blocks = extract_prose(page, half, [])
+    assert [b.heading for b in blocks] == ["Diem nhan"]
+    assert "then chot" in blocks[0].text and blocks[0].text.endswith("doan hai")

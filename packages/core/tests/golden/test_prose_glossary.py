@@ -53,3 +53,23 @@ def test_prose_excludes_regions(doc: fitz.Document) -> None:
     full = " ".join(b.text for b in extract_prose(page, h, []))
     none = extract_prose(page, h, [(h.clip.x0, h.clip.y0, h.clip.x1, h.clip.y1)])
     assert full and none == []
+
+
+def test_prose_page71_figures_keep_their_captions(doc: fitz.Document) -> None:
+    blocks = extract_prose(*half_obj(doc, 71), exclude_bboxes=[])
+    text = " ".join(b.text for b in blocks)
+    for pair in (
+        "Số dư tín dụng: 13% N/N",
+        "Số dư tiền gửi: 24% N/N",
+        "Số lượng khách hàng mới: 65% N/N",
+        "Doanh số phát hành trái phiếu: 117% N/N",
+    ):
+        assert pair in text
+    assert not any(b.heading and "N/N" in b.heading for b in blocks)
+    assert not any(b.heading and "then chốt" in b.heading for b in blocks)  # pull quote is body
+
+
+def test_prose_page117_captions_below_figures(doc: fitz.Document) -> None:
+    text = " ".join(b.text for b in extract_prose(*half_obj(doc, 117), exclude_bboxes=[]))
+    assert "Số lượng khách hàng mới qua các kênh số hóa trong năm 2025 so với 2024: 1,5x" in text
+    assert "Hội viên chương trình Techcombank Rewards: 13,1 Triệu" in text

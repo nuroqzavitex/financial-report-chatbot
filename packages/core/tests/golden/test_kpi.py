@@ -83,3 +83,16 @@ def test_page81_cir_down(doc: fitz.Document) -> None:
 def test_arrow_direction_absent_is_unknown(doc: fitz.Document) -> None:
     page, h = half_obj(doc, 5)  # p.5 tiles have no vector arrows
     assert arrow_direction(page, (702.9, 602.6, 726.6, 614.8)) == "unknown"
+
+
+def test_page117_tiles_captioned_below_take_the_caption_as_label(doc: fitz.Document) -> None:
+    t = tiles(doc, 117)
+    casa = by_label(t, "số dư CASA")
+    assert (casa.value_raw, casa.unit) == ("16,6", "%")
+    assert by_label(t, "Techcombank Rewards").value_raw == "13,1"
+    assert not any("1,5x" in x.context or "2,8x" in x.context for x in t)  # figures are not region headings
+
+
+def test_page77_label_from_description(doc: fitz.Document) -> None:
+    pbt = by_label(tiles(doc, 77), "Lợi nhuận trước thuế năm 2025")
+    assert (pbt.value_raw, pbt.unit) == ("7.109", "tỷ đồng")
