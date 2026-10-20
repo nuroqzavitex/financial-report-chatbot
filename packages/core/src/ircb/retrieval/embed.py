@@ -21,16 +21,22 @@ class LiteLLMEmbedBackend:
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
 
+    def _kwargs(self, batch: list[str]) -> dict[str, Any]:
+        s = self.settings
+        kwargs: dict[str, Any] = {"model": s.embed_model, "input": batch, "dimensions": s.embed_dimensions}
+        if s.embed_model.startswith("ollama/"):
+            # the Ollama that embedded the index embeds every question too (local, or on the server)
+            kwargs["api_base"] = s.ollama_api_base
+            if s.ollama_api_key:
+                kwargs["api_key"] = s.ollama_api_key
+        return kwargs
+
     def _call(self, batch: list[str]) -> list[list[float]]:
         import litellm
 
         for attempt in range(RETRIES + 1):
             try:
-                resp: Any = litellm.embedding(
-                    model=self.settings.embed_model,
-                    input=batch,
-                    dimensions=self.settings.embed_dimensions,
-                )
+                resp: Any = litellm.embedding(**self._kwargs(batch))
                 return [list(map(float, d["embedding"])) for d in resp["data"]]
             except Exception as exc:
                 if attempt == RETRIES or not _retryable(exc):

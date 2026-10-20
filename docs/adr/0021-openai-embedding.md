@@ -1,6 +1,6 @@
 # ADR 0021: OpenAI cho cả LLM và embedding, qua LiteLLM
 
-- Trạng thái: Chấp nhận (2026-10-16, D21; thay quyết định bge-m3 local của DESIGN.md)
+- Trạng thái: Chấp nhận (2026-10-16, D21; thay quyết định bge-m3 local của DESIGN.md). Phần embedding đã được thay bằng ADR 0022 (2026-10-20); phần LLM vẫn giữ.
 
 ## Bối cảnh
 

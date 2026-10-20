@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     )
     llm_timeout_s: int = 60  # per call; hosted open models answer slower than OpenAI
 
-    embed_model: str = "openai/text-embedding-3-large"
+    embed_model: str = "ollama/qwen3-embedding:0.6b"  # what the shipped index/ was embedded with
     embed_dimensions: int = 1024
     embed_cache_dir: Path = Path("./var/embed_cache")
     llm_seed: int = 42

@@ -3,7 +3,9 @@
 # answer data/sample_questions.json in batch mode and assert 10 rows without status "error".
 #
 # Exit codes: 0 OK | 1 assertion failed | 2 data/ files missing | 3 OPENAI_API_KEY missing
-# Needs: uv, Python 3.11 (uv fetches it if absent), OPENAI_API_KEY in the environment, and the
+#             | 4 Ollama or its embedding model missing
+# Needs: uv, Python 3.11 (uv fetches it if absent), Ollama with qwen3-embedding:0.6b, OPENAI_API_KEY
+# in the environment for the default LLM, and the
 # data/ files (shipped in the repository, see README.md). Uses the real OpenAI API (about the cost of one index
 # build plus 10 questions).
 set -euo pipefail
@@ -33,12 +35,19 @@ MSG
   exit 2
 fi
 
-# 2. API key (the default configuration uses OpenAI for the LLM and for embeddings)
+# 2. embeddings run on Ollama (the shipped index was embedded with qwen3-embedding:0.6b)
+OLLAMA="${OLLAMA_API_BASE:-http://localhost:11434}"
+if ! curl -fsS "$OLLAMA/api/tags" 2>/dev/null | grep -q '"qwen3-embedding:0.6b"'; then
+  echo "MISSING: Ollama at $OLLAMA with qwen3-embedding:0.6b (install Ollama, then: ollama pull qwen3-embedding:0.6b)" >&2
+  exit 4
+fi
+
+# 3. API key for the default LLM (openai/gpt-4o)
 if [ -z "${OPENAI_API_KEY:-}" ]; then
   echo "MISSING: OPENAI_API_KEY is not set in the environment." >&2
   if [ ! -f index/manifest.json ]; then
-    echo "index/ is not built yet (no index/manifest.json): the first run builds it with the embedding API," >&2
-    echo "so a key is required: export OPENAI_API_KEY=sk-... and run this script again." >&2
+    echo "index/ is not built yet (no index/manifest.json); the default LLM also needs the key:" >&2
+    echo "export OPENAI_API_KEY=sk-... and run this script again." >&2
   else
     echo "export OPENAI_API_KEY=sk-... and run this script again." >&2
   fi
@@ -47,7 +56,7 @@ fi
 
 command -v uv >/dev/null || { echo "MISSING: uv (https://docs.astral.sh/uv/)" >&2; exit 1; }
 
-# 3. everything this run writes goes to a temp dir: fresh venv, empty Qdrant/SQLite/cache/traces
+# 4. everything this run writes goes to a temp dir: fresh venv, empty Qdrant/SQLite/cache/traces
 WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
 export UV_PROJECT_ENVIRONMENT="$WORK/venv"
@@ -59,26 +68,26 @@ unset QDRANT_URL || true
 echo "== uv sync (fresh venv: $UV_PROJECT_ENVIRONMENT)"
 uv sync --frozen
 
-# NOTE: steps 4 and 5 write into the repository working tree (.env and index/), not the temp dir:
+# NOTE: steps 5 and 6 write into the repository working tree (.env and index/), not the temp dir:
 # both are meant to stay (index/ is committed with the submission; .env is gitignored).
-# 4. .env from the example; never overwrite an existing one. The key comes from the environment.
+# 5. .env from the example; never overwrite an existing one. The key comes from the environment.
 if [ ! -f .env ]; then
   cp .env.example .env
   echo "== created .env from .env.example (OPENAI_API_KEY is read from the environment)"
 fi
 
-# 5. index (committed in the final submission; built here when absent)
+# 6. index (committed in the final submission; built here when absent)
 if [ ! -f index/manifest.json ]; then
-  echo "== index/ missing: building it from the PDF (embedding API calls)"
+  echo "== index/ missing: building it from the PDF (embeddings on Ollama)"
   uv run ircb ingest "$PDF" --out index
 fi
 
-# 6. batch over the 10 published questions
+# 7. batch over the 10 published questions
 OUT="$WORK/out.jsonl"
 echo "== ircb batch $QUESTIONS"
 uv run ircb batch "$QUESTIONS" --out "$OUT"
 
-# 7. assertions
+# 8. assertions
 uv run python -I - "$OUT" <<'PY'
 import json
 import sys

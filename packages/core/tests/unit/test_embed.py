@@ -51,7 +51,7 @@ def test_litellm_backend_batches(monkeypatch):
     out = LiteLLMEmbedBackend(s).embed([str(i) for i in range(300)])
     assert len(out) == 300
     assert [len(c["input"]) for c in calls] == [100, 100, 100]
-    assert calls[0]["model"] == "openai/text-embedding-3-large"
+    assert calls[0]["model"] == "ollama/qwen3-embedding:0.6b"
     assert calls[0]["dimensions"] == 1024
 
 
@@ -110,3 +110,17 @@ def test_retries_stop(monkeypatch):
     with pytest.raises(_Err):
         LiteLLMEmbedBackend(Settings(llm_model="x")).embed(["a"])
     assert len(calls) == RETRIES + 1
+
+
+def test_ollama_embedding_uses_the_configured_server(monkeypatch):
+    calls = _install(monkeypatch, [None])
+    s = Settings(llm_model="x", embed_model="ollama/qwen3-embedding:0.6b", ollama_api_base="http://h:11434")
+    LiteLLMEmbedBackend(s).embed(["a"])
+    assert calls[0]["api_base"] == "http://h:11434" and "api_key" not in calls[0]
+    assert calls[0]["model"] == "ollama/qwen3-embedding:0.6b" and calls[0]["dimensions"] == 1024
+
+
+def test_other_embedding_providers_get_no_ollama_base(monkeypatch):
+    calls = _install(monkeypatch, [None])
+    LiteLLMEmbedBackend(Settings(llm_model="x", embed_model="openai/text-embedding-3-large")).embed(["a"])
+    assert "api_base" not in calls[0]

@@ -10,7 +10,8 @@ Thiết kế: [`docs/DESIGN.md`](docs/DESIGN.md). Bài nộp: [`SUBMISSION.md`](
 
 - Python 3.11 (`uv` tự tải nếu máy chưa có)
 - [uv](https://docs.astral.sh/uv/)
-- `OPENAI_API_KEY` (mặc định dùng OpenAI cho cả LLM và embedding, không phải tải model nào)
+- [Ollama](https://ollama.com) và model embedding `qwen3-embedding:0.6b` (`ollama pull qwen3-embedding:0.6b`, ~640 MB). `index/` ship cùng repo được embed bằng model này, nên câu hỏi cũng phải được embed bằng chính nó
+- Một LLM: mặc định `openai/gpt-4o` (cần `OPENAI_API_KEY`), hoặc model trên Ollama Cloud qua Ollama đã đăng nhập (`LLM_MODEL=ollama_chat/gpt-oss:120b-cloud`, không cần key; chất lượng thấp hơn, xem phần Đổi provider)
 - Docker: **không bắt buộc**, chỉ cho chế độ production local (bên dưới)
 
 ## Dữ liệu: `data/`
@@ -29,10 +30,10 @@ PDF cần cho bước build index và cho các test golden (tự skip khi thiế
 Chế độ chấm bài: chỉ cần Python, không Docker (Qdrant embedded + SQLite).
 
 ```bash
+ollama pull qwen3-embedding:0.6b         # embedding, chạy local
 export OPENAI_API_KEY=sk-...             # PowerShell: $env:OPENAI_API_KEY = "sk-..."
 cp .env.example .env                     # LLM_MODEL mặc định openai/gpt-4o; key lấy từ môi trường hoặc điền vào .env
 uv sync
-# đặt PDF và sample_questions.json vào data/ (xem trên)
 uv run ircb ingest data/techcombank-bao-cao-thuong-nien-2025-vie-update.pdf   # chỉ cần nếu index/ chưa có
 uv run ircb chat
 ```
@@ -41,14 +42,14 @@ Kiểm tra từ máy sạch bằng một lệnh (venv tạm, `uv sync`, build in
 
 ```bash
 export OPENAI_API_KEY=sk-...
-bash scripts/smoke_test.sh               # in "OK 10/10"; thiếu data/ thì exit 2, thiếu key thì exit 3
+bash scripts/smoke_test.sh               # in "OK 10/10"; thiếu data/ exit 2, thiếu key exit 3, thiếu Ollama/model exit 4
 ```
 
 Lần đầu `ircb chat` / `ircb batch` tự nạp `index/` vào `var/qdrant` và `var/app.db` (`AUTO_LOAD_INDEX=true`).
 
 ## Build index
 
-`index/` là artefact ship cùng repo (chunks, facts, vector, `manifest.json`), nhưng **hiện chưa được commit** vì việc build cần OpenAI embedding API. Có `OPENAI_API_KEY` và PDF trong `data/` thì build bằng:
+`index/` là artefact ship cùng repo (chunks, facts, vector, `manifest.json`), embed bằng `ollama/qwen3-embedding:0.6b` 1024 chiều. Build lại từ PDF (cần Ollama với model trên):
 
 ```bash
 uv run ircb ingest data/techcombank-bao-cao-thuong-nien-2025-vie-update.pdf          # ghi vào ./index
@@ -70,24 +71,22 @@ uv run ircb profile data/<pdf>           # khảo sát cấu trúc PDF (M0)
 Mọi thứ đi qua LiteLLM, đổi bằng biến môi trường (hoặc `.env`). Đổi **embedding** thì phải chạy `uv run ircb index reembed` (manifest kiểm tra lệch lúc khởi động). Đổi riêng LLM thì không cần.
 
 ```bash
-# OpenAI (mặc định): một key cho cả LLM và embedding
+# Mặc định: embedding Qwen3 trên Ollama local, LLM OpenAI
+EMBED_MODEL=ollama/qwen3-embedding:0.6b
 LLM_MODEL=openai/gpt-4o
 OPENAI_API_KEY=sk-...
 
-# Anthropic cho LLM; embedding vẫn là OpenAI nên vẫn cần OPENAI_API_KEY
-LLM_MODEL=anthropic/claude-sonnet-4-5
-ANTHROPIC_API_KEY=sk-ant-...
-OPENAI_API_KEY=sk-...
-
-# Local bằng Ollama (LLM và embedding); đổi embedding thì phải reembed
-LLM_MODEL=ollama/qwen2.5:14b
+# Không cần key: LLM trên Ollama Cloud qua Ollama local đã đăng nhập (`ollama signin`)
+LLM_MODEL=ollama_chat/gpt-oss:120b-cloud
 OLLAMA_API_BASE=http://localhost:11434
-EMBED_MODEL=ollama/nomic-embed-text
-EMBED_DIMENSIONS=768
+
+# Embedding OpenAI thay cho Qwen3 (đổi embedding thì phải reembed)
+EMBED_MODEL=openai/text-embedding-3-large
+OPENAI_API_KEY=sk-...
 # rồi: uv run ircb index reembed
 ```
 
-Lưu ý trung thực: đường chạy mặc định (OpenAI) là đường duy nhất được thiết kế và test; generator dùng structured outputs strict nên model khác có thể trả JSON lệch schema và dòng đó sẽ có `status="error"`. Cấu hình Anthropic và Ollama ở trên **chưa được chạy thử** (không có key hay Ollama trong môi trường làm bài), tên model chỉ là ví dụ. Nếu model không hỗ trợ `temperature=0` thì dùng `LLM_SEED` (mặc định 42). Chi phí chỉ được tính khi đặt `LLM_PRICE_IN` / `LLM_PRICE_OUT` (USD cho 1M token). Bảng đầy đủ các biến môi trường nằm ở `SUBMISSION.md` và `.env.example`.
+Đã chạy thật (dev eval, 25 câu): embedding Qwen3 tìm kiếm ngang OpenAI `text-embedding-3-large` (cùng câu hỏi đã viết lại: Recall@8 0,773 cả hai, MRR 0,655 so với 0,666). Với LLM, GPT-4o tốt hơn rõ: `gpt-oss:120b` qua Ollama Cloud làm bộ kiểm tra loại 44% ý (GPT-4o: 21%) và từ chối 13/25 câu (GPT-4o: 7/25). Generator dùng structured outputs strict nên model khác có thể trả JSON lệch schema và dòng đó sẽ có `status="error"`. Nếu model không hỗ trợ `temperature=0` thì dùng `LLM_SEED` (mặc định 42). Chi phí chỉ được tính khi đặt `LLM_PRICE_IN` / `LLM_PRICE_OUT` (USD cho 1M token). Bảng đầy đủ các biến môi trường nằm ở `SUBMISSION.md` và `.env.example`.
 
 ## Hai chế độ chạy
 

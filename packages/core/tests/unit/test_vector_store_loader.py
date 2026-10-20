@@ -65,7 +65,7 @@ def build_index_dir(d: Path, n: int, version: str) -> Path:
             doc_id="tcb-ar-2025",
             pdf_sha256="0",
             embed_provider="openai",
-            embed_model="openai/text-embedding-3-large",
+            embed_model="ollama/qwen3-embedding:0.6b",
             embed_dimensions=DIM,
             tokenizer_version="t1",
             periods_seen=["2025"],
