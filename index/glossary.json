@@ -1,0 +1,1812 @@
+{
+  "entries": [
+    {
+      "term": "AEM",
+      "definition": "Adobe Experience Manager",
+      "printed_page": 386,
+      "bbox": [
+        42.84539985656738,
+        166.62213134765625,
+        201.260009765625,
+        185.3030548095703
+      ]
+    },
+    {
+      "term": "AGM",
+      "definition": "Đại hội đồng cổ đông thường niên",
+      "printed_page": 386,
+      "bbox": [
+        42.84539985656738,
+        185.3030548095703,
+        201.260009765625,
+        210.58221435546875
+      ]
+    },
+    {
+      "term": "AI",
+      "definition": "Trí tuệ nhân tạo",
+      "printed_page": 386,
+      "bbox": [
+        42.84539985656738,
+        210.58221435546875,
+        201.260009765625,
+        228.22203826904297
+      ]
+    },
+    {
+      "term": "AIP",
+      "definition": "Azure Information Protection",
+      "printed_page": 386,
+      "bbox": [
+        42.84539985656738,
+        228.22203826904297,
+        201.260009765625,
+        246.9029541015625
+      ]
+    },
+    {
+      "term": "ALCO",
+      "definition": "Uỷ ban quản lý tài sản - nợ",
+      "printed_page": 386,
+      "bbox": [
+        42.84539985656738,
+        246.9029541015625,
+        201.260009765625,
+        265.58390045166016
+      ]
+    },
+    {
+      "term": "ALM",
+      "definition": "Quản lý tài sản Nợ - Có",
+      "printed_page": 386,
+      "bbox": [
+        42.84539985656738,
+        265.58390045166016,
+        201.260009765625,
+        284.2646789550781
+      ]
+    },
+    {
+      "term": "AML",
+      "definition": "Phòng chống rửa tiền",
+      "printed_page": 386,
+      "bbox": [
+        42.84539985656738,
+        284.2646789550781,
+        201.260009765625,
+        303.9868621826172
+      ]
+    },
+    {
+      "term": "ANTT",
+      "definition": "An ninh thông tin",
+      "printed_page": 386,
+      "bbox": [
+        42.84539985656738,
+        303.9868621826172,
+        201.260009765625,
+        322.8163070678711
+      ]
+    },
+    {
+      "term": "APE",
+      "definition": "Phí bảo hiểm quy năm",
+      "printed_page": 386,
+      "bbox": [
+        42.84539985656738,
+        322.8163070678711,
+        201.260009765625,
+        341.6459655761719
+      ]
+    },
+    {
+      "term": "API",
+      "definition": "Giao diện lập trình ứng dụng",
+      "printed_page": 386,
+      "bbox": [
+        42.84539985656738,
+        341.6459655761719,
+        201.260009765625,
+        360.32691955566406
+      ]
+    },
+    {
+      "term": "APM",
+      "definition": "Theo dõi hiệu suất ứng dụng",
+      "printed_page": 386,
+      "bbox": [
+        42.84539985656738,
+        360.32691955566406,
+        201.260009765625,
+        379.00782775878906
+      ]
+    },
+    {
+      "term": "APT",
+      "definition": "Tấn công có chủ đích",
+      "printed_page": 386,
+      "bbox": [
+        42.84539985656738,
+        379.00782775878906,
+        201.260009765625,
+        397.68851470947266
+      ]
+    },
+    {
+      "term": "ASEAN",
+      "definition": "Hiệp hội các quốc gia Đông Nam Á",
+      "printed_page": 386,
+      "bbox": [
+        42.84539985656738,
+        397.68851470947266,
+        201.260009765625,
+        422.8188896179199
+      ]
+    },
+    {
+      "term": "ATM/CDM",
+      "definition": "Máy rút tiền tự động/Máy nộp tiền tự động",
+      "printed_page": 386,
+      "bbox": [
+        42.84539985656738,
+        422.8188896179199,
+        201.260009765625,
+        447.35453033447266
+      ]
+    },
+    {
+      "term": "AUM",
+      "definition": "Tổng tài sản quản lý",
+      "printed_page": 386,
+      "bbox": [
+        42.84539985656738,
+        447.35453033447266,
+        201.260009765625,
+        465.95809173583984
+      ]
+    },
+    {
+      "term": "Auto ML",
+      "definition": "Công nghệ học máy tự động",
+      "printed_page": 386,
+      "bbox": [
+        42.84539985656738,
+        465.95809173583984,
+        201.260009765625,
+        485.3439636230469
+      ]
+    },
+    {
+      "term": "AWS",
+      "definition": "Amazon Web Services",
+      "printed_page": 386,
+      "bbox": [
+        42.84539985656738,
+        485.3439636230469,
+        201.260009765625,
+        504.02486419677734
+      ]
+    },
+    {
+      "term": "B1",
+      "definition": "Nợ nhóm 1 (Nợ đủ tiêu chuẩn)",
+      "printed_page": 386,
+      "bbox": [
+        42.84539985656738,
+        504.02486419677734,
+        201.260009765625,
+        522.7056655883789
+      ]
+    },
+    {
+      "term": "B2",
+      "definition": "Nợ nhóm 2 (Nợ cần chú ý)",
+      "printed_page": 386,
+      "bbox": [
+        42.84539985656738,
+        522.7056655883789,
+        201.260009765625,
+        541.3864593505859
+      ]
+    },
+    {
+      "term": "B3",
+      "definition": "Nợ nhóm 3 (Nợ dưới tiêu chuẩn)",
+      "printed_page": 386,
+      "bbox": [
+        42.84539985656738,
+        541.3864593505859,
+        201.260009765625,
+        559.7337341308594
+      ]
+    },
+    {
+      "term": "B4",
+      "definition": "Nợ nhóm 4 (Nợ nghi ngờ)",
+      "printed_page": 386,
+      "bbox": [
+        42.84539985656738,
+        559.7337341308594,
+        201.260009765625,
+        578.4146525065104
+      ]
+    },
+    {
+      "term": "B5",
+      "definition": "Nợ nhóm 5 (Nợ có khả năng mất vốn)",
+      "printed_page": 386,
+      "bbox": [
+        42.84539985656738,
+        578.4146525065104,
+        201.260009765625,
+        604.2921447753906
+      ]
+    },
+    {
+      "term": "Banca",
+      "definition": "Bảo hiểm Bancassurance",
+      "printed_page": 386,
+      "bbox": [
+        42.84539985656738,
+        604.2921447753906,
+        201.260009765625,
+        622.3403625488281
+      ]
+    },
+    {
+      "term": "BB",
+      "definition": "Khối Khách hàng Doanh nghiệp",
+      "printed_page": 386,
+      "bbox": [
+        42.84539985656738,
+        622.3403625488281,
+        201.260009765625,
+        641.0214157104492
+      ]
+    },
+    {
+      "term": "BEI",
+      "definition": "Chỉ số sức khỏe thương hiệu",
+      "printed_page": 386,
+      "bbox": [
+        42.84539985656738,
+        641.0214157104492,
+        201.260009765625,
+        660.1761983235677
+      ]
+    },
+    {
+      "term": "BG",
+      "definition": "Bảo lãnh ngân hàng",
+      "printed_page": 386,
+      "bbox": [
+        42.84539985656738,
+        660.1761983235677,
+        201.260009765625,
+        679.015869140625
+      ]
+    },
+    {
+      "term": "BI",
+      "definition": "Trí tuệ doanh nghiệp",
+      "printed_page": 386,
+      "bbox": [
+        42.84539985656738,
+        679.015869140625,
+        201.260009765625,
+        697.6968078613281
+      ]
+    },
+    {
+      "term": "BKS",
+      "definition": "Ban Kiểm soát",
+      "printed_page": 386,
+      "bbox": [
+        42.84539985656738,
+        697.6968078613281,
+        201.260009765625,
+        716.3774871826172
+      ]
+    },
+    {
+      "term": "BOD",
+      "definition": "Hội đồng quản trị",
+      "printed_page": 386,
+      "bbox": [
+        42.84539985656738,
+        716.3774871826172,
+        201.260009765625,
+        735.0581359863281
+      ]
+    },
+    {
+      "term": "CAR",
+      "definition": "Tỷ lệ an toàn vốn",
+      "printed_page": 386,
+      "bbox": [
+        42.84539985656738,
+        735.0581359863281,
+        201.260009765625,
+        753.6636047363281
+      ]
+    },
+    {
+      "term": "CASA",
+      "definition": "Tiền gửi không kỳ hạn",
+      "printed_page": 386,
+      "bbox": [
+        214.01585388183594,
+        166.62213134765625,
+        372.7559856546336,
+        185.3030548095703
+      ]
+    },
+    {
+      "term": "CBNV",
+      "definition": "Cán bộ nhân viên",
+      "printed_page": 386,
+      "bbox": [
+        214.01585388183594,
+        185.3030548095703,
+        372.7559856546336,
+        202.94275665283203
+      ]
+    },
+    {
+      "term": "CCR",
+      "definition": "Rủi ro tín dụng đối tác",
+      "printed_page": 386,
+      "bbox": [
+        214.01585388183594,
+        202.94275665283203,
+        372.7559856546336,
+        222.6649169921875
+      ]
+    },
+    {
+      "term": "CD",
+      "definition": "Chứng chỉ tiền gửi",
+      "printed_page": 386,
+      "bbox": [
+        214.01585388183594,
+        222.6649169921875,
+        372.7559856546336,
+        241.3458709716797
+      ]
+    },
+    {
+      "term": "CDBL",
+      "definition": "Chứng chỉ tiền gửi Bảo Lộc",
+      "printed_page": 386,
+      "bbox": [
+        214.01585388183594,
+        241.3458709716797,
+        372.7559856546336,
+        260.02674865722656
+      ]
+    },
+    {
+      "term": "CDP",
+      "definition": "Nền tảng dữ liệu khách hàng",
+      "printed_page": 386,
+      "bbox": [
+        214.01585388183594,
+        260.02674865722656,
+        372.7559856546336,
+        278.70745849609375
+      ]
+    },
+    {
+      "term": "CEO",
+      "definition": "Tổng Giám đốc",
+      "printed_page": 386,
+      "bbox": [
+        214.01585388183594,
+        278.70745849609375,
+        372.7559856546336,
+        297.38816833496094
+      ]
+    },
+    {
+      "term": "CI/CD",
+      "definition": "Tích hợp liên tục/Triển khai liên tục",
+      "printed_page": 386,
+      "bbox": [
+        214.01585388183594,
+        297.38816833496094,
+        372.7559856546336,
+        322.8163070678711
+      ]
+    },
+    {
+      "term": "CIBG",
+      "definition": "Khối Ngân hàng doanh nghiệp và Định chế tài chính",
+      "printed_page": 386,
+      "bbox": [
+        214.01585388183594,
+        322.8163070678711,
+        372.7559856546336,
+        346.90568923950195
+      ]
+    },
+    {
+      "term": "CIR",
+      "definition": "Tỷ lệ chi phí trên thu nhập",
+      "printed_page": 386,
+      "bbox": [
+        214.01585388183594,
+        346.90568923950195,
+        372.7559856546336,
+        365.5865173339844
+      ]
+    },
+    {
+      "term": "CNTT",
+      "definition": "Công nghệ thông tin",
+      "printed_page": 386,
+      "bbox": [
+        214.01585388183594,
+        365.5865173339844,
+        372.7559856546336,
+        384.2674102783203
+      ]
+    },
+    {
+      "term": "CoF",
+      "definition": "Chi phí huy động",
+      "printed_page": 386,
+      "bbox": [
+        214.01585388183594,
+        384.2674102783203,
+        372.7559856546336,
+        403.98946380615234
+      ]
+    },
+    {
+      "term": "COSO",
+      "definition": "Ủy ban Các tổ chức bảo trợ",
+      "printed_page": 386,
+      "bbox": [
+        214.01585388183594,
+        403.98946380615234,
+        372.7559856546336,
+        422.8188896179199
+      ]
+    },
+    {
+      "term": "CRM",
+      "definition": "Hệ thống quản lý quan hệ khách hàng",
+      "printed_page": 386,
+      "bbox": [
+        214.01585388183594,
+        422.8188896179199,
+        372.7559856546336,
+        447.35453033447266
+      ]
+    },
+    {
+      "term": "CSAT",
+      "definition": "Chỉ số hài lòng khách hàng",
+      "printed_page": 386,
+      "bbox": [
+        214.01585388183594,
+        447.35453033447266,
+        372.7559856546336,
+        465.95809173583984
+      ]
+    },
+    {
+      "term": "CST",
+      "definition": "Đội ngũ chăm sóc khách hàng",
+      "printed_page": 386,
+      "bbox": [
+        214.01585388183594,
+        465.95809173583984,
+        372.7559856546336,
+        485.3439636230469
+      ]
+    },
+    {
+      "term": "CVA",
+      "definition": "Điều chỉnh định giá tín dụng",
+      "printed_page": 386,
+      "bbox": [
+        214.01585388183594,
+        485.3439636230469,
+        372.7559856546336,
+        504.02486419677734
+      ]
+    },
+    {
+      "term": "CVP",
+      "definition": "Định vị giá trị khách hàng",
+      "printed_page": 386,
+      "bbox": [
+        214.01585388183594,
+        504.02486419677734,
+        372.7559856546336,
+        522.7056655883789
+      ]
+    },
+    {
+      "term": "DCM",
+      "definition": "Thị trường vốn nợ",
+      "printed_page": 386,
+      "bbox": [
+        214.01585388183594,
+        522.7056655883789,
+        372.7559856546336,
+        541.3864593505859
+      ]
+    },
+    {
+      "term": "DDoS",
+      "definition": "Tấn công từ chối dịch vụ phân tán",
+      "printed_page": 386,
+      "bbox": [
+        214.01585388183594,
+        541.3864593505859,
+        372.7559856546336,
+        559.7337341308594
+      ]
+    },
+    {
+      "term": "ĐGĐCĐ",
+      "definition": "Đại hội đồng cổ đông thường niên",
+      "printed_page": 386,
+      "bbox": [
+        214.01585388183594,
+        559.7337341308594,
+        372.7559856546336,
+        578.4146525065104
+      ]
+    },
+    {
+      "term": "DLP",
+      "definition": "Chống Thất thoát Dữ liệu",
+      "printed_page": 386,
+      "bbox": [
+        214.01585388183594,
+        578.4146525065104,
+        372.7559856546336,
+        596.796257019043
+      ]
+    },
+    {
+      "term": "DnA",
+      "definition": "Khối Dữ liệu và Phân tích",
+      "printed_page": 386,
+      "bbox": [
+        214.01585388183594,
+        596.796257019043,
+        372.7559856546336,
+        615.8450317382812
+      ]
+    },
+    {
+      "term": "Doanh nghiệp siêu nhỏ (MSME)",
+      "definition": "Khách hàng có tổng doanh thu từ hoạt động bán hàng và dịch vụ của năm tài chính gần nhất dưới 20 tỷ đồng",
+      "printed_page": 386,
+      "bbox": [
+        214.01585388183594,
+        615.8450317382812,
+        372.7559856546336,
+        660.1761983235677
+      ]
+    },
+    {
+      "term": "Doanh nghiệp vừa và nhỏ (SME)",
+      "definition": "Khách hàng có tổng doanh thu từ hoạt động bán hàng và dịch vụ của năm tài chính gần nhất từ 20 - 200 tỷ đồng",
+      "printed_page": 386,
+      "bbox": [
+        214.01585388183594,
+        660.1761983235677,
+        372.7559856546336,
+        706.4035186767578
+      ]
+    },
+    {
+      "term": "DSO",
+      "definition": "Phát triển – Bảo mật – Vận hành",
+      "printed_page": 386,
+      "bbox": [
+        214.01585388183594,
+        706.4035186767578,
+        372.7559856546336,
+        725.0844573974609
+      ]
+    },
+    {
+      "term": "EES",
+      "definition": "Khảo sát mức độ gắn bó của nhân viên",
+      "printed_page": 386,
+      "bbox": [
+        214.01585388183594,
+        725.0844573974609,
+        372.7559856546336,
+        750.3634948730469
+      ]
+    },
+    {
+      "term": "eKYC",
+      "definition": "Xác minh danh tính khách hàng thông qua ứng dụng công nghệ điện tử",
+      "printed_page": 386,
+      "bbox": [
+        385.51190185546875,
+        166.62213134765625,
+        544.2520183694774,
+        202.94275665283203
+      ]
+    },
+    {
+      "term": "ERP",
+      "definition": "Hoạch định tài nguyên doanh nghiệp",
+      "printed_page": 386,
+      "bbox": [
+        385.51190185546875,
+        202.94275665283203,
+        544.2520183694774,
+        228.22203826904297
+      ]
+    },
+    {
+      "term": "ESG",
+      "definition": "Môi trường, xã hội và quản trị",
+      "printed_page": 386,
+      "bbox": [
+        385.51190185546875,
+        228.22203826904297,
+        544.2520183694774,
+        246.9029541015625
+      ]
+    },
+    {
+      "term": "ETF",
+      "definition": "Quỹ hoán đổi danh mục",
+      "printed_page": 386,
+      "bbox": [
+        385.51190185546875,
+        246.9029541015625,
+        544.2520183694774,
+        265.58390045166016
+      ]
+    },
+    {
+      "term": "EVP",
+      "definition": "Định vị giá trị nhân viên",
+      "printed_page": 386,
+      "bbox": [
+        385.51190185546875,
+        265.58390045166016,
+        544.2520183694774,
+        284.2646789550781
+      ]
+    },
+    {
+      "term": "EVE",
+      "definition": "Giá trị kinh tế của vốn chủ sở hữu",
+      "printed_page": 386,
+      "bbox": [
+        385.51190185546875,
+        284.2646789550781,
+        544.2520183694774,
+        308.5025939941406
+      ]
+    },
+    {
+      "term": "EW",
+      "definition": "Hệ thống cảnh báo sớm",
+      "printed_page": 386,
+      "bbox": [
+        385.51190185546875,
+        308.5025939941406,
+        544.2520183694774,
+        327.1837921142578
+      ]
+    },
+    {
+      "term": "EXCO",
+      "definition": "Ủy ban Điều hành",
+      "printed_page": 386,
+      "bbox": [
+        385.51190185546875,
+        327.1837921142578,
+        544.2520183694774,
+        346.90568923950195
+      ]
+    },
+    {
+      "term": "FDI",
+      "definition": "Đầu tư trực tiếp nước ngoài",
+      "printed_page": 386,
+      "bbox": [
+        385.51190185546875,
+        346.90568923950195,
+        544.2520183694774,
+        365.5865173339844
+      ]
+    },
+    {
+      "term": "FMCG",
+      "definition": "Hàng tiêu dùng nhanh",
+      "printed_page": 386,
+      "bbox": [
+        385.51190185546875,
+        365.5865173339844,
+        544.2520183694774,
+        384.2674102783203
+      ]
+    },
+    {
+      "term": "FRTB",
+      "definition": "Tổng rà soát danh mục kinh doanh",
+      "printed_page": 386,
+      "bbox": [
+        385.51190185546875,
+        384.2674102783203,
+        544.2520183694774,
+        408.5052032470703
+      ]
+    },
+    {
+      "term": "FX",
+      "definition": "Ngoại hối",
+      "printed_page": 386,
+      "bbox": [
+        385.51190185546875,
+        408.5052032470703,
+        544.2520183694774,
+        427.1861114501953
+      ]
+    },
+    {
+      "term": "GDP",
+      "definition": "Tổng sản phẩm nội địa",
+      "printed_page": 386,
+      "bbox": [
+        385.51190185546875,
+        427.1861114501953,
+        544.2520183694774,
+        447.35453033447266
+      ]
+    },
+    {
+      "term": "GenAI",
+      "definition": "Trí tuệ nhân tạo tạo sinh",
+      "printed_page": 386,
+      "bbox": [
+        385.51190185546875,
+        447.35453033447266,
+        544.2520183694774,
+        465.95809173583984
+      ]
+    },
+    {
+      "term": "GTS",
+      "definition": "Khối Ngân hàng Giao dịch Toàn cầu",
+      "printed_page": 386,
+      "bbox": [
+        385.51190185546875,
+        465.95809173583984,
+        544.2520183694774,
+        489.82711029052734
+      ]
+    },
+    {
+      "term": "HĐQT",
+      "definition": "Hội đồng quản trị",
+      "printed_page": 386,
+      "bbox": [
+        385.51190185546875,
+        489.82711029052734,
+        544.2520183694774,
+        508.50807189941406
+      ]
+    },
+    {
+      "term": "HNX",
+      "definition": "Sở Giao dịch Chứng khoán Hà Nội",
+      "printed_page": 386,
+      "bbox": [
+        385.51190185546875,
+        508.50807189941406,
+        544.2520183694774,
+        533.7872009277344
+      ]
+    },
+    {
+      "term": "HoSE",
+      "definition": "Sở Giao dịch Chứng khoán Thành phố Hồ Chí Minh",
+      "printed_page": 386,
+      "bbox": [
+        385.51190185546875,
+        533.7872009277344,
+        544.2520183694774,
+        559.7337341308594
+      ]
+    },
+    {
+      "term": "HUST",
+      "definition": "Đại học Bách khoa Hà Nội",
+      "printed_page": 386,
+      "bbox": [
+        385.51190185546875,
+        559.7337341308594,
+        544.2520183694774,
+        578.4146525065104
+      ]
+    },
+    {
+      "term": "IB",
+      "definition": "Ngân hàng đầu tư",
+      "printed_page": 386,
+      "bbox": [
+        385.51190185546875,
+        578.4146525065104,
+        544.2520183694774,
+        596.796257019043
+      ]
+    },
+    {
+      "term": "ICAAP",
+      "definition": "Quy trình đánh giá tính đầy đủ vốn nội bộ",
+      "printed_page": 386,
+      "bbox": [
+        385.51190185546875,
+        596.796257019043,
+        544.2520183694774,
+        622.3403625488281
+      ]
+    },
+    {
+      "term": "ICMA",
+      "definition": "Hiệp hội thị trường vốn quốc tế",
+      "printed_page": 386,
+      "bbox": [
+        385.51190185546875,
+        622.3403625488281,
+        544.2520183694774,
+        641.0214157104492
+      ]
+    },
+    {
+      "term": "IFC",
+      "definition": "Tổ chức Tài chính Quốc tế",
+      "printed_page": 386,
+      "bbox": [
+        385.51190185546875,
+        641.0214157104492,
+        544.2520183694774,
+        660.1761983235677
+      ]
+    },
+    {
+      "term": "ILAAP",
+      "definition": "Quy trình đánh giá an toàn thanh khoản nội bộ",
+      "printed_page": 386,
+      "bbox": [
+        385.51190185546875,
+        660.1761983235677,
+        544.2520183694774,
+        684.3485717773438
+      ]
+    },
+    {
+      "term": "IMA",
+      "definition": "Mô hình nội bộ",
+      "printed_page": 386,
+      "bbox": [
+        385.51190185546875,
+        684.3485717773438,
+        544.2520183694774,
+        703.029541015625
+      ]
+    },
+    {
+      "term": "IPO",
+      "definition": "Phát hành lần đầu ra công chúng",
+      "printed_page": 386,
+      "bbox": [
+        385.51190185546875,
+        703.029541015625,
+        544.2520183694774,
+        728.3086853027344
+      ]
+    },
+    {
+      "term": "IRB",
+      "definition": "Khung phương pháp xếp hạng tín dụng nội bộ",
+      "printed_page": 386,
+      "bbox": [
+        385.51190185546875,
+        728.3086853027344,
+        544.2520183694774,
+        753.6636047363281
+      ]
+    },
+    {
+      "term": "IRRBB",
+      "definition": "Rủi ro lãi suất trên sổ ngân hàng",
+      "printed_page": 387,
+      "bbox": [
+        646.2990112304688,
+        166.62213134765625,
+        805.0400390625,
+        185.3030548095703
+      ]
+    },
+    {
+      "term": "Khách hàng đại chúng (mass)",
+      "definition": "Khách hàng có thu nhập hộ gia đình hàng năm dưới 0,3 tỷ đồng",
+      "printed_page": 387,
+      "bbox": [
+        646.2990112304688,
+        185.3030548095703,
+        805.0400390625,
+        229.70284016927084
+      ]
+    },
+    {
+      "term": "Khách hàng thu nhập cao (affluent)",
+      "definition": "Khách hàng có thu nhập hộ gia đình hàng năm trên 1,3 tỷ đồng",
+      "printed_page": 387,
+      "bbox": [
+        646.2990112304688,
+        229.70284016927084,
+        805.0400390625,
+        274.1028340657552
+      ]
+    },
+    {
+      "term": "Khách hàng thu nhập khá hoặc trung bình (mass affluent)",
+      "definition": "Khách hàng có thu nhập hộ gia đình hàng năm từ 0,3 - 1,3 tỷ đồng",
+      "printed_page": 387,
+      "bbox": [
+        646.2990112304688,
+        274.1028340657552,
+        805.0400390625,
+        341.8019676208496
+      ]
+    },
+    {
+      "term": "KTNB",
+      "definition": "Kiểm toán nội bộ",
+      "printed_page": 387,
+      "bbox": [
+        646.2990112304688,
+        341.8019676208496,
+        805.0400390625,
+        360.4828872680664
+      ]
+    },
+    {
+      "term": "LACE",
+      "definition": "Công cụ chọn lọc khách hàng tiềm năng",
+      "printed_page": 387,
+      "bbox": [
+        646.2990112304688,
+        360.4828872680664,
+        805.0400390625,
+        385.10105895996094
+      ]
+    },
+    {
+      "term": "LC",
+      "definition": "Thư tín dụng",
+      "printed_page": 387,
+      "bbox": [
+        646.2990112304688,
+        385.10105895996094,
+        805.0400390625,
+        403.7820129394531
+      ]
+    },
+    {
+      "term": "LCP",
+      "definition": "Chiến lược dự phòng rủi ro thanh khoản",
+      "printed_page": 387,
+      "bbox": [
+        646.2990112304688,
+        403.7820129394531,
+        805.0400390625,
+        429.0611572265625
+      ]
+    },
+    {
+      "term": "LCR",
+      "definition": "Tỷ lệ đảm bảo thanh khoản",
+      "printed_page": 387,
+      "bbox": [
+        646.2990112304688,
+        429.0611572265625,
+        805.0400390625,
+        447.7420654296875
+      ]
+    },
+    {
+      "term": "LDR",
+      "definition": "Tỷ lệ dư nợ cho vay so với tổng tiền gửi",
+      "printed_page": 387,
+      "bbox": [
+        646.2990112304688,
+        447.7420654296875,
+        805.0400390625,
+        473.0212173461914
+      ]
+    },
+    {
+      "term": "LLM",
+      "definition": "Mô hình ngôn ngữ lớn",
+      "printed_page": 387,
+      "bbox": [
+        646.2990112304688,
+        473.0212173461914,
+        805.0400390625,
+        491.70216369628906
+      ]
+    },
+    {
+      "term": "LOS",
+      "definition": "Giải pháp khởi tạo cho vay",
+      "printed_page": 387,
+      "bbox": [
+        646.2990112304688,
+        491.70216369628906,
+        805.0400390625,
+        510.38307189941406
+      ]
+    },
+    {
+      "term": "MDP",
+      "definition": "Công ty CP Thanh toán số Mobifone",
+      "printed_page": 387,
+      "bbox": [
+        646.2990112304688,
+        510.38307189941406,
+        805.0400390625,
+        534.7837727864584
+      ]
+    },
+    {
+      "term": "ML",
+      "definition": "Công nghệ học máy",
+      "printed_page": 387,
+      "bbox": [
+        646.2990112304688,
+        534.7837727864584,
+        805.0400390625,
+        554.4469757080078
+      ]
+    },
+    {
+      "term": "MOA",
+      "definition": "Ngân hàng giao dịch chính",
+      "printed_page": 387,
+      "bbox": [
+        646.2990112304688,
+        554.4469757080078,
+        805.0400390625,
+        573.1279296875
+      ]
+    },
+    {
+      "term": "MTB",
+      "definition": "Ngân hàng giao dịch chính",
+      "printed_page": 387,
+      "bbox": [
+        646.2990112304688,
+        573.1279296875,
+        805.0400390625,
+        591.808708190918
+      ]
+    },
+    {
+      "term": "NAPAS",
+      "definition": "Công ty Cổ phần Thanh toán Quốc gia Việt Nam",
+      "printed_page": 387,
+      "bbox": [
+        646.2990112304688,
+        591.808708190918,
+        805.0400390625,
+        616.1056009928385
+      ]
+    },
+    {
+      "term": "NAV",
+      "definition": "Tổng giá trị tài sản ròng",
+      "printed_page": 387,
+      "bbox": [
+        646.2990112304688,
+        616.1056009928385,
+        805.0400390625,
+        635.7689208984375
+      ]
+    },
+    {
+      "term": "NBA",
+      "definition": "Next Best Action (Hành động tốt nhất tiếp theo)",
+      "printed_page": 387,
+      "bbox": [
+        646.2990112304688,
+        635.7689208984375,
+        805.0400390625,
+        661.0480422973633
+      ]
+    },
+    {
+      "term": "NBO",
+      "definition": "Next Best Offer (Ưu đãi tốt nhất tiếp theo)",
+      "printed_page": 387,
+      "bbox": [
+        646.2990112304688,
+        661.0480422973633,
+        805.0400390625,
+        685.3451538085938
+      ]
+    },
+    {
+      "term": "NFI",
+      "definition": "Thu từ hoạt động dịch vụ",
+      "printed_page": 387,
+      "bbox": [
+        646.2990112304688,
+        685.3451538085938,
+        805.0400390625,
+        703.483154296875
+      ]
+    },
+    {
+      "term": "NHNN",
+      "definition": "Ngân hàng Nhà nước Việt Nam",
+      "printed_page": 387,
+      "bbox": [
+        646.2990112304688,
+        703.483154296875,
+        805.0400390625,
+        722.1638412475586
+      ]
+    },
+    {
+      "term": "NII",
+      "definition": "Thu nhập lãi thuần",
+      "printed_page": 387,
+      "bbox": [
+        646.2990112304688,
+        722.1638412475586,
+        805.0400390625,
+        742.26611328125
+      ]
+    },
+    {
+      "term": "NIM",
+      "definition": "Biên lãi ròng",
+      "printed_page": 387,
+      "bbox": [
+        646.2990112304688,
+        742.26611328125,
+        805.0400390625,
+        760.9470825195312
+      ]
+    },
+    {
+      "term": "NPL",
+      "definition": "Nợ xấu",
+      "printed_page": 387,
+      "bbox": [
+        646.2990112304688,
+        760.9470825195312,
+        805.0400390625,
+        780.2887954711914
+      ]
+    },
+    {
+      "term": "NPS",
+      "definition": "Chỉ số gắn kết khách hàng",
+      "printed_page": 387,
+      "bbox": [
+        817.7949829101562,
+        166.62213134765625,
+        976.5360107421875,
+        185.3030548095703
+      ]
+    },
+    {
+      "term": "NSFR",
+      "definition": "Tỷ lệ nguồn vốn ổn định ròng",
+      "printed_page": 387,
+      "bbox": [
+        817.7949829101562,
+        185.3030548095703,
+        976.5360107421875,
+        203.9840087890625
+      ]
+    },
+    {
+      "term": "O2O",
+      "definition": "Từ trực tuyến đến trực tiếp (Online-to-offline)",
+      "printed_page": 387,
+      "bbox": [
+        817.7949829101562,
+        203.9840087890625,
+        976.5360107421875,
+        229.70284016927084
+      ]
+    },
+    {
+      "term": "OECD",
+      "definition": "Tổ chức Hợp tác và Phát triển Kinh tế",
+      "printed_page": 387,
+      "bbox": [
+        817.7949829101562,
+        229.70284016927084,
+        976.5360107421875,
+        254.5425567626953
+      ]
+    },
+    {
+      "term": "OTC",
+      "definition": "Giao dịch qua quầy",
+      "printed_page": 387,
+      "bbox": [
+        817.7949829101562,
+        254.5425567626953,
+        976.5360107421875,
+        274.1028340657552
+      ]
+    },
+    {
+      "term": "PBT",
+      "definition": "Thu nhập trước thuế",
+      "printed_page": 387,
+      "bbox": [
+        817.7949829101562,
+        274.1028340657552,
+        976.5360107421875,
+        291.90415954589844
+      ]
+    },
+    {
+      "term": "PCI DSS",
+      "definition": "Bộ tiêu chuẩn bảo mật dữ liệu thẻ thanh toán",
+      "printed_page": 387,
+      "bbox": [
+        817.7949829101562,
+        291.90415954589844,
+        976.5360107421875,
+        317.1835479736328
+      ]
+    },
+    {
+      "term": "PDPD",
+      "definition": "Nghị định về bảo vệ dữ liệu cá nhân",
+      "printed_page": 387,
+      "bbox": [
+        817.7949829101562,
+        317.1835479736328,
+        976.5360107421875,
+        341.8019676208496
+      ]
+    },
+    {
+      "term": "PFE",
+      "definition": "Rủi ro tín dụng tiềm tàng",
+      "printed_page": 387,
+      "bbox": [
+        817.7949829101562,
+        341.8019676208496,
+        976.5360107421875,
+        360.4828872680664
+      ]
+    },
+    {
+      "term": "QLRR",
+      "definition": "Quản lý rủi ro",
+      "printed_page": 387,
+      "bbox": [
+        817.7949829101562,
+        360.4828872680664,
+        976.5360107421875,
+        379.82476806640625
+      ]
+    },
+    {
+      "term": "QTRR",
+      "definition": "Quản trị rủi ro",
+      "printed_page": 387,
+      "bbox": [
+        817.7949829101562,
+        379.82476806640625,
+        976.5360107421875,
+        399.06268310546875
+      ]
+    },
+    {
+      "term": "RBG",
+      "definition": "Khối Ngân hàng Bán lẻ",
+      "printed_page": 387,
+      "bbox": [
+        817.7949829101562,
+        399.06268310546875,
+        976.5360107421875,
+        417.1861114501953
+      ]
+    },
+    {
+      "term": "RM",
+      "definition": "Chuyên viên quan hệ khách hàng",
+      "printed_page": 387,
+      "bbox": [
+        817.7949829101562,
+        417.1861114501953,
+        976.5360107421875,
+        443.0227394104004
+      ]
+    },
+    {
+      "term": "RMPB",
+      "definition": "Sổ tay quản lý khách hàng",
+      "printed_page": 387,
+      "bbox": [
+        817.7949829101562,
+        443.0227394104004,
+        976.5360107421875,
+        461.7036895751953
+      ]
+    },
+    {
+      "term": "ROA",
+      "definition": "Tỷ lệ thu nhập trên tài sản",
+      "printed_page": 387,
+      "bbox": [
+        817.7949829101562,
+        461.7036895751953,
+        976.5360107421875,
+        479.8271179199219
+      ]
+    },
+    {
+      "term": "ROE",
+      "definition": "Tỷ lệ thu nhập trên vốn chủ sở hữu",
+      "printed_page": 387,
+      "bbox": [
+        817.7949829101562,
+        479.8271179199219,
+        976.5360107421875,
+        498.50807189941406
+      ]
+    },
+    {
+      "term": "ROI",
+      "definition": "Tỷ suất hoàn vốn",
+      "printed_page": 387,
+      "bbox": [
+        817.7949829101562,
+        498.50807189941406,
+        976.5360107421875,
+        517.1890258789062
+      ]
+    },
+    {
+      "term": "ROMI",
+      "definition": "Lợi nhuận đầu tư vào tiếp thị",
+      "printed_page": 387,
+      "bbox": [
+        817.7949829101562,
+        517.1890258789062,
+        976.5360107421875,
+        534.7837727864584
+      ]
+    },
+    {
+      "term": "RoRWA",
+      "definition": "Lợi nhuận trên tài sản có rủi ro",
+      "printed_page": 387,
+      "bbox": [
+        817.7949829101562,
+        534.7837727864584,
+        976.5360107421875,
+        554.4469757080078
+      ]
+    },
+    {
+      "term": "RWA",
+      "definition": "Tài sản có rủi ro",
+      "printed_page": 387,
+      "bbox": [
+        817.7949829101562,
+        554.4469757080078,
+        976.5360107421875,
+        573.1279296875
+      ]
+    },
+    {
+      "term": "S&P",
+      "definition": "Standard & Poor's Global Rating",
+      "printed_page": 387,
+      "bbox": [
+        817.7949829101562,
+        573.1279296875,
+        976.5360107421875,
+        591.808708190918
+      ]
+    },
+    {
+      "term": "SA",
+      "definition": "Phương pháp tiếp cận tiêu chuẩn",
+      "printed_page": 387,
+      "bbox": [
+        817.7949829101562,
+        591.808708190918,
+        976.5360107421875,
+        616.1056009928385
+      ]
+    },
+    {
+      "term": "SaaS",
+      "definition": "Phần mềm dạng dịch vụ",
+      "printed_page": 387,
+      "bbox": [
+        817.7949829101562,
+        616.1056009928385,
+        976.5360107421875,
+        635.7689208984375
+      ]
+    },
+    {
+      "term": "SCA",
+      "definition": "Hệ thống phân tích thông tin trên mạng",
+      "printed_page": 387,
+      "bbox": [
+        817.7949829101562,
+        635.7689208984375,
+        976.5360107421875,
+        661.0480422973633
+      ]
+    },
+    {
+      "term": "SDMS",
+      "definition": "Hệ thống quản lý dữ liệu khoa học",
+      "printed_page": 387,
+      "bbox": [
+        817.7949829101562,
+        661.0480422973633,
+        976.5360107421875,
+        685.3451538085938
+      ]
+    },
+    {
+      "term": "SOAR",
+      "definition": "Điều Phối An Ninh, Tự Động Hoá và Phản Hồi",
+      "printed_page": 387,
+      "bbox": [
+        817.7949829101562,
+        685.3451538085938,
+        976.5360107421875,
+        711.7102355957031
+      ]
+    },
+    {
+      "term": "SOP",
+      "definition": "Quy trình vận hành tiêu chuẩn",
+      "printed_page": 387,
+      "bbox": [
+        817.7949829101562,
+        711.7102355957031,
+        976.5360107421875,
+        730.39111328125
+      ]
+    },
+    {
+      "term": "TAS",
+      "definition": "Hoạt động Team Active Saturday",
+      "printed_page": 387,
+      "bbox": [
+        817.7949829101562,
+        730.39111328125,
+        976.5360107421875,
+        755.6702880859375
+      ]
+    },
+    {
+      "term": "TC Life",
+      "definition": "Công ty cổ phần Bảo hiểm nhân thọ Kỹ Thương",
+      "printed_page": 387,
+      "bbox": [
+        817.7949829101562,
+        755.6702880859375,
+        976.5360107421875,
+        780.2887954711914
+      ]
+    },
+    {
+      "term": "TCA",
+      "definition": "Công ty cổ phần TC Advisors",
+      "printed_page": 387,
+      "bbox": [
+        989.291015625,
+        166.62213134765625,
+        1147.9646374932652,
+        185.3030548095703
+      ]
+    },
+    {
+      "term": "TCBF",
+      "definition": "Quỹ đầu tư trái phiếu Techcom",
+      "printed_page": 387,
+      "bbox": [
+        989.291015625,
+        185.3030548095703,
+        1147.9646374932652,
+        203.9840087890625
+      ]
+    },
+    {
+      "term": "TCBS",
+      "definition": "Công ty Cổ phần Chứng khoán Kỹ Thương",
+      "printed_page": 387,
+      "bbox": [
+        989.291015625,
+        203.9840087890625,
+        1147.9646374932652,
+        229.70284016927084
+      ]
+    },
+    {
+      "term": "TCC",
+      "definition": "Công ty Cổ phần Quản lý quỹ Kỹ Thương",
+      "printed_page": 387,
+      "bbox": [
+        989.291015625,
+        229.70284016927084,
+        1147.9646374932652,
+        254.5425567626953
+      ]
+    },
+    {
+      "term": "TCEF",
+      "definition": "Quỹ đầu tư cổ phiếu Techcom",
+      "printed_page": 387,
+      "bbox": [
+        989.291015625,
+        254.5425567626953,
+        1147.9646374932652,
+        274.1028340657552
+      ]
+    },
+    {
+      "term": "TCFF",
+      "definition": "Quỹ đầu tư cân bằng linh hoạt Techcom",
+      "printed_page": 387,
+      "bbox": [
+        989.291015625,
+        274.1028340657552,
+        1147.9646374932652,
+        298.5025939941406
+      ]
+    },
+    {
+      "term": "TCFIN",
+      "definition": "Quỹ đầu tư cổ phiếu ngân hàng và tài chính Techcom",
+      "printed_page": 387,
+      "bbox": [
+        989.291015625,
+        298.5025939941406,
+        1147.9646374932652,
+        323.7820281982422
+      ]
+    },
+    {
+      "term": "TCGI",
+      "definition": "Công ty cổ phần Bảo hiểm Phi nhân thọ Techcom",
+      "printed_page": 387,
+      "bbox": [
+        989.291015625,
+        323.7820281982422,
+        1147.9646374932652,
+        349.06116485595703
+      ]
+    },
+    {
+      "term": "TCREIT",
+      "definition": "Quỹ đầu tư bất động sản Techcom",
+      "printed_page": 387,
+      "bbox": [
+        989.291015625,
+        349.06116485595703,
+        1147.9646374932652,
+        374.3405075073242
+      ]
+    },
+    {
+      "term": "TCRES",
+      "definition": "Quỹ đầu tư cổ phiếu bất động sản Techcom",
+      "printed_page": 387,
+      "bbox": [
+        989.291015625,
+        374.3405075073242,
+        1147.9646374932652,
+        399.06268310546875
+      ]
+    },
+    {
+      "term": "TCSME",
+      "definition": "Quỹ đầu tư cổ phiếu các doanh nghiệp vừa và nhỏ Techcom",
+      "printed_page": 387,
+      "bbox": [
+        989.291015625,
+        399.06268310546875,
+        1147.9646374932652,
+        424.89906311035156
+      ]
+    },
+    {
+      "term": "TCTD",
+      "definition": "Tổ chức tín dụng",
+      "printed_page": 387,
+      "bbox": [
+        989.291015625,
+        424.89906311035156,
+        1147.9646374932652,
+        443.0227394104004
+      ]
+    },
+    {
+      "term": "TCW",
+      "definition": "Techcomway",
+      "printed_page": 387,
+      "bbox": [
+        989.291015625,
+        443.0227394104004,
+        1147.9646374932652,
+        461.7036895751953
+      ]
+    },
+    {
+      "term": "TDDC",
+      "definition": "Trung tâm khám phá dữ liệu Techcombank",
+      "printed_page": 387,
+      "bbox": [
+        989.291015625,
+        461.7036895751953,
+        1147.9646374932652,
+        487.54005432128906
+      ]
+    },
+    {
+      "term": "TechAMC",
+      "definition": "Công ty TNHH Một thành viên Quản lý nợ và Khai thác tài sản – Ngân hàng TMCP Kỹ thương Việt Nam",
+      "printed_page": 387,
+      "bbox": [
+        989.291015625,
+        487.54005432128906,
+        1147.9646374932652,
+        534.7837727864584
+      ]
+    },
+    {
+      "term": "TFG",
+      "definition": "Chương trình Techcombank Future Gen",
+      "printed_page": 387,
+      "bbox": [
+        989.291015625,
+        534.7837727864584,
+        1147.9646374932652,
+        558.0985717773438
+      ]
+    },
+    {
+      "term": "TGĐ",
+      "definition": "Tổng Giám đốc",
+      "printed_page": 387,
+      "bbox": [
+        989.291015625,
+        558.0985717773438,
+        1147.9646374932652,
+        576.779541015625
+      ]
+    },
+    {
+      "term": "TOI",
+      "definition": "Tổng thu nhập hoạt động",
+      "printed_page": 387,
+      "bbox": [
+        989.291015625,
+        576.779541015625,
+        1147.9646374932652,
+        595.4601745605469
+      ]
+    },
+    {
+      "term": "UBNS",
+      "definition": "Ủy ban Nhân sự",
+      "printed_page": 387,
+      "bbox": [
+        989.291015625,
+        595.4601745605469,
+        1147.9646374932652,
+        616.1056009928385
+      ]
+    },
+    {
+      "term": "UPAS LC",
+      "definition": "Thư tín dụng trả chậm có điều khoản thanh toán ngay",
+      "printed_page": 387,
+      "bbox": [
+        989.291015625,
+        616.1056009928385,
+        1147.9646374932652,
+        639.4202880859375
+      ]
+    },
+    {
+      "term": "VAC",
+      "definition": "Kênh tư vấn giải pháp tài chính trực tuyến",
+      "printed_page": 387,
+      "bbox": [
+        989.291015625,
+        639.4202880859375,
+        1147.9646374932652,
+        664.6996612548828
+      ]
+    },
+    {
+      "term": "VaR",
+      "definition": "Giá trị chịu rủi ro",
+      "printed_page": 387,
+      "bbox": [
+        989.291015625,
+        664.6996612548828,
+        1147.9646374932652,
+        685.3451538085938
+      ]
+    },
+    {
+      "term": "VAT",
+      "definition": "Thuế giá trị gia tăng",
+      "printed_page": 387,
+      "bbox": [
+        989.291015625,
+        685.3451538085938,
+        1147.9646374932652,
+        703.483154296875
+      ]
+    },
+    {
+      "term": "VNSI",
+      "definition": "Chỉ số phát triển bền vững",
+      "printed_page": 387,
+      "bbox": [
+        989.291015625,
+        703.483154296875,
+        1147.9646374932652,
+        722.1638412475586
+      ]
+    },
+    {
+      "term": "VSDC",
+      "definition": "Tổng công ty Lưu ký và Bù trừ chứng khoán Việt Nam",
+      "printed_page": 387,
+      "bbox": [
+        989.291015625,
+        722.1638412475586,
+        1147.9646374932652,
+        746.0214538574219
+      ]
+    }
+  ],
+  "extra": {
+    "N/N": [
+      "so với cùng kỳ năm trước"
+    ],
+    "TM": [
+      "thuyết minh"
+    ],
+    "NPL": [
+      "tỷ lệ nợ xấu",
+      "nợ xấu"
+    ],
+    "total assets": [
+      "tổng tài sản"
+    ]
+  }
+}

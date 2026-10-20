@@ -1,0 +1,2753 @@
+[
+  {
+    "pdf_page": 1,
+    "half": "S",
+    "printed_page": 1,
+    "chapter": null,
+    "is_divider": false
+  },
+  {
+    "pdf_page": 2,
+    "half": "L",
+    "printed_page": 2,
+    "chapter": "Mục lục",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 2,
+    "half": "R",
+    "printed_page": 3,
+    "chapter": "Mục lục",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 3,
+    "half": "L",
+    "printed_page": 4,
+    "chapter": "Chúng tôi là ai",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 3,
+    "half": "R",
+    "printed_page": 5,
+    "chapter": "Chúng tôi là ai",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 4,
+    "half": "L",
+    "printed_page": 6,
+    "chapter": "Chúng tôi là ai",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 4,
+    "half": "R",
+    "printed_page": 7,
+    "chapter": "Chúng tôi là ai",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 5,
+    "half": "L",
+    "printed_page": 8,
+    "chapter": null,
+    "is_divider": true
+  },
+  {
+    "pdf_page": 5,
+    "half": "R",
+    "printed_page": 9,
+    "chapter": null,
+    "is_divider": true
+  },
+  {
+    "pdf_page": 6,
+    "half": "L",
+    "printed_page": 10,
+    "chapter": "Tầm nhìn của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 6,
+    "half": "R",
+    "printed_page": 11,
+    "chapter": "Tầm nhìn của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 7,
+    "half": "L",
+    "printed_page": 12,
+    "chapter": "Tầm nhìn của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 7,
+    "half": "R",
+    "printed_page": 13,
+    "chapter": "Tầm nhìn của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 8,
+    "half": "L",
+    "printed_page": 14,
+    "chapter": "Tầm nhìn của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 8,
+    "half": "R",
+    "printed_page": 15,
+    "chapter": "Tầm nhìn của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 9,
+    "half": "L",
+    "printed_page": 16,
+    "chapter": "Tầm nhìn của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 9,
+    "half": "R",
+    "printed_page": 17,
+    "chapter": "Tầm nhìn của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 10,
+    "half": "L",
+    "printed_page": 18,
+    "chapter": "Tầm nhìn của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 10,
+    "half": "R",
+    "printed_page": 19,
+    "chapter": "Tầm nhìn của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 11,
+    "half": "L",
+    "printed_page": 20,
+    "chapter": "Tầm nhìn của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 11,
+    "half": "R",
+    "printed_page": 21,
+    "chapter": "Tầm nhìn của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 12,
+    "half": "L",
+    "printed_page": 22,
+    "chapter": "Tầm nhìn của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 12,
+    "half": "R",
+    "printed_page": 23,
+    "chapter": "Tầm nhìn của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 13,
+    "half": "L",
+    "printed_page": 24,
+    "chapter": null,
+    "is_divider": true
+  },
+  {
+    "pdf_page": 13,
+    "half": "R",
+    "printed_page": 25,
+    "chapter": null,
+    "is_divider": true
+  },
+  {
+    "pdf_page": 14,
+    "half": "L",
+    "printed_page": 26,
+    "chapter": "Câu chuyện của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 14,
+    "half": "R",
+    "printed_page": 27,
+    "chapter": "Câu chuyện của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 15,
+    "half": "L",
+    "printed_page": 28,
+    "chapter": "Câu chuyện của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 15,
+    "half": "R",
+    "printed_page": 29,
+    "chapter": "Câu chuyện của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 16,
+    "half": "L",
+    "printed_page": 30,
+    "chapter": "Câu chuyện của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 16,
+    "half": "R",
+    "printed_page": 31,
+    "chapter": "Câu chuyện của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 17,
+    "half": "L",
+    "printed_page": 32,
+    "chapter": "Câu chuyện của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 17,
+    "half": "R",
+    "printed_page": 33,
+    "chapter": "Câu chuyện của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 18,
+    "half": "L",
+    "printed_page": 34,
+    "chapter": "Câu chuyện của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 18,
+    "half": "R",
+    "printed_page": 35,
+    "chapter": "Câu chuyện của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 19,
+    "half": "L",
+    "printed_page": 36,
+    "chapter": "Câu chuyện của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 19,
+    "half": "R",
+    "printed_page": 37,
+    "chapter": "Câu chuyện của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 20,
+    "half": "L",
+    "printed_page": 38,
+    "chapter": "Câu chuyện của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 20,
+    "half": "R",
+    "printed_page": 39,
+    "chapter": "Câu chuyện của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 21,
+    "half": "L",
+    "printed_page": 40,
+    "chapter": "Câu chuyện của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 21,
+    "half": "R",
+    "printed_page": 41,
+    "chapter": "Câu chuyện của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 22,
+    "half": "L",
+    "printed_page": 42,
+    "chapter": "Câu chuyện của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 22,
+    "half": "R",
+    "printed_page": 43,
+    "chapter": "Câu chuyện của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 23,
+    "half": "L",
+    "printed_page": 44,
+    "chapter": null,
+    "is_divider": true
+  },
+  {
+    "pdf_page": 23,
+    "half": "R",
+    "printed_page": 45,
+    "chapter": null,
+    "is_divider": true
+  },
+  {
+    "pdf_page": 24,
+    "half": "L",
+    "printed_page": 46,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 24,
+    "half": "R",
+    "printed_page": 47,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 25,
+    "half": "L",
+    "printed_page": 48,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 25,
+    "half": "R",
+    "printed_page": 49,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 26,
+    "half": "L",
+    "printed_page": 50,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 26,
+    "half": "R",
+    "printed_page": 51,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 27,
+    "half": "L",
+    "printed_page": 52,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 27,
+    "half": "R",
+    "printed_page": 53,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 28,
+    "half": "L",
+    "printed_page": 54,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 28,
+    "half": "R",
+    "printed_page": 55,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 29,
+    "half": "L",
+    "printed_page": 56,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 29,
+    "half": "R",
+    "printed_page": 57,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 30,
+    "half": "L",
+    "printed_page": 58,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 30,
+    "half": "R",
+    "printed_page": 59,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 31,
+    "half": "L",
+    "printed_page": 60,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 31,
+    "half": "R",
+    "printed_page": 61,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 32,
+    "half": "L",
+    "printed_page": 62,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 32,
+    "half": "R",
+    "printed_page": 63,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 33,
+    "half": "L",
+    "printed_page": 64,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 33,
+    "half": "R",
+    "printed_page": 65,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 34,
+    "half": "L",
+    "printed_page": 66,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 34,
+    "half": "R",
+    "printed_page": 67,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 35,
+    "half": "L",
+    "printed_page": 68,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 35,
+    "half": "R",
+    "printed_page": 69,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 36,
+    "half": "L",
+    "printed_page": 70,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 36,
+    "half": "R",
+    "printed_page": 71,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 37,
+    "half": "L",
+    "printed_page": 72,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 37,
+    "half": "R",
+    "printed_page": 73,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 38,
+    "half": "L",
+    "printed_page": 74,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 38,
+    "half": "R",
+    "printed_page": 75,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 39,
+    "half": "L",
+    "printed_page": 76,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 39,
+    "half": "R",
+    "printed_page": 77,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 40,
+    "half": "L",
+    "printed_page": 78,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 40,
+    "half": "R",
+    "printed_page": 79,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 41,
+    "half": "L",
+    "printed_page": 80,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 41,
+    "half": "R",
+    "printed_page": 81,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 42,
+    "half": "L",
+    "printed_page": 82,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 42,
+    "half": "R",
+    "printed_page": 83,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 43,
+    "half": "L",
+    "printed_page": 84,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 43,
+    "half": "R",
+    "printed_page": 85,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 44,
+    "half": "L",
+    "printed_page": 86,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 44,
+    "half": "R",
+    "printed_page": 87,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 45,
+    "half": "L",
+    "printed_page": 88,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 45,
+    "half": "R",
+    "printed_page": 89,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 46,
+    "half": "L",
+    "printed_page": 90,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 46,
+    "half": "R",
+    "printed_page": 91,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 47,
+    "half": "L",
+    "printed_page": 92,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 47,
+    "half": "R",
+    "printed_page": 93,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 48,
+    "half": "L",
+    "printed_page": 94,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 48,
+    "half": "R",
+    "printed_page": 95,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 49,
+    "half": "L",
+    "printed_page": 96,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 49,
+    "half": "R",
+    "printed_page": 97,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 50,
+    "half": "L",
+    "printed_page": 98,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 50,
+    "half": "R",
+    "printed_page": 99,
+    "chapter": "Thành tựu của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 51,
+    "half": "L",
+    "printed_page": 100,
+    "chapter": null,
+    "is_divider": true
+  },
+  {
+    "pdf_page": 51,
+    "half": "R",
+    "printed_page": 101,
+    "chapter": null,
+    "is_divider": true
+  },
+  {
+    "pdf_page": 52,
+    "half": "L",
+    "printed_page": 102,
+    "chapter": "Hành trình chuyển đổi của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 52,
+    "half": "R",
+    "printed_page": 103,
+    "chapter": "Hành trình chuyển đổi của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 53,
+    "half": "L",
+    "printed_page": 104,
+    "chapter": "Hành trình chuyển đổi của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 53,
+    "half": "R",
+    "printed_page": 105,
+    "chapter": "Hành trình chuyển đổi của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 54,
+    "half": "L",
+    "printed_page": 106,
+    "chapter": "Hành trình chuyển đổi của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 54,
+    "half": "R",
+    "printed_page": 107,
+    "chapter": "Hành trình chuyển đổi của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 55,
+    "half": "L",
+    "printed_page": 108,
+    "chapter": "Hành trình chuyển đổi của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 55,
+    "half": "R",
+    "printed_page": 109,
+    "chapter": "Hành trình chuyển đổi của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 56,
+    "half": "L",
+    "printed_page": 110,
+    "chapter": "Hành trình chuyển đổi của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 56,
+    "half": "R",
+    "printed_page": 111,
+    "chapter": "Hành trình chuyển đổi của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 57,
+    "half": "L",
+    "printed_page": 112,
+    "chapter": "Hành trình chuyển đổi của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 57,
+    "half": "R",
+    "printed_page": 113,
+    "chapter": "Hành trình chuyển đổi của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 58,
+    "half": "L",
+    "printed_page": 114,
+    "chapter": "Hành trình chuyển đổi của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 58,
+    "half": "R",
+    "printed_page": 115,
+    "chapter": "Hành trình chuyển đổi của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 59,
+    "half": "L",
+    "printed_page": 116,
+    "chapter": "Hành trình chuyển đổi của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 59,
+    "half": "R",
+    "printed_page": 117,
+    "chapter": "Hành trình chuyển đổi của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 60,
+    "half": "L",
+    "printed_page": 118,
+    "chapter": "Hành trình chuyển đổi của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 60,
+    "half": "R",
+    "printed_page": 119,
+    "chapter": "Hành trình chuyển đổi của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 61,
+    "half": "L",
+    "printed_page": 120,
+    "chapter": "Hành trình chuyển đổi của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 61,
+    "half": "R",
+    "printed_page": 121,
+    "chapter": "Hành trình chuyển đổi của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 62,
+    "half": "L",
+    "printed_page": 122,
+    "chapter": "Hành trình chuyển đổi của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 62,
+    "half": "R",
+    "printed_page": 123,
+    "chapter": "Hành trình chuyển đổi của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 63,
+    "half": "L",
+    "printed_page": 124,
+    "chapter": "Hành trình chuyển đổi của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 63,
+    "half": "R",
+    "printed_page": 125,
+    "chapter": "Hành trình chuyển đổi của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 64,
+    "half": "L",
+    "printed_page": 126,
+    "chapter": "Hành trình chuyển đổi của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 64,
+    "half": "R",
+    "printed_page": 127,
+    "chapter": "Hành trình chuyển đổi của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 65,
+    "half": "L",
+    "printed_page": 128,
+    "chapter": "Hành trình chuyển đổi của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 65,
+    "half": "R",
+    "printed_page": 129,
+    "chapter": "Hành trình chuyển đổi của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 66,
+    "half": "L",
+    "printed_page": 130,
+    "chapter": "Hành trình chuyển đổi của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 66,
+    "half": "R",
+    "printed_page": 131,
+    "chapter": "Hành trình chuyển đổi của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 67,
+    "half": "L",
+    "printed_page": 132,
+    "chapter": "Hành trình chuyển đổi của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 67,
+    "half": "R",
+    "printed_page": 133,
+    "chapter": "Hành trình chuyển đổi của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 68,
+    "half": "L",
+    "printed_page": 134,
+    "chapter": "Hành trình chuyển đổi của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 68,
+    "half": "R",
+    "printed_page": 135,
+    "chapter": "Hành trình chuyển đổi của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 69,
+    "half": "L",
+    "printed_page": 136,
+    "chapter": "Hành trình chuyển đổi của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 69,
+    "half": "R",
+    "printed_page": 137,
+    "chapter": "Hành trình chuyển đổi của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 70,
+    "half": "L",
+    "printed_page": 138,
+    "chapter": "Hành trình chuyển đổi của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 70,
+    "half": "R",
+    "printed_page": 139,
+    "chapter": "Hành trình chuyển đổi của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 71,
+    "half": "L",
+    "printed_page": 140,
+    "chapter": "Hành trình chuyển đổi của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 71,
+    "half": "R",
+    "printed_page": 141,
+    "chapter": "Hành trình chuyển đổi của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 72,
+    "half": "L",
+    "printed_page": 142,
+    "chapter": "Hành trình chuyển đổi của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 72,
+    "half": "R",
+    "printed_page": 143,
+    "chapter": "Hành trình chuyển đổi của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 73,
+    "half": "L",
+    "printed_page": 144,
+    "chapter": null,
+    "is_divider": true
+  },
+  {
+    "pdf_page": 73,
+    "half": "R",
+    "printed_page": 145,
+    "chapter": null,
+    "is_divider": true
+  },
+  {
+    "pdf_page": 74,
+    "half": "L",
+    "printed_page": 146,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 74,
+    "half": "R",
+    "printed_page": 147,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 75,
+    "half": "L",
+    "printed_page": 148,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 75,
+    "half": "R",
+    "printed_page": 149,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 76,
+    "half": "L",
+    "printed_page": 150,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 76,
+    "half": "R",
+    "printed_page": 151,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 77,
+    "half": "L",
+    "printed_page": 152,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 77,
+    "half": "R",
+    "printed_page": 153,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 78,
+    "half": "L",
+    "printed_page": 154,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 78,
+    "half": "R",
+    "printed_page": 155,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 79,
+    "half": "L",
+    "printed_page": 156,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 79,
+    "half": "R",
+    "printed_page": 157,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 80,
+    "half": "L",
+    "printed_page": 158,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 80,
+    "half": "R",
+    "printed_page": 159,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 81,
+    "half": "L",
+    "printed_page": 160,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 81,
+    "half": "R",
+    "printed_page": 161,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 82,
+    "half": "L",
+    "printed_page": 162,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 82,
+    "half": "R",
+    "printed_page": 163,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 83,
+    "half": "L",
+    "printed_page": 164,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 83,
+    "half": "R",
+    "printed_page": 165,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 84,
+    "half": "L",
+    "printed_page": 166,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 84,
+    "half": "R",
+    "printed_page": 167,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 85,
+    "half": "L",
+    "printed_page": 168,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 85,
+    "half": "R",
+    "printed_page": 169,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 86,
+    "half": "L",
+    "printed_page": 170,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 86,
+    "half": "R",
+    "printed_page": 171,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 87,
+    "half": "L",
+    "printed_page": 172,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 87,
+    "half": "R",
+    "printed_page": 173,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 88,
+    "half": "L",
+    "printed_page": 174,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 88,
+    "half": "R",
+    "printed_page": 175,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 89,
+    "half": "L",
+    "printed_page": 176,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 89,
+    "half": "R",
+    "printed_page": 177,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 90,
+    "half": "L",
+    "printed_page": 178,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 90,
+    "half": "R",
+    "printed_page": 179,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 91,
+    "half": "L",
+    "printed_page": 180,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 91,
+    "half": "R",
+    "printed_page": 181,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 92,
+    "half": "L",
+    "printed_page": 182,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 92,
+    "half": "R",
+    "printed_page": 183,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 93,
+    "half": "L",
+    "printed_page": 184,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 93,
+    "half": "R",
+    "printed_page": 185,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 94,
+    "half": "L",
+    "printed_page": 186,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 94,
+    "half": "R",
+    "printed_page": 187,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 95,
+    "half": "L",
+    "printed_page": 188,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 95,
+    "half": "R",
+    "printed_page": 189,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 96,
+    "half": "L",
+    "printed_page": 190,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 96,
+    "half": "R",
+    "printed_page": 191,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 97,
+    "half": "L",
+    "printed_page": 192,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 97,
+    "half": "R",
+    "printed_page": 193,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 98,
+    "half": "L",
+    "printed_page": 194,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 98,
+    "half": "R",
+    "printed_page": 195,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 99,
+    "half": "L",
+    "printed_page": 196,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 99,
+    "half": "R",
+    "printed_page": 197,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 100,
+    "half": "L",
+    "printed_page": 198,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 100,
+    "half": "R",
+    "printed_page": 199,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 101,
+    "half": "L",
+    "printed_page": 200,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 101,
+    "half": "R",
+    "printed_page": 201,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 102,
+    "half": "L",
+    "printed_page": 202,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 102,
+    "half": "R",
+    "printed_page": 203,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 103,
+    "half": "L",
+    "printed_page": 204,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 103,
+    "half": "R",
+    "printed_page": 205,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 104,
+    "half": "L",
+    "printed_page": 206,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 104,
+    "half": "R",
+    "printed_page": 207,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 105,
+    "half": "L",
+    "printed_page": 208,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 105,
+    "half": "R",
+    "printed_page": 209,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 106,
+    "half": "L",
+    "printed_page": 210,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 106,
+    "half": "R",
+    "printed_page": 211,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 107,
+    "half": "L",
+    "printed_page": 212,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 107,
+    "half": "R",
+    "printed_page": 213,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 108,
+    "half": "L",
+    "printed_page": 214,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 108,
+    "half": "R",
+    "printed_page": 215,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 109,
+    "half": "L",
+    "printed_page": 216,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 109,
+    "half": "R",
+    "printed_page": 217,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 110,
+    "half": "L",
+    "printed_page": 218,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 110,
+    "half": "R",
+    "printed_page": 219,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 111,
+    "half": "L",
+    "printed_page": 220,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 111,
+    "half": "R",
+    "printed_page": 221,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 112,
+    "half": "L",
+    "printed_page": 222,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 112,
+    "half": "R",
+    "printed_page": 223,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 113,
+    "half": "L",
+    "printed_page": 224,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 113,
+    "half": "R",
+    "printed_page": 225,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 114,
+    "half": "L",
+    "printed_page": 226,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 114,
+    "half": "R",
+    "printed_page": 227,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 115,
+    "half": "L",
+    "printed_page": 228,
+    "chapter": "Nền Nền tảng tảng vững vững vàng vàng của của Tech Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 115,
+    "half": "R",
+    "printed_page": 229,
+    "chapter": "Nền Nền tảng tảng vững vững vàng vàng của của Tech Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 116,
+    "half": "L",
+    "printed_page": 230,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 116,
+    "half": "R",
+    "printed_page": 231,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 117,
+    "half": "L",
+    "printed_page": 232,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 117,
+    "half": "R",
+    "printed_page": 233,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 118,
+    "half": "L",
+    "printed_page": 234,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 118,
+    "half": "R",
+    "printed_page": 235,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 119,
+    "half": "L",
+    "printed_page": 236,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 119,
+    "half": "R",
+    "printed_page": 237,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 120,
+    "half": "L",
+    "printed_page": 238,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 120,
+    "half": "R",
+    "printed_page": 239,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 121,
+    "half": "L",
+    "printed_page": 240,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 121,
+    "half": "R",
+    "printed_page": 241,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 122,
+    "half": "L",
+    "printed_page": 242,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 122,
+    "half": "R",
+    "printed_page": 243,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 123,
+    "half": "L",
+    "printed_page": 244,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 123,
+    "half": "R",
+    "printed_page": 245,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 124,
+    "half": "L",
+    "printed_page": 246,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 124,
+    "half": "R",
+    "printed_page": 247,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 125,
+    "half": "L",
+    "printed_page": 248,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 125,
+    "half": "R",
+    "printed_page": 249,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 126,
+    "half": "L",
+    "printed_page": 250,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 126,
+    "half": "R",
+    "printed_page": 251,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 127,
+    "half": "L",
+    "printed_page": 252,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 127,
+    "half": "R",
+    "printed_page": 253,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 128,
+    "half": "L",
+    "printed_page": 254,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 128,
+    "half": "R",
+    "printed_page": 255,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 129,
+    "half": "L",
+    "printed_page": 256,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 129,
+    "half": "R",
+    "printed_page": 257,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 130,
+    "half": "L",
+    "printed_page": 258,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 130,
+    "half": "R",
+    "printed_page": 259,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 131,
+    "half": "L",
+    "printed_page": 260,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 131,
+    "half": "R",
+    "printed_page": 261,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 132,
+    "half": "L",
+    "printed_page": 262,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 132,
+    "half": "R",
+    "printed_page": 263,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 133,
+    "half": "L",
+    "printed_page": 264,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 133,
+    "half": "R",
+    "printed_page": 265,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 134,
+    "half": "L",
+    "printed_page": 266,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 134,
+    "half": "R",
+    "printed_page": 267,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 135,
+    "half": "L",
+    "printed_page": 268,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 135,
+    "half": "R",
+    "printed_page": 269,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 136,
+    "half": "L",
+    "printed_page": 270,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 136,
+    "half": "R",
+    "printed_page": 271,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 137,
+    "half": "L",
+    "printed_page": 272,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 137,
+    "half": "R",
+    "printed_page": 273,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 138,
+    "half": "L",
+    "printed_page": 274,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 138,
+    "half": "R",
+    "printed_page": 275,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 139,
+    "half": "L",
+    "printed_page": 276,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 139,
+    "half": "R",
+    "printed_page": 277,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 140,
+    "half": "L",
+    "printed_page": 278,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 140,
+    "half": "R",
+    "printed_page": 279,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 141,
+    "half": "L",
+    "printed_page": 280,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 141,
+    "half": "R",
+    "printed_page": 281,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 142,
+    "half": "L",
+    "printed_page": 282,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 142,
+    "half": "R",
+    "printed_page": 283,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 143,
+    "half": "L",
+    "printed_page": 284,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 143,
+    "half": "R",
+    "printed_page": 285,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 144,
+    "half": "L",
+    "printed_page": 286,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 144,
+    "half": "R",
+    "printed_page": 287,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 145,
+    "half": "L",
+    "printed_page": 288,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 145,
+    "half": "R",
+    "printed_page": 289,
+    "chapter": "Nền tảng vững vàng của Tech",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 146,
+    "half": "L",
+    "printed_page": 290,
+    "chapter": null,
+    "is_divider": true
+  },
+  {
+    "pdf_page": 146,
+    "half": "R",
+    "printed_page": 291,
+    "chapter": null,
+    "is_divider": true
+  },
+  {
+    "pdf_page": 147,
+    "half": "L",
+    "printed_page": 292,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 147,
+    "half": "R",
+    "printed_page": 293,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 148,
+    "half": "L",
+    "printed_page": 294,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 148,
+    "half": "R",
+    "printed_page": 295,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 149,
+    "half": "L",
+    "printed_page": 296,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 149,
+    "half": "R",
+    "printed_page": 297,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 150,
+    "half": "L",
+    "printed_page": 298,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 150,
+    "half": "R",
+    "printed_page": 299,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 151,
+    "half": "L",
+    "printed_page": 300,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 151,
+    "half": "R",
+    "printed_page": 301,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 152,
+    "half": "L",
+    "printed_page": 302,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 152,
+    "half": "R",
+    "printed_page": 303,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 153,
+    "half": "L",
+    "printed_page": 304,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 153,
+    "half": "R",
+    "printed_page": 305,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 154,
+    "half": "L",
+    "printed_page": 306,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 154,
+    "half": "R",
+    "printed_page": 307,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 155,
+    "half": "L",
+    "printed_page": 308,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 155,
+    "half": "R",
+    "printed_page": 309,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 156,
+    "half": "L",
+    "printed_page": 310,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 156,
+    "half": "R",
+    "printed_page": 311,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 157,
+    "half": "L",
+    "printed_page": 312,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 157,
+    "half": "R",
+    "printed_page": 313,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 158,
+    "half": "L",
+    "printed_page": 314,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 158,
+    "half": "R",
+    "printed_page": 315,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 159,
+    "half": "L",
+    "printed_page": 316,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 159,
+    "half": "R",
+    "printed_page": 317,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 160,
+    "half": "L",
+    "printed_page": 318,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 160,
+    "half": "R",
+    "printed_page": 319,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 161,
+    "half": "L",
+    "printed_page": 320,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 161,
+    "half": "R",
+    "printed_page": 321,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 162,
+    "half": "L",
+    "printed_page": 322,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 162,
+    "half": "R",
+    "printed_page": 323,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 163,
+    "half": "L",
+    "printed_page": 324,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 163,
+    "half": "R",
+    "printed_page": 325,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 164,
+    "half": "L",
+    "printed_page": 326,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 164,
+    "half": "R",
+    "printed_page": 327,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 165,
+    "half": "L",
+    "printed_page": 328,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 165,
+    "half": "R",
+    "printed_page": 329,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 166,
+    "half": "L",
+    "printed_page": 330,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 166,
+    "half": "R",
+    "printed_page": 331,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 167,
+    "half": "L",
+    "printed_page": 332,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 167,
+    "half": "R",
+    "printed_page": 333,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 168,
+    "half": "L",
+    "printed_page": 334,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 168,
+    "half": "R",
+    "printed_page": 335,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 169,
+    "half": "L",
+    "printed_page": 336,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 169,
+    "half": "R",
+    "printed_page": 337,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 170,
+    "half": "L",
+    "printed_page": 338,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 170,
+    "half": "R",
+    "printed_page": 339,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 171,
+    "half": "L",
+    "printed_page": 340,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 171,
+    "half": "R",
+    "printed_page": 341,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 172,
+    "half": "L",
+    "printed_page": 342,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 172,
+    "half": "R",
+    "printed_page": 343,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 173,
+    "half": "L",
+    "printed_page": 344,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 173,
+    "half": "R",
+    "printed_page": 345,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 174,
+    "half": "L",
+    "printed_page": 346,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 174,
+    "half": "R",
+    "printed_page": 347,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 175,
+    "half": "L",
+    "printed_page": 348,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 175,
+    "half": "R",
+    "printed_page": 349,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 176,
+    "half": "L",
+    "printed_page": 350,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 176,
+    "half": "R",
+    "printed_page": 351,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 177,
+    "half": "L",
+    "printed_page": 352,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 177,
+    "half": "R",
+    "printed_page": 353,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 178,
+    "half": "L",
+    "printed_page": 354,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 178,
+    "half": "R",
+    "printed_page": 355,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 179,
+    "half": "L",
+    "printed_page": 356,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 179,
+    "half": "R",
+    "printed_page": 357,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 180,
+    "half": "L",
+    "printed_page": 358,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 180,
+    "half": "R",
+    "printed_page": 359,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 181,
+    "half": "L",
+    "printed_page": 360,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 181,
+    "half": "R",
+    "printed_page": 361,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 182,
+    "half": "L",
+    "printed_page": 362,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 182,
+    "half": "R",
+    "printed_page": 363,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 183,
+    "half": "L",
+    "printed_page": 364,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 183,
+    "half": "R",
+    "printed_page": 365,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 184,
+    "half": "L",
+    "printed_page": 366,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 184,
+    "half": "R",
+    "printed_page": 367,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 185,
+    "half": "L",
+    "printed_page": 368,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 185,
+    "half": "R",
+    "printed_page": 369,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 186,
+    "half": "L",
+    "printed_page": 370,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 186,
+    "half": "R",
+    "printed_page": 371,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 187,
+    "half": "L",
+    "printed_page": 372,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 187,
+    "half": "R",
+    "printed_page": 373,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 188,
+    "half": "L",
+    "printed_page": 374,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 188,
+    "half": "R",
+    "printed_page": 375,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 189,
+    "half": "L",
+    "printed_page": 376,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 189,
+    "half": "R",
+    "printed_page": 377,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 190,
+    "half": "L",
+    "printed_page": 378,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 190,
+    "half": "R",
+    "printed_page": 379,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 191,
+    "half": "L",
+    "printed_page": 380,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 191,
+    "half": "R",
+    "printed_page": 381,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 192,
+    "half": "L",
+    "printed_page": 382,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 192,
+    "half": "R",
+    "printed_page": 383,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 193,
+    "half": "L",
+    "printed_page": 384,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 193,
+    "half": "R",
+    "printed_page": 385,
+    "chapter": "Báo cáo tài chính",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 194,
+    "half": "L",
+    "printed_page": 386,
+    "chapter": "Thuật ngữ",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 194,
+    "half": "R",
+    "printed_page": 387,
+    "chapter": "Thuật ngữ",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 195,
+    "half": "L",
+    "printed_page": 388,
+    "chapter": "Phụ lục GRI",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 195,
+    "half": "R",
+    "printed_page": 389,
+    "chapter": "Phụ lục GRI",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 196,
+    "half": "L",
+    "printed_page": 390,
+    "chapter": "Phụ lục GRI",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 196,
+    "half": "R",
+    "printed_page": 391,
+    "chapter": "Phụ lục GRI",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 197,
+    "half": "L",
+    "printed_page": 392,
+    "chapter": "Phụ lục GRI",
+    "is_divider": false
+  },
+  {
+    "pdf_page": 197,
+    "half": "R",
+    "printed_page": 393,
+    "chapter": "Phụ lục GRI",
+    "is_divider": false
+  }
+]

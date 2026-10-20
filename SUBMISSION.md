@@ -2,7 +2,7 @@
 
 # Submission
 
-> **Đọc trước (trung thực về trạng thái).** Toàn bộ mã, test offline và bộ dữ liệu eval đã xong. **Chưa có lần chạy nào với OpenAI API thật** (môi trường làm bài không có key): `index/` chưa được build, chưa có số liệu eval, chưa đo chi phí/độ trễ, chưa quay video. Mọi chỗ cần số đo thật được đánh dấu **`[CHƯA ĐO ...]`** kèm đúng lệnh để chạy. Không có con số nào trong tài liệu này được ước lượng hay bịa; những số có ở đây đều đo được offline và ghi rõ nguồn.
+> **Đọc trước (trung thực về trạng thái).** Toàn bộ mã, test offline và bộ dữ liệu eval đã xong. **Chưa có lần chạy nào với OpenAI API thật** (môi trường làm bài không có key): chưa có số liệu eval, chưa đo chi phí/độ trễ, chưa quay video. Mọi chỗ cần số đo thật được đánh dấu **`[CHƯA ĐO ...]`** kèm đúng lệnh để chạy. Không có con số nào trong tài liệu này được ước lượng hay bịa; những số có ở đây đều đo được offline và ghi rõ nguồn.
 
 ## How to run
 - Clean machine: cần Python 3.11 (`uv` tự tải), [uv](https://docs.astral.sh/uv/), và `OPENAI_API_KEY`. Đặt hai file bảo mật vào `data/` (không có trong repo): `data/techcombank-bao-cao-thuong-nien-2025-vie-update.pdf` và `data/sample_questions.json`. Rồi chạy một lệnh:
@@ -43,7 +43,7 @@
   | `AUTO_LOAD_INDEX` | | `true` | Tự nạp artefact vào DB nếu thiếu hoặc lệch version |
   | `PAGE_CACHE_DIR` | | `./var/page_cache` | Cache ảnh trang của API/web |
   | `PDF_PATH` | | `./data/techcombank-…-update.pdf` | PDF nguồn |
-- Shipped index: đường dẫn dự kiến `index/` (cùng `index/manifest.json`). **Hiện chưa được commit:** việc build cần OpenAI embedding API mà môi trường làm bài không có key. Build bằng `uv run ircb ingest data/techcombank-bao-cao-thuong-nien-2025-vie-update.pdf` (cũng được `scripts/smoke_test.sh` tự gọi khi thiếu `index/`), rồi commit `index/` (trừ `index/build/` và `index/.tmp/` đã gitignore). **[CHƯA ĐO — cần chạy `uv run ircb ingest data/techcombank-bao-cao-thuong-nien-2025-vie-update.pdf` với OPENAI_API_KEY]** để có kích thước thư mục và `index_version` thật. Số đo offline (embedder giả, cùng bước extract): 1.150 chunk, 2.974 fact.
+- Shipped index: `index/` đã được commit (13,4 MB; `index/build/` và `index/.tmp/` gitignore), `index_version` `46c78c954ba6`, embedding `openai/text-embedding-3-large` 1024 chiều, 1.150 chunk, 2.974 fact. `index/manifest.json` được kiểm tra lúc khởi động; đổi `EMBED_MODEL` / `EMBED_DIMENSIONS` thì chạy `uv run ircb index reembed`. Build lại từ PDF: `uv run ircb ingest data/techcombank-bao-cao-thuong-nien-2025-vie-update.pdf`.
 
 ## Depth track(s) chosen
 **Chính: Document Intelligence. Phụ: Retrieval & Reasoning (gọn).**
