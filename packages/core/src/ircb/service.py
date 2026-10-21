@@ -87,12 +87,14 @@ class AnswerService:
         lookup: FactLookup,
         periods_seen: set[str],
         trace_dir: Path,
+        periods_in_ranges: set[str] | None = None,
     ) -> None:
         self.settings = settings
         self.deps = deps
         self.client = client
         self.lookup = lookup
         self.periods_seen = periods_seen
+        self.periods_in_ranges = periods_in_ranges or set()
         self.trace_dir = Path(trace_dir)
 
     @classmethod
@@ -122,7 +124,13 @@ class AnswerService:
         )
         lookup = FactLookup(store, sql, embedder, glossary, manifest.doc_id)
         return cls(
-            settings, deps, LLMClient(settings), lookup, set(manifest.periods_seen), settings.trace_dir
+            settings,
+            deps,
+            LLMClient(settings),
+            lookup,
+            set(manifest.periods_seen),
+            settings.trace_dir,
+            set(manifest.periods_in_ranges),
         )
 
     def ask(
@@ -193,7 +201,7 @@ class AnswerService:
     ) -> _Outcome:
         s = self.settings
         with trace.step("period_guard"):
-            refusal = period_guard(message, self.periods_seen)
+            refusal = period_guard(message, self.periods_seen, self.periods_in_ranges)
         if refusal is not None:
             return self._guarded(refusal, prev_state, trace)
 
@@ -203,7 +211,7 @@ class AnswerService:
         state = _state_of(rw)
 
         with trace.step("post_rewrite_guard"):
-            refusal = post_rewrite_guard(rw, self.periods_seen)
+            refusal = post_rewrite_guard(rw, self.periods_seen, self.periods_in_ranges)
         if refusal is not None:
             return self._guarded(refusal, prev_state, trace)
 

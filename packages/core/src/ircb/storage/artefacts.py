@@ -36,6 +36,8 @@ class Manifest(BaseModel):
     embed_dimensions: int
     tokenizer_version: str
     periods_seen: list[str]
+    # years strictly inside a printed range ("2026–2030" -> 2027..2029); [] in older manifests
+    periods_in_ranges: list[str] = []
     n_chunks: int
     n_facts: int
     created_at: str

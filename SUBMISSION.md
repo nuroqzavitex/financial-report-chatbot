@@ -46,7 +46,7 @@
   | `AUTO_LOAD_INDEX` | | `true` | Tự nạp artefact vào DB nếu thiếu hoặc lệch version |
   | `PAGE_CACHE_DIR` | | `./var/page_cache` | Cache ảnh trang của API/web |
   | `PDF_PATH` | | `./data/techcombank-…-update.pdf` | PDF nguồn |
-- Shipped index: `index/` đã được commit (22,4 MB; `index/build/` và `index/.tmp/` gitignore), `index_version` `d75e895c3b5d` (chunk mang tên khối, xem `config/units.json`; các số đo ở Evaluation chạy trên `def472d744b6`, cùng chunk nhưng chưa có tên khối), embedding `ollama/qwen3-embedding:4b` 1024 chiều (embed lại toàn bộ trên GPU RTX 4060 mất khoảng 1 phút), 1.145 chunk, 2.974 fact. `index/manifest.json` được kiểm tra lúc khởi động; đổi `EMBED_MODEL` / `EMBED_DIMENSIONS` thì chạy `uv run ircb index reembed`. Build lại từ PDF: `uv run ircb ingest data/techcombank-bao-cao-thuong-nien-2025-vie-update.pdf`.
+- Shipped index: `index/` đã được commit (22,4 MB; `index/build/` và `index/.tmp/` gitignore), `index_version` `1acb2897eb97` (chunk mang tên khối; manifest có `periods_in_ranges`, xem `config/units.json`; các số đo ở Evaluation chạy trên `def472d744b6`, cùng chunk nhưng chưa có tên khối), embedding `ollama/qwen3-embedding:4b` 1024 chiều (embed lại toàn bộ trên GPU RTX 4060 mất khoảng 1 phút), 1.145 chunk, 2.974 fact. `index/manifest.json` được kiểm tra lúc khởi động; đổi `EMBED_MODEL` / `EMBED_DIMENSIONS` thì chạy `uv run ircb index reembed`. Build lại từ PDF: `uv run ircb ingest data/techcombank-bao-cao-thuong-nien-2025-vie-update.pdf`.
 
 ## Depth track(s) chosen
 **Chính: Document Intelligence. Phụ: Retrieval & Reasoning (gọn).**

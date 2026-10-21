@@ -337,3 +337,22 @@ def test_gitignore_excludes_index_build_only() -> None:
     lines = (root / ".gitignore").read_text(encoding="utf-8").splitlines()
     assert "index/build/" in lines and "index/.tmp/" in lines
     assert "index/" not in lines
+
+
+def test_years_in_ranges_are_the_inner_years_of_short_periods() -> None:
+    from ircb.ingestion.pipeline import years_in_ranges
+
+    assert years_in_ranges("giai đoạn 2026–2030 và 2018-2025") == {
+        "2027",
+        "2028",
+        "2029",
+        "2019",
+        "2020",
+        "2021",
+        "2022",
+        "2023",
+        "2024",
+    }
+    assert years_in_ranges("2025-2026") == set()  # adjacent: no inner year
+    assert years_in_ranges("1990-2025") == set()  # too wide to be a plan period
+    assert years_in_ranges("số 12.2026-2030") == set()  # part of a larger number

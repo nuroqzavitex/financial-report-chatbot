@@ -17,6 +17,14 @@ _YEAR_RE = re.compile(
 _FY_RE = re.compile(r"\bFY\s?(\d{4}|\d{2})\b", re.IGNORECASE)
 
 
+# a question that wants a figure; a year the report covers only inside a period ("2026–2030")
+# has no figure of its own, so such a question is still refused without calling the LLM
+_ASKS_FIGURE_RE = re.compile(
+    r"bao nhiêu|mức nào|mức bao|là mấy|con số|số liệu|dự báo|dự kiến|ước tính|tỷ lệ|tăng trưởng|%",
+    re.IGNORECASE,
+)
+
+
 @dataclass(frozen=True)
 class GuardRefusal:
     reason: str
@@ -38,20 +46,34 @@ def explicit_years(text: str) -> list[str]:
     return sorted(years)
 
 
-def period_guard(question: str, periods_seen: set[str]) -> GuardRefusal | None:
+def _covered(year: str, periods_seen: set[str], periods_in_ranges: set[str], asks_figure: bool) -> bool:
+    """Named in the report, or inside one of its periods when the question is not after a figure
+    ("Kế hoạch năm 2027 là gì?" goes on to the 2026–2030 strategy; "... năm 2027 là bao nhiêu?" does not)."""
+    return year in periods_seen or (year in periods_in_ranges and not asks_figure)
+
+
+def period_guard(
+    question: str, periods_seen: set[str], periods_in_ranges: set[str] | None = None
+) -> GuardRefusal | None:
+    ranges = periods_in_ranges or set()
+    asks_figure = bool(_ASKS_FIGURE_RE.search(question))
     for y in explicit_years(question):
-        if y not in periods_seen:
+        if not _covered(y, periods_seen, ranges, asks_figure):
             return _refusal(y)
     return None
 
 
-def post_rewrite_guard(rw: RewriteResult, periods_seen: set[str]) -> GuardRefusal | None:
+def post_rewrite_guard(
+    rw: RewriteResult, periods_seen: set[str], periods_in_ranges: set[str] | None = None
+) -> GuardRefusal | None:
+    ranges = periods_in_ranges or set()
+    asks_figure = bool(_ASKS_FIGURE_RE.search(rw.standalone_query))
     for p in rw.periods:
         for y in explicit_years(p):
-            if y not in periods_seen:
+            if not _covered(y, periods_seen, ranges, asks_figure):
                 return _refusal(y)
     if rw.is_forecast:
         for y in explicit_years(" ".join([*rw.periods, rw.standalone_query])):
-            if int(y) > LAST_FORECAST_YEAR and y not in periods_seen:
+            if int(y) > LAST_FORECAST_YEAR and not _covered(y, periods_seen, ranges, asks_figure):
                 return _refusal(y)
     return None

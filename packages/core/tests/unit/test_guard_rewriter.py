@@ -211,3 +211,28 @@ def test_rewriter_prompt_examples_match_the_schema() -> None:
 
 def test_stored_state_without_topic_still_loads() -> None:
     assert TurnState.model_validate_json('{"metrics": [], "periods": ["2025"], "entity": null}').topic is None
+
+
+RANGES = {"2027", "2028", "2029"}  # inside "2026–2030", never named on their own
+
+
+def test_year_inside_a_period_passes_for_a_plan_question() -> None:
+    assert period_guard("Kế hoạch năm 2027 của Techcombank là gì?", SEEN, RANGES) is None
+    plan = rw(standalone_query="Kế hoạch năm 2027 của Techcombank là gì?", periods=["2027"], is_forecast=True)
+    assert post_rewrite_guard(plan, SEEN, RANGES) is None
+
+
+def test_year_inside_a_period_still_refused_when_a_figure_is_asked() -> None:
+    for q in (
+        "Techcombank dự báo lợi nhuận trước thuế năm 2027 là bao nhiêu?",
+        "Kế hoạch lợi nhuận năm 2028 là bao nhiêu?",
+        "Tỷ lệ CASA năm 2029?",
+    ):
+        r = period_guard(q, SEEN, RANGES)
+        assert r is not None, q
+    figure = rw(standalone_query="Lợi nhuận năm 2027 là bao nhiêu?", periods=["2027"], is_forecast=True)
+    assert post_rewrite_guard(figure, SEEN, RANGES) is not None
+
+
+def test_year_outside_every_period_is_refused_whatever_is_asked() -> None:
+    assert period_guard("Kế hoạch năm 2035 là gì?", SEEN, RANGES) is not None

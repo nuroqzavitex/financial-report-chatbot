@@ -82,6 +82,8 @@ STAGING = ".tmp"
 # final artefacts moved from the staging dir into out_dir; the manifest goes last
 _FINAL = (CHUNKS, FACTS, GLOSSARY, PAGE_MAP, VECTORS, REPORT)
 _YEAR = re.compile(r"(?<![\d.,])(?:19|20)\d{2}(?![\d])")
+_YEAR_RANGE = re.compile(r"(?<![\d.,])((?:19|20)\d{2})\s*[-–—]\s*((?:19|20)\d{2})(?![\d])")
+MAX_RANGE_YEARS = 10  # "2026–2030" is a plan period; a wider span is more likely not a period
 
 
 class GateError(Exception):
@@ -164,6 +166,17 @@ def assert_unique_ids(chunks: Sequence[Chunk], facts: Sequence[Fact]) -> None:
 def years_in_text(text: str) -> set[str]:
     """Four-digit years (19xx/20xx) standing alone, not inside a larger number."""
     return set(_YEAR.findall(text))
+
+
+def years_in_ranges(text: str) -> set[str]:
+    """Years strictly inside a printed period such as "2026–2030" (2027, 2028, 2029): the report
+    covers them as part of the period without ever naming them."""
+    out: set[str] = set()
+    for a, b in _YEAR_RANGE.findall(text):
+        start, end = int(a), int(b)
+        if 1 < end - start <= MAX_RANGE_YEARS:
+            out |= {str(y) for y in range(start + 1, end)}
+    return out
 
 
 def compute_index_version(pdf_sha256: str, embed_model: str, dimensions: int, git_hash: str) -> str:
@@ -263,10 +276,13 @@ def run_extract(pdf: Path, out_dir: Path) -> None:
         kpi_out: list[dict[str, Any]] = []
         qa_out: list[dict[str, Any]] = []
         years: set[str] = set()
+        range_years: set[str] = set()
         glossary_tables = 0
         for pdf_page in range(1, doc.page_count + 1):
             page = doc[pdf_page - 1]
-            years |= years_in_text(str(page.get_text()))  # type: ignore[no-untyped-call]
+            page_text = str(page.get_text())  # type: ignore[no-untyped-call]
+            years |= years_in_text(page_text)
+            range_years |= years_in_ranges(page_text)
             tables, qa = qa_tables(doc, pdf_page)
             qa_out += [asdict(q) for q in qa]
             if pdf_page == GLOSSARY_PDF_PAGE:
@@ -304,6 +320,7 @@ def run_extract(pdf: Path, out_dir: Path) -> None:
                 f"PDF p.{m.pdf_page} found {m.found}, expected {m.expected}" for m in mismatches
             ],
             "periods_seen": sorted(years),
+            "periods_in_ranges": sorted(range_years - years),
             "kpi_golden_failed": kpi_golden_check(doc),
             "informative_images_pending_vlm": images,
             "glossary_page_tables": glossary_tables,
@@ -416,6 +433,7 @@ def run_normalize(out_dir: Path) -> None:
             "table_qa": qa,
             "informative_images_pending_vlm": meta["informative_images_pending_vlm"],
             "periods_seen": meta["periods_seen"],
+            "periods_in_ranges": meta.get("periods_in_ranges", []),
         },
     )
 
@@ -508,6 +526,7 @@ def build_index(
         embed_dimensions=embedder.dimensions,
         tokenizer_version=TOKENIZER_VERSION,
         periods_seen=report["periods_seen"],
+        periods_in_ranges=report.get("periods_in_ranges", []),
         n_chunks=report["n_chunks"],
         n_facts=report["n_facts"],
         created_at=datetime.now(UTC).isoformat(timespec="seconds"),

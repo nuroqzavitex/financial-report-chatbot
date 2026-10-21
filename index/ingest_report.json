@@ -3820,6 +3820,13 @@
     "2045",
     "2050"
   ],
+  "periods_in_ranges": [
+    "1996",
+    "1997",
+    "1998",
+    "2027",
+    "2028"
+  ],
   "warnings": [
     "coverage<0.95: 3R=0.83",
     "coverage<0.95: 10L=0.50",
@@ -3863,8 +3870,8 @@
     "coverage<0.95: 192R=0.92"
   ],
   "timings_s": {
-    "extract": 217.91,
-    "normalize": 0.96,
-    "embed": 111.05
+    "extract": 127.3,
+    "normalize": 0.94,
+    "embed": 56.69
   }
 }
