@@ -35,6 +35,8 @@ def pdf(tmp_path: Path) -> Path:
     _text(p1, 50, 100, "Cover")
     p2 = d.new_page(width=600, height=400)  # type: ignore[no-untyped-call]
     _text(p2, 50, 60, "Tong tai san 1.192")
+    _text(p2, 20, 150, "von chu so huu cua ngan hang tang manh")
+    _text(p2, 50, 300, "Ghi chu khac")
     _text(p2, 350, 60, "Du no vay 328,1")
     path = tmp_path / "synthetic.pdf"
     d.save(path)  # type: ignore[no-untyped-call]
@@ -55,6 +57,30 @@ def test_half_page_dimensions(renderer: PageRenderer) -> None:
 def test_evidence_highlight_changes_pixels_inside_clip(renderer: PageRenderer) -> None:
     plain, lit = renderer.render(2), renderer.render(2, evidence="Tong tai san 1.192")
     assert plain != lit
+
+
+def _pixels(png: bytes) -> list[tuple[int, int, int]]:
+    pix = fitz.Pixmap(png)  # type: ignore[no-untyped-call]
+    s, n = pix.samples, pix.n
+    return [(s[i], s[i + 1], s[i + 2]) for i in range(0, len(s), n)]
+
+
+def test_evidence_text_turns_red_without_a_box(renderer: PageRenderer) -> None:
+    lit = _pixels(renderer.render(2, evidence="Tong tai san 1.192"))
+    red = [p for p in lit if p[0] > 150 and p[1] < 90 and p[2] < 90]
+    yellow = [p for p in lit if p[0] > 200 and p[1] > 180 and p[2] < 120]
+    assert red and not yellow
+    plain = _pixels(renderer.render(2))
+    assert not [p for p in plain if p[0] > 150 and p[1] < 90 and p[2] < 90]
+
+
+def test_quote_worded_differently_still_reddens_its_shared_words(renderer: PageRenderer) -> None:
+    """A claim citing several pages quotes one chunk; on another page its shared words still hit, and
+    the whole source rect (here the full half page) is not painted."""
+    quote = "Nam 2025 von chu so huu cua ngan hang tang 17%"  # the page has a 6-word run of it
+    lit = _pixels(renderer.render(2, evidence=quote, rect=[0, 0, 300, 400]))
+    red_rows = {i // 600 for i, p in enumerate(lit) if p[0] > 150 and p[1] < 90 and p[2] < 90}
+    assert red_rows and min(red_rows) > 250 and max(red_rows) < 320  # the y=150pt line only
 
 
 def test_rect_fallback_and_outside_rect_ignored(renderer: PageRenderer) -> None:

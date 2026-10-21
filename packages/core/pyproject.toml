@@ -14,6 +14,7 @@ dependencies = [
     "pyarrow",
     "structlog",
     "psycopg[binary]",
+    "numpy>=2",
 ]
 
 [build-system]

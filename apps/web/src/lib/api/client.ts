@@ -146,8 +146,13 @@ export async function deleteSession(id: string): Promise<void> {
   if (!res.ok && res.status !== 404) throw new Error(await errorMessage(res));
 }
 
+// Bumped when the API changes how evidence is highlighted, so images cached under the old
+// one-day max-age are not shown again (2: red text instead of a yellow box).
+const PAGE_IMAGE_VERSION = "2";
+
 export function pageImageUrl(printed: number, source?: SourceDTO): string {
   const url = new URL(apiUrl(`/v1/pages/${printed}/image`));
+  url.searchParams.set("v", PAGE_IMAGE_VERSION);
   if (source) {
     url.searchParams.set("source", `${source.kind}:${source.id}`);
     url.searchParams.set("evidence", source.evidence.slice(0, EVIDENCE_MAX));

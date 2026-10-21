@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
+import hashlib
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Query, Response
+from fastapi import APIRouter, Depends, Header, Query, Response
 from ircb.pages import PageNotFound, PdfMissing
 
 from ircb_api.errors import ApiError
@@ -44,6 +45,7 @@ def page_image(
     st: Annotated[AppState, Depends(get_state)],
     source: str | None = None,
     evidence: Annotated[str | None, Query(max_length=500)] = None,
+    if_none_match: Annotated[str | None, Header()] = None,
 ) -> Response:
     rect = _source_rect(st, source, printed)
     try:
@@ -52,4 +54,10 @@ def page_image(
         raise ApiError(404, "page_not_found", "Không có trang này trong báo cáo.") from None
     except PdfMissing:
         raise ApiError(503, "pdf_missing", "Không có tệp PDF gốc trên máy chủ.") from None
-    return Response(png, media_type="image/png", headers={"Cache-Control": "public, max-age=86400"})
+    # revalidated on every view (304 when unchanged): a new highlight style must not hide behind a
+    # browser cache of the same URL, as a one-day max-age did when boxes became red text
+    etag = f'"{hashlib.sha256(png).hexdigest()[:32]}"'
+    headers = {"Cache-Control": "no-cache", "ETag": etag}
+    if if_none_match == etag:
+        return Response(status_code=304, headers=headers)
+    return Response(png, media_type="image/png", headers=headers)

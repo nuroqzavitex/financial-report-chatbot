@@ -1,8 +1,9 @@
 import pymupdf as fitz
 import pytest
-from conftest import half_obj
 from ircb.ingestion.glossary import load_glossary_extra, parse_glossary
 from ircb.ingestion.prose import extract_prose
+
+from conftest import half_obj
 
 pytestmark = pytest.mark.requires_pdf
 

@@ -51,6 +51,10 @@ def get_state(request: Request) -> AppState:
 
 def build_state(settings: Settings) -> AppState:
     """Open every store; known start-up failures become a one-line RuntimeError."""
+    # LiteLLM is imported here, before serving: imported first inside a request's worker thread it
+    # deadlocks with its own logging filter importing a submodule on the event loop (docker run)
+    import litellm  # noqa: F401
+
     index_dir = settings.index_dir
     if not (index_dir / artefacts.MANIFEST).is_file():
         raise RuntimeError(

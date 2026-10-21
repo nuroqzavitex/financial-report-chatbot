@@ -2,7 +2,13 @@ def test_page_png_with_chunk_highlight(client):
     r = client.get("/v1/pages/2/image", params={"source": "chunk:c1", "evidence": "Tổng tài sản 1.192"})
     assert r.status_code == 200 and r.headers["content-type"] == "image/png"
     assert r.content[:8] == b"\x89PNG\r\n\x1a\n"
-    assert r.headers["cache-control"] == "public, max-age=86400"
+    assert r.headers["cache-control"] == "no-cache" and r.headers["etag"]
+    again = client.get(
+        "/v1/pages/2/image",
+        params={"source": "chunk:c1", "evidence": "Tổng tài sản 1.192"},
+        headers={"If-None-Match": r.headers["etag"]},
+    )
+    assert again.status_code == 304 and again.content == b""
 
 
 def test_page_bounds_and_unknown_source(client):

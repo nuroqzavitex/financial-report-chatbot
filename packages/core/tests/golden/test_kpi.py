@@ -2,8 +2,9 @@ import re
 
 import pymupdf as fitz
 import pytest
-from conftest import half_obj
 from ircb.ingestion.kpi import KpiTile, arrow_direction, parse_kpi_tiles
+
+from conftest import half_obj
 
 pytestmark = pytest.mark.requires_pdf
 
