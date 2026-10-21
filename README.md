@@ -209,6 +209,21 @@ uv run lint-imports                      # ircb không được import fastapi /
 
 (`make setup | test | lint | ...` là bí danh của các lệnh trên nếu máy có `make`.)
 
+## CI và image trên ghcr.io
+
+`.github/workflows/ci.yml` chạy trên mỗi push và pull request:
+
+- **python:** `ruff check`, `ruff format --check`, `mypy`, `lint-imports`, `pytest` (kể cả test golden trên PDF trong `data/`; không cần API key hay Ollama).
+- **integration:** `pytest -m integration` với Qdrant `v1.19.0` và PostgreSQL 16 chạy dạng service container.
+- **web:** `pnpm lint`, `pnpm test`, `pnpm build`.
+- **publish:** chỉ khi push lên `main` hoặc tag `v*`, và cả ba job trên đều qua. Build và đẩy hai image lên GitHub Container Registry:
+  - `ghcr.io/nuroqzavitex/financial-report-chatbot-api`
+  - `ghcr.io/nuroqzavitex/financial-report-chatbot-web`
+
+  Tag: `latest` và `sha-<commit>` cho `main`; `1.2.3` và `1.2` cho tag `v1.2.3`.
+
+Image không chứa `index/` và `data/`: khi chạy vẫn mount hai thư mục này như trong `docker-compose.yml`. Image web được build với `NEXT_PUBLIC_API_URL=http://localhost:8000` và không bật Clerk (giá trị `NEXT_PUBLIC_*` được nhúng lúc build); muốn khác thì build lại bằng `docker compose build web`. Package mới trên ghcr.io mặc định là private: đổi sang public ở trang Packages của repo nếu muốn `docker pull` không cần đăng nhập.
+
 ## Cấu trúc
 
 ```
