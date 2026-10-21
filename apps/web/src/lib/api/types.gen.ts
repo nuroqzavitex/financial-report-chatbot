@@ -15,7 +15,7 @@ export interface paths {
     put?: never;
     /**
      * Chat
-     * @description A new id starts a session for the caller; continuing someone else's session is a 404.
+     * @description Without a session id a new session starts; with one the turn continues it.
      */
     post: operations["chat_v1_chat_post"];
     delete?: never;
@@ -67,6 +67,23 @@ export interface paths {
     };
     /** Page Image */
     get: operations["page_image_v1_pages__printed__image_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/v1/report.pdf": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Report Pdf */
+    get: operations["report_pdf_v1_report_pdf_get"];
     put?: never;
     post?: never;
     delete?: never;
@@ -448,7 +465,9 @@ export interface operations {
         source?: string | null;
         evidence?: string | null;
       };
-      header?: never;
+      header?: {
+        "if-none-match"?: string | null;
+      };
       path: {
         printed: number;
       };
@@ -472,6 +491,26 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  report_pdf_v1_report_pdf_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/pdf": unknown;
         };
       };
     };

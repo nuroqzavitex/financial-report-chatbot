@@ -664,7 +664,7 @@
   "paths": {
     "/v1/chat": {
       "post": {
-        "description": "A new id starts a session for the caller; continuing someone else's session is a 404.",
+        "description": "Without a session id a new session starts; with one the turn continues it.",
         "operationId": "chat_v1_chat_post",
         "requestBody": {
           "content": {
@@ -837,6 +837,22 @@
               ],
               "title": "Evidence"
             }
+          },
+          {
+            "in": "header",
+            "name": "if-none-match",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "If-None-Match"
+            }
           }
         ],
         "responses": {
@@ -858,6 +874,20 @@
           }
         },
         "summary": "Page Image"
+      }
+    },
+    "/v1/report.pdf": {
+      "get": {
+        "operationId": "report_pdf_v1_report_pdf_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/pdf": {}
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Report Pdf"
       }
     },
     "/v1/sessions": {

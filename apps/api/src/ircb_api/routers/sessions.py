@@ -1,4 +1,4 @@
-"""/v1/sessions: the caller's conversations (list, open, delete); someone else's is a 404."""
+"""/v1/sessions: the conversations (list, open, delete); an unknown id is a 404."""
 
 from __future__ import annotations
 
@@ -8,7 +8,6 @@ from fastapi import APIRouter, Depends, Query, Response
 from ircb.storage.session_repo import StoredMessage
 
 from ircb_api.errors import ApiError
-from ircb_api.owner import get_owner
 from ircb_api.schemas import ChatAnswerOut, MessageOut, SessionListOut, SessionOut, SessionSummaryOut
 from ircb_api.state import AppState, get_state
 
@@ -27,10 +26,9 @@ def _message(m: StoredMessage) -> MessageOut:
 @router.get("/sessions", response_model=SessionListOut)
 def list_sessions(
     st: Annotated[AppState, Depends(get_state)],
-    owner: Annotated[str, Depends(get_owner)],
     limit: Annotated[int, Query(ge=1, le=200)] = 50,
 ) -> SessionListOut:
-    rows = st.sessions.list_sessions(owner, limit)
+    rows = st.sessions.list_sessions(limit)
     return SessionListOut(sessions=[SessionSummaryOut(**r.model_dump()) for r in rows])
 
 
@@ -38,9 +36,8 @@ def list_sessions(
 def get_session(
     session_id: str,
     st: Annotated[AppState, Depends(get_state)],
-    owner: Annotated[str, Depends(get_owner)],
 ) -> SessionOut:
-    summary = st.sessions.get(session_id, owner)
+    summary = st.sessions.get(session_id)
     if summary is None:
         raise _not_found()
     msgs = [_message(m) for m in st.sessions.messages(session_id)]
@@ -51,10 +48,9 @@ def get_session(
 def delete_session(
     session_id: str,
     st: Annotated[AppState, Depends(get_state)],
-    owner: Annotated[str, Depends(get_owner)],
 ) -> Response:
     with st.lock:  # never delete under a turn that is still writing to the session
-        if not st.sessions.owned_by(session_id, owner):
+        if not st.sessions.exists(session_id):
             raise _not_found()
         st.sessions.delete(session_id)
     return Response(status_code=204)

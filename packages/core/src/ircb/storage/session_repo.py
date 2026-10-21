@@ -1,8 +1,6 @@
 """Conversation persistence: sessions and messages with structured turn state.
 
-A session belongs to an ``owner``: an opaque id the caller supplies (the API passes the signed-in
-user or the browser's anonymous id; the CLI passes none). Lookups match it exactly, so a session
-is invisible to every other owner.
+Single user: every session is listed to whoever runs the app (no sign-in, no owners).
 """
 
 from datetime import UTC, datetime
@@ -43,10 +41,6 @@ def _utc(t: datetime) -> datetime:
     return t if t.tzinfo is not None else t.replace(tzinfo=UTC)
 
 
-def _owned(owner: str | None) -> sa.ColumnElement[bool]:
-    return ChatSession.owner.is_(None) if owner is None else ChatSession.owner == owner
-
-
 class SessionRepo:
     def __init__(self, engine: Engine) -> None:
         self._engine = engine
@@ -58,14 +52,13 @@ class SessionRepo:
         content: str,
         state: TurnState | None,
         payload: str | None = None,
-        owner: str | None = None,
     ) -> None:
-        """Add a message; the first one creates the session for ``owner``, the first question titles it."""
+        """Add a message; the first one creates the session, the first question titles it."""
         now = datetime.now(UTC)
         with session_scope(self._engine) as s:
             chat = s.get(ChatSession, session_id)
             if chat is None:
-                chat = ChatSession(id=session_id, owner=owner, created_at=now)
+                chat = ChatSession(id=session_id, created_at=now)
                 s.add(chat)
                 s.flush()
             if chat.title is None and role == "user":
@@ -105,23 +98,19 @@ class SessionRepo:
         with session_scope(self._engine) as s:
             return s.get(ChatSession, session_id) is not None
 
-    def owned_by(self, session_id: str, owner: str | None) -> bool:
-        """The session exists and belongs to ``owner``."""
-        return self.get(session_id, owner) is not None
-
-    def get(self, session_id: str, owner: str | None) -> SessionSummary | None:
-        """The summary of ``owner``'s session ``session_id``; None if missing or someone else's."""
-        found = self._summaries(owner, session_id=session_id, limit=1)
+    def get(self, session_id: str) -> SessionSummary | None:
+        """The summary of session ``session_id``; None if missing."""
+        found = self._summaries(session_id=session_id, limit=1)
         return found[0] if found else None
 
-    def list_sessions(self, owner: str | None, limit: int = 50) -> list[SessionSummary]:
-        """``owner``'s sessions, most recently updated first."""
-        return self._summaries(owner, session_id=None, limit=limit)
+    def list_sessions(self, limit: int = 50) -> list[SessionSummary]:
+        """All sessions, most recently updated first."""
+        return self._summaries(session_id=None, limit=limit)
 
-    def _summaries(self, owner: str | None, session_id: str | None, limit: int) -> list[SessionSummary]:
+    def _summaries(self, session_id: str | None, limit: int) -> list[SessionSummary]:
         n = sa.select(sa.func.count(Message.id)).where(Message.session_id == ChatSession.id).scalar_subquery()
         last = sa.func.coalesce(ChatSession.updated_at, ChatSession.created_at)
-        q = sa.select(ChatSession.id, ChatSession.title, ChatSession.created_at, last, n).where(_owned(owner))
+        q = sa.select(ChatSession.id, ChatSession.title, ChatSession.created_at, last, n)
         if session_id is not None:
             q = q.where(ChatSession.id == session_id)
         with session_scope(self._engine) as s:

@@ -94,8 +94,6 @@ class ChatSession(Base):
 
     id: Mapped[str] = mapped_column(sa.Text, primary_key=True)
     created_at: Mapped[datetime] = mapped_column(sa.DateTime(timezone=True), default=_now)
-    # who may list / open / continue the session: an opaque id from the API layer, matched exactly
-    owner: Mapped[str | None] = mapped_column(sa.Text, nullable=True, index=True)
     title: Mapped[str | None] = mapped_column(sa.Text, nullable=True)
     updated_at: Mapped[datetime | None] = mapped_column(sa.DateTime(timezone=True), nullable=True)
 

@@ -24,8 +24,6 @@ uv run mypy                               # strict, covers packages/core/src/irc
 uv run lint-imports                       # ircb must not import fastapi / ircb_cli / ircb_api
 ```
 
-CI (`.github/workflows/ci.yml`) runs the same checks plus `pytest -m integration` on Qdrant/Postgres service containers and the web lint/test/build; on a push to `main` or a `v*` tag it pushes the API and web images to `ghcr.io/<repo>-api` / `-web`.
-
 CLI (`ircb`, typer, `apps/cli/src/ircb_cli/`): `ingest <pdf> [--out index]`, `index load [--force]`, `index reembed`, `chat`, `batch <in> --out <out.jsonl> [--concurrency N]`, `eval --split dev|test (--run | --batch-out <file>)`, `profile <pdf>`. API and web:
 
 ```bash
@@ -77,7 +75,7 @@ period_guard → rewrite (LLM: metrics/periods/entity) → post_rewrite_guard �
 
 The verifier drops claims that fail and downgrades the answer to `partial`. The renderer never echoes the text of a failed claim and appends fixed Vietnamese sentences for partial answers and conflicts. Prompts live in `answering/prompts/*.md`. Traces are written as JSONL to `TRACE_DIR` only.
 
-**API and web (`apps/api`, `apps/web`).** `ircb_api` routes hold no business logic: they call core only through `AnswerService`, `PageRenderer`, `SqlFactStore` and `SessionRepo`, and map results to DTOs in `mapping.py`. Zero leak: no response may contain the text, evidence or sources of a claim with `ok == False`. Decimals cross the API as strings and the web never computes on numbers. SSE streams status only; the answer is sent once, after the verifier. Page images (evidence highlighted in yellow) and `GET /v1/report.pdf` need the PDF (503 `pdf_missing` otherwise). Sessions belong to an owner (`ircb_api.owner.get_owner`: `user:<clerk sub>` when `CLERK_PUBLISHABLE_KEY`/`NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` is set and the Bearer token verifies in `ircb_api.auth`, else `client:<X-Client-Id>` or `public`); list/open/delete/continue match it exactly and answer 404 otherwise. The assistant turn stores the `ChatAnswerOut` it sent (`messages.payload_json`), so a reopened session renders the same claims. `apps/web` is Next.js with pnpm (lockfile committed); types are generated from the OpenAPI export.
+**API and web (`apps/api`, `apps/web`).** `ircb_api` routes hold no business logic: they call core only through `AnswerService`, `PageRenderer`, `SqlFactStore` and `SessionRepo`, and map results to DTOs in `mapping.py`. Zero leak: no response may contain the text, evidence or sources of a claim with `ok == False`. Decimals cross the API as strings and the web never computes on numbers. SSE streams status only; the answer is sent once, after the verifier. Page images (evidence highlighted in yellow) and `GET /v1/report.pdf` need the PDF (503 `pdf_missing` otherwise). Single user by design: no sign-in and no session owners (the brief rules out auth, multi-user and CI), so every stored session is listed. The assistant turn stores the `ChatAnswerOut` it sent (`messages.payload_json`), so a reopened session renders the same claims. `apps/web` is Next.js with pnpm (lockfile committed); types are generated from the OpenAPI export.
 
 **Tests.** `packages/core/tests/` has three suites:
 - `unit/`: uses the fakes in `factories.py` and in-file `Fake*` classes, never real OpenAI. `test_end_to_end.py` runs load, retrieval and answer on embedded Qdrant + SQLite.

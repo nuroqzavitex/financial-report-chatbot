@@ -13,8 +13,6 @@
     "format": "prettier --write src tests"
   },
   "dependencies": {
-    "@clerk/localizations": "4.22.0",
-    "@clerk/nextjs": "7.9.11",
     "class-variance-authority": "^0.7.1",
     "cn": "^0.5.0",
     "lucide-react": "^1.59.0",

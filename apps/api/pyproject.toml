@@ -6,7 +6,6 @@ requires-python = ">=3.11,<3.12"
 dependencies = [
     "fastapi>=0.143.3",
     "ircb",
-    "pyjwt[crypto]>=2.15.0,<2.16",
     "sse-starlette>=3.5.0",
     "uvicorn[standard]>=0.54.0",
 ]

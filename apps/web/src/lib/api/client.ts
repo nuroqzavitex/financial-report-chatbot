@@ -1,4 +1,3 @@
-import { ownerHeaders } from "@/lib/auth";
 import { parseSse } from "@/lib/sse";
 import type {
   ChatAnswer,
@@ -63,7 +62,6 @@ export async function streamChat(
       headers: {
         "content-type": "application/json",
         accept: "text/event-stream",
-        ...(await ownerHeaders()),
       },
       body: JSON.stringify(body),
       signal,
@@ -123,7 +121,7 @@ export async function streamChat(
 export class NotFound extends Error {}
 
 async function getJson<T>(path: string): Promise<T> {
-  const res = await fetch(apiUrl(path), { headers: await ownerHeaders() });
+  const res = await fetch(apiUrl(path));
   if (res.status === 404) throw new NotFound(await errorMessage(res));
   if (!res.ok) throw new Error(await errorMessage(res));
   return (await res.json()) as T;
@@ -141,7 +139,6 @@ export function getSession(id: string): Promise<SessionDetail> {
 export async function deleteSession(id: string): Promise<void> {
   const res = await fetch(apiUrl(`/v1/sessions/${encodeURIComponent(id)}`), {
     method: "DELETE",
-    headers: await ownerHeaders(),
   });
   if (!res.ok && res.status !== 404) throw new Error(await errorMessage(res));
 }

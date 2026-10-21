@@ -8,7 +8,7 @@ import {
   type ChatAnswer,
   type StoredMessage,
 } from "@/lib/api/client";
-import { lastSession, rememberSession } from "@/lib/clientId";
+import { lastSession, rememberSession } from "@/lib/lastSession";
 
 export type ChatItem =
   | { role: "user"; text: string }

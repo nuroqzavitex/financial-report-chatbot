@@ -181,7 +181,7 @@ Sau khi đổi schema API, sinh lại kiểu TypeScript: `make gen-types` (khôn
 |---|---|
 | `GET /v1/health` | Trạng thái, `index_version`, số chunk/fact, model, `pdf_available` |
 | `POST /v1/chat` | Hỏi đáp; trả SSE: `status` (các bước) rồi `answer` rồi `done`, hoặc `error` |
-| `GET /v1/sessions` | Các phiên của người gọi, mới nhất trước (tiêu đề là câu hỏi đầu) |
+| `GET /v1/sessions` | Tất cả các phiên, mới nhất trước (tiêu đề là câu hỏi đầu) |
 | `GET /v1/sessions/{id}` | Một phiên, kèm nguyên câu trả lời đã gửi (claim, trang, phép tính) |
 | `DELETE /v1/sessions/{id}` | Xoá một phiên |
 | `GET /v1/pages/{printed}/image?source=&evidence=` | PNG trang in số `printed`, highlight vàng đoạn bằng chứng |
@@ -189,9 +189,7 @@ Sau khi đổi schema API, sinh lại kiểu TypeScript: `make gen-types` (khôn
 | `GET /v1/facts?q=&period=&limit=` | Tra fact (giá trị là chuỗi Decimal) |
 | `GET /v1/traces/{trace_id}` | Trace một câu; chỉ bật khi `APP_ENV=dev` |
 
-**Lịch sử trò chuyện.** Web gửi header `X-Client-Id` (mã ngẫu nhiên lưu trong trình duyệt), nên mỗi trình duyệt chỉ thấy lịch sử của mình; mở phiên của người khác trả 404. Đây là tách lịch sử, chưa phải đăng nhập: ai có mã đó đều xem được các phiên ấy. Request không có header dùng chung một nhóm công khai.
-
-**Đăng nhập (Clerk, tuỳ chọn).** Tạo application trên [Clerk](https://dashboard.clerk.com), rồi điền `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` và `CLERK_SECRET_KEY` vào `.env` (Docker đọc từ đây) và vào `apps/web/.env.local` (khi chạy `pnpm dev`). Khi có key, chat và lịch sử bắt buộc đăng nhập: web gửi session token của Clerk, API tự kiểm tra chữ ký bằng JWKS của Clerk, hạn dùng và origin (`CORS_ORIGINS`), và mỗi tài khoản chỉ thấy lịch sử của mình. Ảnh trang, tra fact và health vẫn công khai. Để trống hai key thì hệ thống chạy ẩn danh như trên. Đổi key thì build lại web (`docker compose up -d --build web`) vì publishable key được nhúng lúc build.
+**Lịch sử trò chuyện.** Một người dùng, không đăng nhập: mọi phiên lưu trong DB đều hiện ở panel lịch sử (đề bài yêu cầu không làm xác thực và nhiều người dùng). Vì vậy đừng mở API ra mạng ngoài máy cục bộ.
 
 `/v1/traces` được bật khi `APP_ENV=dev` (mặc định), nên hãy đặt `APP_ENV=prod` trước khi bind API vào một host không phải máy cục bộ.
 
@@ -210,21 +208,6 @@ uv run lint-imports                      # ircb không được import fastapi /
 
 (`make setup | test | lint | ...` là bí danh của các lệnh trên nếu máy có `make`.)
 
-## CI và image trên ghcr.io
-
-`.github/workflows/ci.yml` chạy trên mỗi push và pull request:
-
-- **python:** `ruff check`, `ruff format --check`, `mypy`, `lint-imports`, `pytest` (kể cả test golden trên PDF trong `data/`; không cần API key hay Ollama).
-- **integration:** `pytest -m integration` với Qdrant `v1.19.0` và PostgreSQL 16 chạy dạng service container.
-- **web:** `pnpm lint`, `pnpm test`, `pnpm build`.
-- **publish:** chỉ khi push lên `main` hoặc tag `v*`, và cả ba job trên đều qua. Build và đẩy hai image lên GitHub Container Registry:
-  - `ghcr.io/nuroqzavitex/financial-report-chatbot-api`
-  - `ghcr.io/nuroqzavitex/financial-report-chatbot-web`
-
-  Tag: `latest` và `sha-<commit>` cho `main`; `1.2.3` và `1.2` cho tag `v1.2.3`.
-
-Image không chứa `index/` và `data/`: khi chạy vẫn mount hai thư mục này như trong `docker-compose.yml`. Image web được build với `NEXT_PUBLIC_API_URL=http://localhost:8000` và không bật Clerk (giá trị `NEXT_PUBLIC_*` được nhúng lúc build); muốn khác thì build lại bằng `docker compose build web`. Package mới trên ghcr.io mặc định là private: đổi sang public ở trang Packages của repo nếu muốn `docker pull` không cần đăng nhập.
-
 ## Cấu trúc
 
 ```
@@ -236,6 +219,5 @@ eval/                     dataset, runner chấm điểm, RAGAS, độ đồng t
 config/                   sections.json (chương), units.json (khối / công ty con), images.json, glossary_extra.json
 docs/                     thiết kế, ADR, worklog
 infra/docker/             Dockerfile của API và web
-.github/workflows/        CI và publish image lên ghcr.io
 scripts/                  profile_pdf.py, smoke_test.sh
 ```

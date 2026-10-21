@@ -1,6 +1,5 @@
 "use client";
 
-import { UserButton } from "@clerk/nextjs";
 import { BookOpen, FileText, History, SquarePen } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -17,7 +16,6 @@ import {
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useChat } from "@/hooks/useChat";
 import { useSessions } from "@/hooks/useSessions";
-import { AUTH_ENABLED } from "@/lib/auth";
 import { reportUrl, type ClaimDTO } from "@/lib/api/client";
 
 export interface Selection {
@@ -106,7 +104,6 @@ export default function Home() {
             <SquarePen />
             <span className="max-sm:sr-only">Cuộc trò chuyện mới</span>
           </Button>
-          {AUTH_ENABLED && <UserButton />}
         </header>
         <div className="min-h-0 flex-1 overflow-y-auto">
           <div className="mx-auto w-full max-w-[44rem] px-4 sm:px-6">

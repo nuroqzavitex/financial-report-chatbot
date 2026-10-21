@@ -178,3 +178,7 @@ LLM đổi sang `ollama_chat/gemma4:31b` qua `https://ollama.com` (API key); emb
 - **Năm trong giai đoạn:** "Kế hoạch năm 2027" bị bộ chặn từ chối vì "2027" không được in ở đâu, dù nằm trong "giai đoạn 2026–2030". Manifest có thêm `periods_in_ranges` (năm bên trong một khoảng in trong báo cáo, khoảng tối đa 10 năm: 2027, 2028, 1996–1998); bộ chặn cho qua các năm này, trừ khi câu hỏi đòi con số ("bao nhiêu", "dự báo", "tỷ lệ", "%"...). Prompt: trả lời bằng định hướng của cả giai đoạn, không viết năm được hỏi vào claim (lần đầu model viết "2027" và bị `number_mismatch`). Index `1acb2897eb97` (chunk và vector không đổi).
 - **Ảnh trang:** bằng chứng highlight vàng kiểu bút dạ quang (nhân màu một lần trên hợp các vùng khớp) thay cho chữ đỏ.
 - **Web:** nút "Xem báo cáo" mở `GET /v1/report.pdf` (PDF inline) trong tab mới.
+
+## 2026-10-21 - Gỡ phần đề bài ghi "Do NOT build"
+
+- **Đối chiếu với đề:** mục 4 của đề loại trừ xác thực, nhiều người dùng và CI ("không được tính điểm"). Đã gỡ đăng nhập Clerk (`ircb_api.auth`, `AuthGate`, `@clerk/*`, PyJWT), việc tách phiên theo chủ sở hữu (`ircb_api.owner`, header `X-Client-Id`; migration `0003` bỏ cột `sessions.owner`) và `.github/workflows/ci.yml`. App còn một người dùng: mọi phiên đều hiện trong lịch sử. Image cũ đã đẩy lên ghcr.io không bị xoá (xoá ở trang Packages của repo nếu muốn).
