@@ -1,7 +1,7 @@
 "use client";
 
 import { UserButton } from "@clerk/nextjs";
-import { FileText, History, SquarePen } from "lucide-react";
+import { BookOpen, FileText, History, SquarePen } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Composer } from "@/components/chat/Composer";
@@ -18,7 +18,7 @@ import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useChat } from "@/hooks/useChat";
 import { useSessions } from "@/hooks/useSessions";
 import { AUTH_ENABLED } from "@/lib/auth";
-import type { ClaimDTO } from "@/lib/api/client";
+import { reportUrl, type ClaimDTO } from "@/lib/api/client";
 
 export interface Selection {
   claim: ClaimDTO;
@@ -85,6 +85,17 @@ export default function Home() {
               Mọi con số được đối chiếu với báo cáo trước khi hiển thị
             </p>
           </div>
+          <Button asChild variant="outline" size="sm">
+            <a
+              href={reportUrl()}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Mở toàn bộ báo cáo thường niên trong tab mới"
+            >
+              <BookOpen />
+              <span className="max-sm:sr-only">Xem báo cáo</span>
+            </a>
+          </Button>
           <Button
             type="button"
             variant="outline"

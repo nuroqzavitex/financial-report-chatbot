@@ -12,11 +12,19 @@ from ircb.settings import Settings
 from starlette.types import ASGIApp, Receive, Scope, Send
 
 from ircb_api.errors import allowed_origins, install_error_handlers
-from ircb_api.routers import chat, facts, health, pages, sessions, traces
+from ircb_api.routers import chat, facts, health, pages, report, sessions, traces
 from ircb_api.schemas import ErrorOut, StatusOut
 from ircb_api.state import AppState, build_state
 
-_routers = [health.router, chat.router, sessions.router, pages.router, facts.router, traces.router]
+_routers = [
+    health.router,
+    chat.router,
+    sessions.router,
+    pages.router,
+    report.router,
+    facts.router,
+    traces.router,
+]
 
 
 class _LazyCORS:

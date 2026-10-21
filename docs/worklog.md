@@ -172,3 +172,9 @@ LLM đổi sang `ollama_chat/gemma4:31b` qua `https://ollama.com` (API key); emb
 - **"X% N/N" không dấu:** verifier chặn "tăng" (đúng thiết kế, adv-05). Prompt nay bảo viết "thay đổi X% so với cùng kỳ năm trước (N/N)" khi nguồn không có chiều; own-07 trả lời đúng tr. 71. Chưa chạy lại eval dev/test sau thay đổi prompt.
 - **Ảnh trang:** bằng chứng tô chữ đỏ thay vì khung vàng; không thấy nguyên câu trên trang thì tìm từng cụm 6 chữ (claim nhiều trang chỉ trích một chunk). `Cache-Control: no-cache` + ETag thay cho max-age một ngày (trình duyệt từng hiện ảnh khung cũ).
 - **Docker:** câu hỏi đầu tiên lỗi vì deadlock import LiteLLM giữa luồng worker và bộ lọc log trên event loop; API import LiteLLM lúc khởi động.
+
+## 2026-10-21 - Năm trong một giai đoạn, highlight vàng, nút mở báo cáo
+
+- **Năm trong giai đoạn:** "Kế hoạch năm 2027" bị bộ chặn từ chối vì "2027" không được in ở đâu, dù nằm trong "giai đoạn 2026–2030". Manifest có thêm `periods_in_ranges` (năm bên trong một khoảng in trong báo cáo, khoảng tối đa 10 năm: 2027, 2028, 1996–1998); bộ chặn cho qua các năm này, trừ khi câu hỏi đòi con số ("bao nhiêu", "dự báo", "tỷ lệ", "%"...). Prompt: trả lời bằng định hướng của cả giai đoạn, không viết năm được hỏi vào claim (lần đầu model viết "2027" và bị `number_mismatch`). Index `1acb2897eb97` (chunk và vector không đổi).
+- **Ảnh trang:** bằng chứng highlight vàng kiểu bút dạ quang (nhân màu một lần trên hợp các vùng khớp) thay cho chữ đỏ.
+- **Web:** nút "Xem báo cáo" mở `GET /v1/report.pdf` (PDF inline) trong tab mới.

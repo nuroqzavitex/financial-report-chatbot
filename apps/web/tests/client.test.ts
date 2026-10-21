@@ -1,5 +1,11 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { apiUrl, health, pageImageUrl, streamChat } from "@/lib/api/client";
+import {
+  apiUrl,
+  health,
+  pageImageUrl,
+  reportUrl,
+  streamChat,
+} from "@/lib/api/client";
 import { citationLabel } from "@/lib/format";
 
 function sseResponse(frames: string[]): Response {
@@ -161,5 +167,11 @@ describe("client fixes", () => {
       { onStatus: vi.fn(), onAnswer: vi.fn(), onError: (m) => errors.push(m) },
     );
     expect(errors).toEqual(["Không kết nối được máy chủ, vui lòng thử lại."]);
+  });
+});
+
+describe("reportUrl", () => {
+  it("points at the whole report PDF on the API", () => {
+    expect(reportUrl()).toBe(apiUrl("/v1/report.pdf"));
   });
 });

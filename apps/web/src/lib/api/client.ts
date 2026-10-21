@@ -146,6 +146,11 @@ export async function deleteSession(id: string): Promise<void> {
   if (!res.ok && res.status !== 404) throw new Error(await errorMessage(res));
 }
 
+/** The whole annual report, opened inline by the browser's PDF viewer. */
+export function reportUrl(): string {
+  return apiUrl("/v1/report.pdf");
+}
+
 // Bumped when the API changes how evidence is highlighted, so images cached under the old
 // one-day max-age are not shown again (2: red text instead of a yellow box).
 const PAGE_IMAGE_VERSION = "2";
