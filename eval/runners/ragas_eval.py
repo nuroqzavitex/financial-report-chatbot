@@ -44,6 +44,20 @@ def _openai_model(judge: str) -> str:
     return judge.split("/", 1)[1] if judge.startswith("openai/") else judge
 
 
+def judge_client(
+    judge: str, ollama_base: str, ollama_key: str | None, openai_key: str | None
+) -> tuple[str, str | None, str | None]:
+    """(model, base_url, api key) of the OpenAI-compatible client RAGAS builds for ``judge``.
+
+    ``openai/<m>`` goes to OpenAI; ``ollama_chat/<m>`` / ``ollama/<m>`` go to the ``/v1`` endpoint of
+    the same Ollama the LLM uses (ollama.com with its key, or a signed-in local Ollama, which needs none).
+    """
+    for prefix in ("ollama_chat/", "ollama/"):
+        if judge.startswith(prefix):
+            return judge[len(prefix) :], ollama_base.rstrip("/") + "/v1", ollama_key or "ollama"
+    return _openai_model(judge), None, openai_key
+
+
 def _contexts(trace: dict[str, Any] | None, chunks: dict[str, str], facts: dict[str, str]) -> list[str]:
     rec = (trace or {}).get("records", {}).get("retrieval") or {}
     out = [chunks[c] for c in rec.get("chunks", []) if c in chunks]
@@ -147,17 +161,28 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--out", type=Path, default=None)
     args = ap.parse_args(argv)
 
-    if not args.judge:
+    from ircb.settings import Settings
+
+    settings = Settings()  # .env as everywhere else: LLM_MODEL, JUDGE_MODEL and the keys
+    judge = args.judge or settings.judge_model
+    if not judge:
         print(
-            "JUDGE_MODEL is not set: pass --judge or set JUDGE_MODEL (an OpenAI model other than LLM_MODEL).",
+            "JUDGE_MODEL is not set: pass --judge or set JUDGE_MODEL (a model other than LLM_MODEL, "
+            "e.g. openai/gpt-4o-mini or ollama_chat/nemotron-3-ultra).",
             file=sys.stderr,
         )
         return 2
-    if args.judge == os.environ.get("LLM_MODEL"):
+    if judge == settings.llm_model:
         print("JUDGE_MODEL must differ from LLM_MODEL (spec §10.2).", file=sys.stderr)
         return 2
-    if not os.environ.get("OPENAI_API_KEY"):
-        print("OPENAI_API_KEY is not set: the RAGAS judge needs an OpenAI key.", file=sys.stderr)
+    model, base_url, key = judge_client(
+        judge, settings.ollama_api_base, settings.ollama_api_key, settings.openai_api_key
+    )
+    if not key:
+        print(
+            f"no API key for the judge {judge}: set OPENAI_API_KEY (or use an ollama_chat/ judge).",
+            file=sys.stderr,
+        )
         return 2
     try:
         from ragas.llms import llm_factory
@@ -169,7 +194,9 @@ def main(argv: list[str] | None = None) -> int:
         sys.path.insert(0, str(ROOT))
     from eval.runners.run_eval import final_outputs, load_jsonl, load_traces, select_split
 
-    llm = llm_factory(_openai_model(args.judge))
+    os.environ["OPENAI_API_KEY"] = key  # read by the OpenAI client inside llm_factory; this process only
+    llm = llm_factory(model, base_url=base_url)
+    args.judge = judge
     now = datetime.now(UTC)
     out_path = args.out or ROOT / "eval" / "reports" / f"ragas_{now:%Y%m%dT%H%M%SZ}.json"
     meta = {"created_at": now.isoformat(), "judge_model": args.judge, "threshold": args.threshold}

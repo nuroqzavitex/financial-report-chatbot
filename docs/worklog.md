@@ -154,3 +154,14 @@ Còn mở:
 ## 2026-10-20 - Embedding đổi sang qwen3-embedding:4b
 
 Dự án chạy local trên GPU RTX 4060. Embed lại bằng `ollama/qwen3-embedding:4b` (1024 chiều, cắt từ 2560): index `def472d744b6`, khoảng 1 phút. Với câu viết lại bằng gpt-oss, Recall@8 0,636 → 0,773, MRR 0,494 → 0,555; với GPT-4o thì ngang nhau (0,818). Độ trễ embed câu hỏi không đổi (~0,5 giây). Chi tiết ở ADR 0023.
+
+## 2026-10-21 - LLM gemma4:31b, smoke test, eval dev/test, RAGAS đối nghịch
+
+LLM đổi sang `ollama_chat/gemma4:31b` qua `https://ollama.com` (API key); embedding vẫn ở Ollama local (`EMBED_API_BASE` tách khỏi `OLLAMA_API_BASE`).
+
+- **Client:** gemma4 bỏ qua `response_format`. Ba dạng câu trả lời đã gặp nay đọc được, đối tượng vẫn kiểm schema chặt: JSON bọc trong ```` ```json ````; chữ giải thích sau khối bọc (own-36); chữ thừa sau dấu đóng ngoặc (own-33). Có chữ đứng trước JSON thì vẫn lỗi.
+- **Dòng fact KPI không có tên cột** nay ghi kỳ ("năm 2025"). Trước đó sq-04 (tỷ lệ CASA) bị từ chối: model không biết năm của fact, chuyển sang trích chunk và ghép hai chunk thành câu trích không nguyên văn.
+- **Smoke test** kiểm key theo `LLM_MODEL` (môi trường, `.env`, `.env.example`), không còn bắt buộc `OPENAI_API_KEY`: `OK 10/10`.
+- **Eval** (`suggested_correct`, chưa chấm tay): dev 14 / 3 / 8 (gpt-4o 13 / 4 / 7, gpt-oss 9 / 2 / 13), claim bị chặn 18,5%; test 16 / 1 / 5, 3 câu chưa chấm được.
+- **`REFUSAL_THRESHOLD`:** quét 0,1–0,99 trên dev không đổi kết quả câu nào vì mọi hit top-1 đều nằm ở cả hai nhánh. Giữ 0,35; giá trị gợi ý 0,64 chỉ là điểm giữa của đoạn phẳng.
+- **RAGAS đối nghịch:** `ragas_eval.py` nhận judge `ollama_chat/<model>` qua endpoint `/v1` của Ollama. Judge `nemotron-3-ultra` cho lọt 5/64 claim cố ý sai (verifier chặn 64/64); 22 phút cho 64 claim.

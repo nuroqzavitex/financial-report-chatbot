@@ -2,12 +2,13 @@
 # Clean-machine smoke test: fresh virtualenv in a temp dir, uv sync, build the index if missing,
 # answer data/sample_questions.json in batch mode and assert 10 rows without status "error".
 #
-# Exit codes: 0 OK | 1 assertion failed | 2 data/ files missing | 3 OPENAI_API_KEY missing
+# Exit codes: 0 OK | 1 assertion failed | 2 data/ files missing | 3 the LLM's API key missing
 #             | 4 Ollama or its embedding model missing
-# Needs: uv, Python 3.11 (uv fetches it if absent), Ollama with qwen3-embedding:4b, OPENAI_API_KEY
-# in the environment for the default LLM, and the
-# data/ files (shipped in the repository, see README.md). Uses the real OpenAI API (about the cost of one index
-# build plus 10 questions).
+# Needs: uv, Python 3.11 (uv fetches it if absent), Ollama with qwen3-embedding:4b, the data/ files
+# (shipped in the repository, see README.md), and the key of LLM_MODEL (environment first, then .env,
+# then .env.example): OPENAI_API_KEY for openai/*, OLLAMA_API_KEY for ollama_chat/* when
+# OLLAMA_API_BASE=https://ollama.com; a signed-in local Ollama needs none. Calls the LLM for 10
+# questions; embeddings stay on local Ollama (free).
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -35,24 +36,41 @@ MSG
   exit 2
 fi
 
+# value of a setting: the environment, else .env, else .env.example (values are never printed)
+setting() {
+  local v="${!1:-}" f
+  if [ -z "$v" ]; then
+    for f in .env .env.example; do
+      [ -f "$f" ] && v="$(sed -n "s/^$1=\([^ #]*\).*/\1/p" "$f" | tail -n 1)"
+      [ -n "$v" ] && break
+    done
+  fi
+  printf '%s' "$v"
+}
+
 # 2. embeddings run on Ollama (the shipped index was embedded with qwen3-embedding:4b)
-OLLAMA="${OLLAMA_API_BASE:-http://localhost:11434}"
+OLLAMA="$(setting EMBED_API_BASE)"
+OLLAMA="${OLLAMA:-http://localhost:11434}"
 if ! curl -fsS "$OLLAMA/api/tags" 2>/dev/null | grep -q '"qwen3-embedding:4b"'; then
   echo "MISSING: Ollama at $OLLAMA with qwen3-embedding:4b (install Ollama, then: ollama pull qwen3-embedding:4b)" >&2
   exit 4
 fi
 
-# 3. API key for the default LLM (openai/gpt-4o)
-if [ -z "${OPENAI_API_KEY:-}" ]; then
-  echo "MISSING: OPENAI_API_KEY is not set in the environment." >&2
-  if [ ! -f index/manifest.json ]; then
-    echo "index/ is not built yet (no index/manifest.json); the default LLM also needs the key:" >&2
-    echo "export OPENAI_API_KEY=sk-... and run this script again." >&2
-  else
-    echo "export OPENAI_API_KEY=sk-... and run this script again." >&2
-  fi
+# 3. the API key of the configured LLM
+LLM="$(setting LLM_MODEL)"
+KEY=""
+case "$LLM" in
+  openai/*) KEY=OPENAI_API_KEY ;;
+  anthropic/*) KEY=ANTHROPIC_API_KEY ;;
+  gemini/*) KEY=GEMINI_API_KEY ;;
+  ollama/* | ollama_chat/*) case "$(setting OLLAMA_API_BASE)" in *ollama.com*) KEY=OLLAMA_API_KEY ;; esac ;;
+esac
+if [ -n "$KEY" ] && [ -z "$(setting "$KEY")" ]; then
+  echo "MISSING: $KEY for LLM_MODEL=$LLM (set it in the environment or in .env, then run again)." >&2
+  [ -f index/manifest.json ] || echo "index/ is not built yet (no index/manifest.json); it is built from the PDF on the next run." >&2
   exit 3
 fi
+echo "== LLM_MODEL=$LLM"
 
 command -v uv >/dev/null || { echo "MISSING: uv (https://docs.astral.sh/uv/)" >&2; exit 1; }
 
@@ -70,10 +88,10 @@ uv sync --frozen
 
 # NOTE: steps 5 and 6 write into the repository working tree (.env and index/), not the temp dir:
 # both are meant to stay (index/ is committed with the submission; .env is gitignored).
-# 5. .env from the example; never overwrite an existing one. The key comes from the environment.
+# 5. .env from the example; never overwrite an existing one. Keys come from the environment or .env.
 if [ ! -f .env ]; then
   cp .env.example .env
-  echo "== created .env from .env.example (OPENAI_API_KEY is read from the environment)"
+  echo "== created .env from .env.example (API keys are read from the environment)"
 fi
 
 # 6. index (committed in the final submission; built here when absent)

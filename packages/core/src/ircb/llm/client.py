@@ -1,5 +1,6 @@
 """LiteLLM client: strict structured output, retries, cost accounting."""
 
+import json
 import re
 import time
 from collections.abc import Callable
@@ -68,14 +69,28 @@ def _response_format(schema: type[BaseModel]) -> dict[str, Any]:
     }
 
 
-_FENCE_RE = re.compile(r"\s*```(?:json)?\s*\n(.*?)\n?\s*```\s*", re.DOTALL | re.IGNORECASE)
+_FENCE_RE = re.compile(r"\s*```(?:json)?\s*\n(.*?)\n?\s*```", re.DOTALL | re.IGNORECASE)
 
 
 def _unfence(content: str) -> str:
-    """The JSON inside a whole-reply markdown fence: hosted open models (gemma4, gpt-oss on
-    ollama.com) ignore ``response_format`` and wrap the object in ```json … ```."""
-    m = _FENCE_RE.fullmatch(content)
+    """The JSON inside a markdown fence that opens the reply: hosted open models (gemma4, gpt-oss on
+    ollama.com) ignore ``response_format``, wrap the object in ```json … ``` and may explain after it;
+    a reply with text before the fence is left as is (and fails validation)."""
+    m = _FENCE_RE.match(content)
     return m.group(1) if m else content
+
+
+def _first_object(content: str) -> str | None:
+    """The first complete JSON object of a reply that goes on after it (gemma4 sometimes writes
+    more after the closing brace); the rest is dropped, the object is still schema-validated."""
+    text = content.lstrip()
+    if not text.startswith("{"):
+        return None
+    try:
+        _obj, end = json.JSONDecoder().raw_decode(text)
+    except ValueError:
+        return None
+    return text[:end] if text[end:].strip() else None
 
 
 def _get(obj: Any, key: str) -> Any:
@@ -167,10 +182,17 @@ class LLMClient:
             pt += rpt
             ct += rct
             cost += self._cost(resp, rpt, rct)
+            payload = _unfence(content)
             try:
-                out = schema.model_validate_json(_unfence(content))
+                out = schema.model_validate_json(payload)
                 return out, Usage(pt, ct, cost)
             except ValidationError as exc:
+                first = _first_object(payload)
+                if first is not None:
+                    try:
+                        return schema.model_validate_json(first), Usage(pt, ct, cost)
+                    except ValidationError:
+                        pass
                 error = exc
                 if schema_try == 0:
                     kwargs["messages"] = [

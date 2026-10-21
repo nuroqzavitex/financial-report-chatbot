@@ -99,6 +99,28 @@ def test_reply_wrapped_in_a_markdown_fence_is_unwrapped(settings: Settings, fenc
     assert isinstance(out, GeneratorOutput) and c._attempts == 1
 
 
+def test_text_after_the_object_is_dropped(settings: Settings) -> None:
+    """Real run own-33: gemma4 wrote more after the closing brace ("trailing characters")."""
+    text = valid_generator_json() + '\n{"status": "answered"}\nDone.'
+    c = LLMClient(settings, completion_fn=sequence([text]))
+    out, _ = c.complete_json("ollama_chat/gemma4:31b", [], GeneratorOutput)
+    assert isinstance(out, GeneratorOutput) and c._attempts == 1
+
+
+def test_text_after_a_leading_fence_is_dropped(settings: Settings) -> None:
+    """Real run own-36: the fenced object was followed by an explanation of the calc."""
+    text = f"```json\n{valid_generator_json()}\n```\n*Ghi chú: dùng growth.*"
+    c = LLMClient(settings, completion_fn=sequence([text]))
+    out, _ = c.complete_json("ollama_chat/gemma4:31b", [], GeneratorOutput)
+    assert isinstance(out, GeneratorOutput) and c._attempts == 1
+
+
+def test_first_object_that_fails_the_schema_still_fails(settings: Settings) -> None:
+    c = LLMClient(settings, completion_fn=sequence(['{"bad": 1} trailing', '{"bad": 1} trailing']))
+    with pytest.raises(LLMError):
+        c.complete_json("openai/m", [], GeneratorOutput)
+
+
 def test_fence_with_text_around_it_still_fails_validation(settings: Settings) -> None:
     text = f"Here it is:\n```json\n{valid_generator_json()}\n```"
     c = LLMClient(settings, completion_fn=sequence([text, text]))

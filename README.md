@@ -11,7 +11,7 @@ Thiết kế: [`docs/DESIGN.md`](docs/DESIGN.md). Bài nộp: [`SUBMISSION.md`](
 - Python 3.11 (`uv` tự tải nếu máy chưa có)
 - [uv](https://docs.astral.sh/uv/)
 - [Ollama](https://ollama.com) và model embedding `qwen3-embedding:4b` (`ollama pull qwen3-embedding:4b`, ~2,5 GB). `index/` ship cùng repo được embed bằng model này, nên câu hỏi cũng phải được embed bằng chính nó
-- Một LLM: mặc định `openai/gpt-4o` (cần `OPENAI_API_KEY`), hoặc model trên Ollama Cloud qua Ollama đã đăng nhập (`LLM_MODEL=ollama_chat/gpt-oss:120b-cloud`, không cần key; chất lượng thấp hơn, xem phần Đổi provider)
+- Một LLM: mặc định `openai/gpt-4o` (cần `OPENAI_API_KEY`), hoặc model trên Ollama Cloud: `LLM_MODEL=ollama_chat/gemma4:31b` với `OLLAMA_API_BASE=https://ollama.com` và `OLLAMA_API_KEY` (cấu hình đã đo, xem `SUBMISSION.md`), hoặc qua Ollama local đã `ollama signin` (`ollama_chat/gemma4:31b-cloud`, không cần key)
 - Docker: **không bắt buộc**, chỉ cho chế độ production local (bên dưới)
 
 ## Dữ liệu: `data/`
@@ -31,8 +31,7 @@ Chế độ chấm bài: chỉ cần Python, không Docker (Qdrant embedded + SQ
 
 ```bash
 ollama pull qwen3-embedding:4b         # embedding, chạy local
-export OPENAI_API_KEY=sk-...             # PowerShell: $env:OPENAI_API_KEY = "sk-..."
-cp .env.example .env                     # LLM_MODEL mặc định openai/gpt-4o; key lấy từ môi trường hoặc điền vào .env
+cp .env.example .env                     # rồi điền OLLAMA_API_KEY (phần 1 của file); LLM mặc định gemma4:31b trên Ollama Cloud
 uv sync
 uv run ircb ingest data/techcombank-bao-cao-thuong-nien-2025-vie-update.pdf   # chỉ cần nếu index/ chưa có
 uv run ircb chat
@@ -41,8 +40,7 @@ uv run ircb chat
 Kiểm tra từ máy sạch bằng một lệnh (venv tạm, `uv sync`, build index nếu thiếu, chạy 10 câu mẫu, khẳng định đủ 10 dòng và không dòng nào `error`):
 
 ```bash
-export OPENAI_API_KEY=sk-...
-bash scripts/smoke_test.sh               # in "OK 10/10"; thiếu data/ exit 2, thiếu key exit 3, thiếu Ollama/model exit 4
+bash scripts/smoke_test.sh               # in "OK 10/10"; thiếu data/ exit 2, thiếu key của LLM_MODEL exit 3, thiếu Ollama/model exit 4
 ```
 
 Lần đầu `ircb chat` / `ircb batch` tự nạp `index/` vào `var/qdrant` và `var/app.db` (`AUTO_LOAD_INDEX=true`).
@@ -108,7 +106,7 @@ Cả hai chế độ query Qdrant với `exact=True`, và RRF được gộp ph�
 
 ### Chạy toàn bộ bằng Docker
 
-`docker-compose.yml` dựng đủ bốn service: Qdrant `:6333`, PostgreSQL `:5432`, API `:8000`, web `:3000` (API và web chỉ mở trên `127.0.0.1`). Cần có sẵn trên máy: `.env` (ít nhất `OPENAI_API_KEY`, `LLM_MODEL`), `index/` đã build và PDF trong `data/`. Hai thư mục này được mount read-only lúc chạy, không bao giờ nằm trong image.
+`docker-compose.yml` dựng đủ bốn service: Qdrant `:6333`, PostgreSQL `:5432`, API `:8000`, web `:3000` (API và web chỉ mở trên `127.0.0.1`). Cần có sẵn trên máy: `.env` (ít nhất `LLM_MODEL` và key của nó), `index/` đã build và PDF trong `data/`. Hai thư mục này được mount read-only lúc chạy, không bao giờ nằm trong image.
 
 ```bash
 docker compose up -d --build --wait      # lần đầu build image (~vài phút); API tự nạp index/ vào Qdrant + Postgres
@@ -165,7 +163,7 @@ uv run python eval/runners/judge_agreement.py eval/scoring/score_sheet.csv eval/
 Lõi `ircb` có thêm một API FastAPI (`apps/api`, gói `ircb_api`) và một giao diện Next.js (`apps/web`). Cả hai chỉ là lớp mỏng: API gọi `AnswerService`, `PageRenderer`, `SqlFactStore`, `SessionRepo` và ánh xạ sang DTO; mọi kiểm tra số liệu vẫn nằm ở lõi. Claim bị verifier loại không bao giờ xuất hiện trong phản hồi. SSE chỉ stream trạng thái các bước, câu trả lời được gửi một lần sau khi verifier chạy xong.
 
 ```bash
-# Terminal 1: API (cần index/ đã nạp và OPENAI_API_KEY)
+# Terminal 1: API (cần index/ đã nạp và key của LLM_MODEL)
 uv run uvicorn ircb_api.main:app --port 8000          # thêm --reload khi phát triển
 # hoặc: uv run python -m ircb_api                      # chạy uvicorn trên API_HOST/API_PORT (mặc định 127.0.0.1:8000)
 
