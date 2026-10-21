@@ -4,15 +4,15 @@
 
 Thiết kế: [`docs/DESIGN.md`](docs/DESIGN.md). Bài nộp: [`SUBMISSION.md`](SUBMISSION.md). Nhật ký làm việc: [`docs/worklog.md`](docs/worklog.md). Quyết định kiến trúc: [`docs/adr/`](docs/adr/).
 
-> **Trạng thái:** toàn bộ mã và test offline đã xong. Chưa có lần chạy nào với OpenAI API thật, nên `index/` **chưa được build và commit** và chưa có số liệu eval. Xem mục [Build index](#build-index) và `SUBMISSION.md`.
+> **Trạng thái:** `index/` đã build và commit sẵn (embedding `qwen3-embedding:4b`), nên clone về là chạy được, không cần build lại. Cấu hình đã đo: LLM `gemma4:31b` trên Ollama Cloud; số liệu eval, độ trễ và chi phí nằm trong `SUBMISSION.md`.
 
 ## Yêu cầu
 
 - Python 3.11 (`uv` tự tải nếu máy chưa có)
 - [uv](https://docs.astral.sh/uv/)
 - [Ollama](https://ollama.com) và model embedding `qwen3-embedding:4b` (`ollama pull qwen3-embedding:4b`, ~2,5 GB). `index/` ship cùng repo được embed bằng model này, nên câu hỏi cũng phải được embed bằng chính nó
-- Một LLM: mặc định `openai/gpt-4o` (cần `OPENAI_API_KEY`), hoặc model trên Ollama Cloud: `LLM_MODEL=ollama_chat/gemma4:31b` với `OLLAMA_API_BASE=https://ollama.com` và `OLLAMA_API_KEY` (cấu hình đã đo, xem `SUBMISSION.md`), hoặc qua Ollama local đã `ollama signin` (`ollama_chat/gemma4:31b-cloud`, không cần key)
-- Docker: **không bắt buộc**, chỉ cho chế độ production local (bên dưới)
+- Một LLM. Mặc định trong `.env.example`: `gemma4:31b` trên Ollama Cloud, cần `OLLAMA_API_KEY` (tạo miễn phí tại https://ollama.com/settings/keys). Thay thế: Ollama local đã `ollama signin` (không cần key), hoặc `openai/gpt-4o` với `OPENAI_API_KEY`
+- Docker: **không bắt buộc**, chỉ cho chế độ production local (bên dưới). Kể cả khi chạy bằng Docker, Ollama vẫn phải chạy trên máy để embed câu hỏi
 
 ## Dữ liệu: `data/`
 
@@ -33,21 +33,21 @@ Chế độ chấm bài: chỉ cần Python, không Docker (Qdrant embedded + SQ
 ollama pull qwen3-embedding:4b         # embedding, chạy local
 cp .env.example .env                     # rồi điền OLLAMA_API_KEY (phần 1 của file); LLM mặc định gemma4:31b trên Ollama Cloud
 uv sync
-uv run ircb ingest data/techcombank-bao-cao-thuong-nien-2025-vie-update.pdf   # chỉ cần nếu index/ chưa có
-uv run ircb chat
+uv run ircb chat                         # index/ có sẵn; lần đầu tự nạp vào var/ (vài giây)
 ```
 
 Kiểm tra từ máy sạch bằng một lệnh (venv tạm, `uv sync`, build index nếu thiếu, chạy 10 câu mẫu, khẳng định đủ 10 dòng và không dòng nào `error`):
 
 ```bash
 bash scripts/smoke_test.sh               # in "OK 10/10"; thiếu data/ exit 2, thiếu key của LLM_MODEL exit 3, thiếu Ollama/model exit 4
+                                         # (Windows: chạy trong Git Bash)
 ```
 
 Lần đầu `ircb chat` / `ircb batch` tự nạp `index/` vào `var/qdrant` và `var/app.db` (`AUTO_LOAD_INDEX=true`).
 
 ## Build index
 
-`index/` là artefact ship cùng repo (chunks, facts, vector, `manifest.json`), embed bằng `ollama/qwen3-embedding:4b` 1024 chiều. Build lại từ PDF (cần Ollama với model trên):
+`index/` là artefact ship cùng repo (chunks, facts, vector, `manifest.json`), embed bằng `ollama/qwen3-embedding:4b` 1024 chiều. Chỉ cần build lại khi sửa phần trích xuất hoặc `config/` (cần Ollama với model trên; khoảng 3–5 phút, chunk không đổi thì lấy embedding từ cache):
 
 ```bash
 uv run ircb ingest data/techcombank-bao-cao-thuong-nien-2025-vie-update.pdf          # ghi vào ./index
@@ -69,16 +69,15 @@ uv run ircb profile data/<pdf>           # khảo sát cấu trúc PDF (M0)
 Mọi thứ đi qua LiteLLM, đổi bằng biến môi trường (hoặc `.env`). Đổi **embedding** thì phải chạy `uv run ircb index reembed` (manifest kiểm tra lệch lúc khởi động). Đổi riêng LLM thì không cần.
 
 ```bash
-# Mặc định: embedding Qwen3 trên Ollama local, LLM OpenAI
-EMBED_MODEL=ollama/qwen3-embedding:4b
-LLM_MODEL=openai/gpt-4o
-OPENAI_API_KEY=sk-...
-
-# LLM trên Ollama Cloud bằng API key (https://ollama.com/settings/keys), tên model không có "-cloud";
-# embedding vẫn chạy trên Ollama local (EMBED_API_BASE, mặc định http://localhost:11434)
+# Mặc định (.env.example): LLM trên Ollama Cloud bằng API key, tên model không có "-cloud";
+# embedding Qwen3 chạy trên Ollama local (EMBED_API_BASE, mặc định http://localhost:11434)
 LLM_MODEL=ollama_chat/gemma4:31b
 OLLAMA_API_BASE=https://ollama.com
 OLLAMA_API_KEY=...
+
+# OpenAI
+LLM_MODEL=openai/gpt-4o
+OPENAI_API_KEY=sk-...
 
 # Không cần key: LLM trên Ollama Cloud qua Ollama local đã đăng nhập (`ollama signin`)
 LLM_MODEL=ollama_chat/gemma4:31b-cloud
@@ -90,7 +89,7 @@ OPENAI_API_KEY=sk-...
 # rồi: uv run ircb index reembed
 ```
 
-Đã chạy thật (dev eval, 25 câu): embedding Qwen3 tìm kiếm ngang OpenAI `text-embedding-3-large` (cùng câu hỏi đã viết lại: Recall@8 0,773 cả hai, MRR 0,655 so với 0,666). Với LLM, GPT-4o tốt hơn rõ: `gpt-oss:120b` qua Ollama Cloud làm bộ kiểm tra loại 44% ý (GPT-4o: 21%) và từ chối 13/25 câu (GPT-4o: 7/25). Generator dùng structured outputs strict nên model khác có thể trả JSON lệch schema và dòng đó sẽ có `status="error"`. Nếu model không hỗ trợ `temperature=0` thì dùng `LLM_SEED` (mặc định 42). Chi phí chỉ được tính khi đặt `LLM_PRICE_IN` / `LLM_PRICE_OUT` (USD cho 1M token). Bảng đầy đủ các biến môi trường nằm ở `SUBMISSION.md` và `.env.example`.
+Đã chạy thật trên tập dev (25 câu, `suggested_correct` đúng / một phần / sai): `gemma4:31b` 14 / 3 / 8, `openai/gpt-4o` 13 / 4 / 7, `gpt-oss:120b` 9 / 2 / 13; embedding Qwen3 tìm kiếm ngang OpenAI `text-embedding-3-large` (chi tiết trong `SUBMISSION.md`, ADR 0022 và 0023). Model trên Ollama Cloud bỏ qua structured outputs: client nhận cả JSON bọc trong khối ```` ```json ```` hay có chữ thừa phía sau, rồi vẫn kiểm schema chặt; JSON sai schema sau một lần thử lại thì dòng đó có `status="error"`. Nếu model không hỗ trợ `temperature=0` thì dùng `LLM_SEED` (mặc định 42). Chi phí chỉ được tính khi đặt `LLM_PRICE_IN` / `LLM_PRICE_OUT` (USD cho 1M token). Bảng đầy đủ các biến môi trường nằm ở `SUBMISSION.md` và `.env.example`.
 
 ## Hai chế độ chạy
 
@@ -106,7 +105,7 @@ Cả hai chế độ query Qdrant với `exact=True`, và RRF được gộp ph�
 
 ### Chạy toàn bộ bằng Docker
 
-`docker-compose.yml` dựng đủ bốn service: Qdrant `:6333`, PostgreSQL `:5432`, API `:8000`, web `:3000` (API và web chỉ mở trên `127.0.0.1`). Cần có sẵn trên máy: `.env` (ít nhất `LLM_MODEL` và key của nó), `index/` đã build và PDF trong `data/`. Hai thư mục này được mount read-only lúc chạy, không bao giờ nằm trong image.
+`docker-compose.yml` dựng đủ bốn service: Qdrant `:6333`, PostgreSQL `:5432`, API `:8000`, web `:3000` (API và web chỉ mở trên `127.0.0.1`). Cần có sẵn trên máy: `.env` (ít nhất `LLM_MODEL` và key của nó), `index/` và PDF trong `data/` (đều có trong repo; mount read-only lúc chạy, không bao giờ nằm trong image), và **Ollama đang chạy với `qwen3-embedding:4b`**: container API gọi `host.docker.internal:11434` để embed câu hỏi.
 
 ```bash
 docker compose up -d --build --wait      # lần đầu build image (~vài phút); API tự nạp index/ vào Qdrant + Postgres
@@ -115,7 +114,8 @@ docker compose logs -f api               # xem log API
 docker compose down                      # dừng (giữ dữ liệu); thêm -v để xóa cả volume Qdrant/Postgres
 ```
 
-- API đọc `.env` qua `env_file`; các biến kết nối (`QDRANT_URL`, `DATABASE_URL`, đường dẫn index/PDF/cache) do compose đặt sẵn.
+- API đọc `.env` qua `env_file`; các biến kết nối (`QDRANT_URL`, `DATABASE_URL`, đường dẫn index/PDF/cache) do compose đặt sẵn. Embedding luôn gọi Ollama trên máy host; LLM theo `OLLAMA_API_BASE` trong `.env` (`https://ollama.com` với key, hoặc để trống để dùng Ollama trên host).
+- Sửa code hay prompt thì build lại: `docker compose up -d --build --wait api` (prompt nằm trong image). Build lại `index/` thì chỉ cần `docker compose restart api`: API nạp lại khi `index_version` đổi.
 - Web được build với `NEXT_PUBLIC_API_URL=http://localhost:8000` (địa chỉ trình duyệt gọi tới). Đổi cổng API thì sửa build arg trong `docker-compose.yml` rồi `docker compose build web`.
 - Trace JSONL được ghi ra `./traces` trên máy host.
 
@@ -139,7 +139,7 @@ uv run ircb batch data/sample_questions.json --out eval/reports/run.jsonl [--con
 
 ## Eval
 
-Bộ câu tự xây: `eval/datasets/own_questions.jsonl` (50 câu, 25 dev / 25 test). Bộ đối nghịch của verifier: `eval/datasets/adversarial.jsonl` (60 dòng; chạy như unit test trong suite, không cần API).
+Bộ câu tự xây: `eval/datasets/own_questions.jsonl` (50 câu, 25 dev / 25 test). Bộ đối nghịch của verifier: `eval/datasets/adversarial.jsonl` (64 dòng; chạy như unit test trong suite, không cần API).
 
 ```bash
 # trả lời tập dev bằng AnswerService rồi chấm (Recall@8, MRR, citation hit, refusal, unit, chỉ số vận hành)
@@ -149,12 +149,12 @@ uv run ircb eval --split test --run      # chỉ chạy để báo cáo số cu�
 uv run ircb eval --split dev --batch-out eval/reports/batch_out.jsonl
 ```
 
-Kết quả ghi vào `eval/reports/<timestamp>_<commit>.json` và phiếu chấm tay `eval/scoring/score_sheet.csv`. RAGAS (tùy chọn; `JUDGE_MODEL` nên khác `LLM_MODEL`) và độ đồng thuận với người chấm:
+Kết quả ghi vào `eval/reports/<timestamp>_<commit>.json` và phiếu chấm tay `eval/scoring/score_sheet.csv`. RAGAS (tùy chọn; judge phải khác `LLM_MODEL`, ví dụ `ollama_chat/nemotron-3-ultra` qua cùng `OLLAMA_API_BASE`/`OLLAMA_API_KEY`, hoặc `openai/gpt-4o-mini`) và độ đồng thuận với người chấm:
 
 ```bash
 uv sync --group eval
-uv run python eval/runners/ragas_eval.py --judge $JUDGE_MODEL --split dev
-uv run python eval/runners/ragas_eval.py --judge $JUDGE_MODEL --adversarial eval/datasets/adversarial.jsonl
+uv run --group eval python eval/runners/ragas_eval.py --judge ollama_chat/nemotron-3-ultra --split dev
+uv run --group eval python eval/runners/ragas_eval.py --judge ollama_chat/nemotron-3-ultra --adversarial eval/datasets/adversarial.jsonl
 uv run python eval/runners/judge_agreement.py eval/scoring/score_sheet.csv eval/reports/ragas_<ts>.json
 ```
 
@@ -167,7 +167,7 @@ Lõi `ircb` có thêm một API FastAPI (`apps/api`, gói `ircb_api`) và một 
 uv run uvicorn ircb_api.main:app --port 8000          # thêm --reload khi phát triển
 # hoặc: uv run python -m ircb_api                      # chạy uvicorn trên API_HOST/API_PORT (mặc định 127.0.0.1:8000)
 
-# Terminal 2: web (Node 20+, pnpm)
+# Terminal 2: web (Node 24, pnpm 9)
 pnpm --dir apps/web install
 cp apps/web/.env.local.example apps/web/.env.local     # NEXT_PUBLIC_API_URL=http://localhost:8000
 pnpm --dir apps/web dev                                # http://localhost:3000
@@ -175,7 +175,7 @@ pnpm --dir apps/web dev                                # http://localhost:3000
 
 Sau khi đổi schema API, sinh lại kiểu TypeScript: `make gen-types` (không có `make`: `uv run python -m ircb_api.openapi apps/web/openapi.json` rồi `pnpm --dir apps/web gen:types`, xem `Makefile`).
 
-**Trình xem trang cần PDF.** Ảnh trang in (có tô sáng vùng chứa con số) được render từ `data/…pdf` (`PDF_PATH`). Thiếu PDF thì `/v1/pages/{n}/image` trả HTTP 503 `{"code": "pdf_missing"}` và web hiển thị đoạn bằng chứng dạng chữ thay cho ảnh. Ảnh được cache ở `PAGE_CACHE_DIR` (`./var/page_cache`, không commit).
+**Trình xem trang cần PDF.** Ảnh trang in được render từ `data/…pdf` (`PDF_PATH`), đoạn bằng chứng được highlight vàng (không thấy nguyên câu trên trang thì highlight từng cụm 6 chữ khớp; fact trong bảng hay ô KPI thì highlight vùng của nó). Nút "Xem báo cáo" trên header mở toàn bộ PDF trong tab mới. Thiếu PDF thì `/v1/pages/{n}/image` và `/v1/report.pdf` trả HTTP 503 `{"code": "pdf_missing"}` và web hiển thị đoạn bằng chứng dạng chữ thay cho ảnh. Ảnh được cache ở `PAGE_CACHE_DIR` (`./var/page_cache`, không commit); trình duyệt hỏi lại server mỗi lần xem (`ETag`, 304 khi không đổi).
 
 | Endpoint | Mô tả |
 |---|---|
@@ -184,7 +184,8 @@ Sau khi đổi schema API, sinh lại kiểu TypeScript: `make gen-types` (khôn
 | `GET /v1/sessions` | Các phiên của người gọi, mới nhất trước (tiêu đề là câu hỏi đầu) |
 | `GET /v1/sessions/{id}` | Một phiên, kèm nguyên câu trả lời đã gửi (claim, trang, phép tính) |
 | `DELETE /v1/sessions/{id}` | Xoá một phiên |
-| `GET /v1/pages/{printed}/image?source=&evidence=` | PNG trang in số `printed`, tô sáng vùng bằng chứng |
+| `GET /v1/pages/{printed}/image?source=&evidence=` | PNG trang in số `printed`, highlight vàng đoạn bằng chứng |
+| `GET /v1/report.pdf` | Toàn bộ báo cáo (PDF, mở trong trình duyệt) |
 | `GET /v1/facts?q=&period=&limit=` | Tra fact (giá trị là chuỗi Decimal) |
 | `GET /v1/traces/{trace_id}` | Trace một câu; chỉ bật khi `APP_ENV=dev` |
 
@@ -232,7 +233,9 @@ apps/cli/src/ircb_cli/    lệnh `ircb` (typer): ingest, index, chat, batch, eva
 apps/api/src/ircb_api/    API FastAPI: routers, mapping.py (core sang DTO), SSE
 apps/web/                 giao diện Next.js: chat, thẻ trả lời, trình xem trang
 eval/                     dataset, runner chấm điểm, RAGAS, độ đồng thuận
-config/                   sections.json, images.json, glossary_extra.json
-docs/                     spec, ADR, worklog, mẫu SUBMISSION
+config/                   sections.json (chương), units.json (khối / công ty con), images.json, glossary_extra.json
+docs/                     thiết kế, ADR, worklog
+infra/docker/             Dockerfile của API và web
+.github/workflows/        CI và publish image lên ghcr.io
 scripts/                  profile_pdf.py, smoke_test.sh
 ```

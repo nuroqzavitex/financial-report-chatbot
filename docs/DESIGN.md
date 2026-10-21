@@ -2,6 +2,8 @@
 
 > Tài liệu thiết kế MVP · Kiến trúc · Tech stack · Cấu trúc dự án
 > Trạng thái: Draft · Package Python tạm: `ircb` (đổi khi chốt tên dự án)
+>
+> **Lưu ý:** đây là thiết kế ban đầu. Các quyết định thay đổi sau đó nằm trong `docs/adr/` và có hiệu lực hơn tài liệu này, đáng chú ý: embedding là `ollama/qwen3-embedding:4b` (ADR 0021–0023, không phải bge-m3); LLM đã đo là `gemma4:31b` trên Ollama Cloud. Cách chạy và biến môi trường hiện hành: `README.md`, `.env.example`, `SUBMISSION.md`.
 
 ---
 

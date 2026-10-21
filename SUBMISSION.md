@@ -143,7 +143,7 @@ Số đo offline liên quan: độ phủ con số của bảng BCTC là 2.124/2.
 ## What I deliberately did not build
 Theo thiết kế:
 - **Web UI và API là bản gọn:** đề không chấm web nên chỉ làm phần cần để kiểm chứng trích dẫn (chat, thẻ trả lời, trình xem trang). Lõi vẫn không import `fastapi` (import-linter canh).
-- **Deploy cloud, CI:** ngoài phạm vi take-home; hệ thống chạy hoàn toàn trên máy local (LLM gọi Ollama Cloud). Lịch sử chat (API `GET/DELETE /v1/sessions`, panel lịch sử trên web) và đăng nhập Clerk tùy chọn đã có; quản lý người dùng ngoài phần đó (vai trò, quota) thì không làm.
+- **Deploy cloud:** ngoài phạm vi take-home; hệ thống chạy hoàn toàn trên máy local (LLM gọi Ollama Cloud). CI thì có (`.github/workflows/ci.yml`: lint, mypy, pytest, test tích hợp trên Qdrant + PostgreSQL thật, web; push lên `main` đẩy image API và web lên ghcr.io, xem README). Lịch sử chat (API `GET/DELETE /v1/sessions`, panel lịch sử trên web) và đăng nhập Clerk tùy chọn đã có; quản lý người dùng ngoài phần đó (vai trò, quota) thì không làm.
 - **OCR hàng loạt:** thử rồi, không tìm ra số mới (xem trên).
 - **Reranker:** chỉ thêm nếu eval cho thấy `R-miss` cao; chưa có số để biện minh.
 - **Mô tả ảnh bằng VLM:** chỉ 1 ảnh có thông tin (sơ đồ, không chứa số); `VLM_MODEL` là tùy chọn, chưa dùng.
@@ -158,7 +158,7 @@ Theo thứ tự ưu tiên:
 2. Lỗi trích xuất còn lại: bảng fallback của QA độ phủ dựng "bảng" từ trang infographic (101 chunk trên 39 trang, 16 fact phần lớn sai nhãn). (Lỗi tên khối không theo sang trang sau đã sửa: `config/units.json` gắn tên khối vào chunk prose/bảng; retrieval dev Recall@8 0,818 → 0,864, test 0,682 → 0,773; own-07 nay trả lời đúng tr. 71. Chưa chạy lại eval đầy đủ sau sửa.)
 3. Giảm chặn nhầm của verifier dựa trên số liệu eval: thêm danh từ đếm được (khách hàng, thẻ, tài khoản) làm đơn vị đếm; đưa ngữ cảnh KPI (chương/mục, ví dụ "TCBS") vào mô tả fact; xử lý nốt các điểm đã ghi trong "deferred" của worklog (qualifier của phân đoạn, nội dung sau từ chỉ chiều).
 4. Eval lớn hơn và chấm bởi người thứ hai, thêm alt-pages cho gold nhiều trang hợp lệ; chạy lại cạnh Anthropic để có số cho mục "đổi provider".
-5. Đưa test tích hợp Qdrant server + PostgreSQL (đã chạy với Docker) vào CI và chạy trên toàn bộ index thật mỗi lần build lại.
+5. Chạy test tích hợp hai chế độ trên toàn bộ index thật trong CI (hiện CI chạy trên index tổng hợp và phần so sánh dùng index ship sẵn).
 6. Reranker nếu `R-miss` còn cao (benchmark embedding đã làm trên 22 câu dev, xem ADR 0023; cần tập lớn hơn); mô tả ảnh bằng VLM.
 7. Đo thời gian kiểm chứng trích dẫn của người dùng trên trình xem trang.
 8. Scale lên nhiều tài liệu: page map tổng quát, Table QA thành cổng bắt buộc, Qdrant có replication/quantization, Postgres partition theo `doc_id`, ingestion thành worker xếp hàng (spec §11).
