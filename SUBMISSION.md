@@ -49,56 +49,104 @@
 ## Depth track(s) chosen
 **Chính: Document Intelligence. Phụ: Retrieval & Reasoning (gọn).**
 
-Khảo sát tài liệu (M0, `scripts/profile_pdf.py`, ~62 giây CPU) cho thấy rủi ro lớn nhất nằm ở bước trích xuất, không ở retrieval: 196/197 trang là spread A3 (mỗi trang PDF chứa hai trang in, nên chunk, bảng và citation phải tách theo nửa trang); 6 bảng vắt qua khe giữa; ba thang đơn vị cùng tồn tại (`nghìn tỷ đồng` ở ô KPI, `tỷ đồng` ở bảng tổng quan, `triệu đồng` ở BCTC, chênh nhau tới 10^6 lần); mũi tên ▲/▼ trên ô KPI là hình vector nên text mất dấu tăng/giảm; ô KPI bị trộn khi đọc theo stream; cùng một nhãn lặp ở dòng cha và dòng con chỉ lệch 4pt thụt lề. Retrieval tốt đến đâu cũng không cứu được một con số đã bị gán sai dòng hay sai đơn vị từ lúc ingest. Độ phủ bảng 98,6% ngay từ baseline cho thấy track này làm xong được trong ngân sách thời gian.
+Khảo sát tài liệu trước khi thiết kế (`scripts/profile_pdf.py`, ~62 giây CPU) cho thấy rủi ro lớn nhất nằm ở bước trích xuất, không ở retrieval: 196/197 trang là spread A3 (mỗi trang PDF chứa hai trang in, nên chunk, bảng và citation phải tách theo nửa trang); 6 bảng vắt qua khe giữa; ba thang đơn vị cùng tồn tại (`nghìn tỷ đồng` ở ô KPI, `tỷ đồng` ở bảng tổng quan, `triệu đồng` ở BCTC, chênh nhau tới 10^6 lần); mũi tên ▲/▼ trên ô KPI là hình vector nên text mất dấu tăng/giảm; ô KPI bị trộn khi đọc theo stream; cùng một nhãn lặp ở dòng cha và dòng con chỉ lệch 4pt thụt lề. Retrieval tốt đến đâu cũng không cứu được một con số đã bị gán sai dòng hay sai đơn vị từ lúc ingest. Độ phủ bảng 98,6% ngay từ baseline cho thấy track này làm xong được trong ngân sách thời gian.
 
 Track phụ chỉ giữ phần rẻ mà hiệu quả: hybrid BM25 + dense với RRF, mở rộng glossary, phép tính khai báo thực thi bằng code. Lý do chi tiết: `docs/DESIGN.md` và các ADR trong `docs/adr/`.
 
 ## Architecture
-Thiết kế (kèm sơ đồ mermaid): `docs/DESIGN.md`. Tóm tắt:
+Nguyên tắc: **LLM viết câu, code kiểm tra.** LLM chỉ được gọi ở hai chỗ (viết lại câu hỏi và soạn câu trả lời). Mọi thứ người phân tích sẽ dán vào email (con số, đơn vị, số trang, phép tính, quyết định từ chối với kỳ ngoài báo cáo) đều do code quyết định hoặc kiểm tra. Ý nào không kiểm chứng được bị loại; câu trả lời thành `partial` hoặc bị từ chối, không bao giờ "đoán".
 
-**Ingestion** (chạy một lần, kết quả ship trong `index/`; ba bước extract, normalize, embed, mỗi bước có cổng chất lượng):
-1. *Spread splitter + page map:* mỗi trang PDF p thành nửa trái/phải, số trang in = `2p−2` / `2p−1`, kiểm tra với header từng trang; lệch ở bất kỳ trang nào thì fail build.
-2. *Layout:* tách theo word/span, bỏ furniture (header lặp, số trang) và footnote superscript.
-3. *Bảng:* PyMuPDF `find_tables` theo nửa trang (bảng vắt gutter trích trên cả spread, cite `[tr. N, N+1]`), thêm bước kiểm tra độ phủ số và fallback gom từ theo tọa độ cho nửa trang phủ thấp; suy ra cấp dòng cha/con từ x0 và bold, đơn vị từ header cột hoặc dòng "Đơn vị".
-4. *Ô KPI:* parser theo tọa độ (nhãn, số lớn, đơn vị bên phải hoặc bên dưới, mô tả) và đọc chiều tăng/giảm từ hình học vector của mũi tên; không đọc được thì `direction=unknown`.
-5. *Chuẩn hóa:* số kiểu Việt Nam (`1.192,34`), đơn vị bắt buộc trên mọi fact, `decimal.Decimal` xuyên suốt. Ra `chunks.jsonl` (mỗi chunk thuộc một trang in), `facts.jsonl`, glossary từ bảng viết tắt tr. 386–387.
-6. *Embed:* `qwen3-embedding:4b` qua Ollama, 1024 chiều (cache theo hash) cộng BM25 sparse tự tính, nạp vào Qdrant (embedded hoặc server) và SQL (SQLite hoặc PostgreSQL). Giá trị số của fact chỉ nằm trong SQL.
+```mermaid
+flowchart TB
+    subgraph ING["Ingestion: chạy một lần, kết quả ship trong index/"]
+        PDF[PDF 197 trang A3] --> SP[Tách spread thành 2 nửa trang<br/>page map: tr. 2p−2 / 2p−1, lệch thì fail]
+        SP --> LAY[Layout: word/span, bỏ header/footer lặp]
+        LAY --> TB[Bảng: find_tables + kiểm độ phủ số<br/>+ fallback tọa độ; dòng cha/con]
+        LAY --> KPI[Ô KPI: parser tọa độ<br/>chiều ▲/▼ từ hình vector]
+        LAY --> PR[Văn xuôi, glossary tr. 386–387, ảnh]
+        TB & KPI --> FN[Chuẩn hóa: số kiểu VN → Decimal + đơn vị]
+        TB & KPI & PR --> CK[Chunk: 1 chunk thuộc 1 trang in<br/>tiền tố chương / khối]
+        FN --> ART[(index/: facts.jsonl, chunks.jsonl,<br/>vectors.parquet, glossary, manifest)]
+        CK --> EMB[Embed qwen3-embedding:4b + BM25] --> ART
+    end
+    subgraph QRY["Mỗi câu hỏi"]
+        Q[Câu hỏi + lịch sử] --> PG{Period guard<br/>kỳ ngoài báo cáo?}
+        PG -- có --> REF[Từ chối + trang gợi ý]
+        PG -- không --> RW[Rewriter LLM<br/>câu độc lập + metrics/periods/entity]
+        RW --> PF[Prefetch: hybrid chunk + tra fact]
+        PF --> GATE{Score gate}
+        GATE -- thấp --> REF
+        GATE -- đủ --> GEN[Generator LLM<br/>JSON: claims + nguồn + phép tính khai báo]
+        GEN --> CALC[Calc executor Decimal]
+        CALC --> VER[Verifier deterministic]
+        VER --> REN[Renderer: tr. N từ metadata<br/>câu cố định cho partial / mâu thuẫn]
+    end
+    ART -.nạp lần đầu.-> DB[(Qdrant: vector<br/>SQL: giá trị fact)]
+    DB -.-> PF
+    DB -.-> VER
+```
 
-**Query** (code lấy trước dữ liệu, LLM gọi một lần, không agent loop, ADR 0018):
-1. *Period guard* xác định (không LLM): kỳ ngoài tài liệu (ví dụ năm 2027) bị từ chối ngay, kèm trang gợi ý.
-2. *Rewriter* trả câu hỏi độc lập cùng `metrics[]`, `periods[]`, `entity` (state có cấu trúc giữa các lượt) và glossary expander.
-3. *Prefetch song song:* hybrid chunk + `lookup_fact` cho mỗi cặp metric x period, một request embedding; score gate thấp thì từ chối.
-4. *Generator* một lần gọi (structured outputs strict): JSON gồm claims có `fact:<id>` / `chunk:<id>` và các phép tính khai báo (`calcs`); tối đa một vòng `need_fact` có kiểm soát.
-5. *Calc executor* tính bằng Decimal rồi điền chỗ trống `{cN}`, kèm chiều tăng/giảm do code render; model không bao giờ thấy kết quả (ADR 0019).
-6. *Verifier* deterministic kiểm từng claim: số có trong nguồn, đúng đơn vị và thang, trang cite chứa claim, từ chỉ chiều khớp nguồn. Claim sai bị loại và câu trả lời là `partial` với một câu cố định chỉ nêu trang, không lặp lại nội dung claim bị loại; hết claim thì từ chối (ADR 0020). Số trang chỉ lấy từ metadata, model không tự viết số trang.
+**Ingestion** (`uv run ircb ingest`, khoảng 3 phút trên máy dev; mỗi bước có cổng chất lượng, build trong thư mục tạm và chỉ thay `index/` khi mọi cổng đều qua):
+1. *Spread và page map:* 196/197 trang PDF là spread A3 chứa hai trang in. Mỗi trang PDF p được tách thành nửa trái (tr. 2p−2) và nửa phải (tr. 2p−1); số trang suy ra được đối chiếu với số in trên header từng trang, lệch ở bất kỳ trang nào thì build thất bại. Mọi chunk và fact mang số trang in, không phải số trang PDF.
+2. *Layout:* đọc theo word/span, loại furniture (header/footer lặp, số trang) và chỉ số chú thích superscript.
+3. *Bảng BCTC:* PyMuPDF `find_tables` theo nửa trang; bảng vắt qua khe giữa được trích trên cả spread và cite `[tr. N, N+1]`. Bước QA đếm số trong text layer so với số trong bảng; nửa trang phủ thấp thì gom từ theo tọa độ. Cấp dòng cha/con suy từ thụt lề x0 và chữ đậm; dòng "Tổng" chỉ được gọi là tổng khi cộng Decimal các dòng trên khớp. Đơn vị lấy từ header cột hoặc dòng "Đơn vị".
+4. *Ô KPI:* parser theo tọa độ ghép nhãn, số lớn, đơn vị và mô tả; chiều tăng/giảm đọc từ hình học vector của mũi tên ▲/▼ (text layer không có dấu này), không đọc được thì `unknown`.
+5. *Văn xuôi, glossary, ảnh:* văn xuôi theo thứ tự stream (đúng cho bố cục nhiều cột); số infographic được ghép với chú thích của nó; glossary viết tắt tr. 386–387 thành bảng mở rộng truy vấn (CASA ↔ tiền gửi không kỳ hạn); 251 ảnh được phân loại trang trí / có thông tin (`config/images.json`).
+6. *Chuẩn hóa fact:* số kiểu Việt Nam (`1.192,34`, `53,4`) thành `decimal.Decimal`, đơn vị bắt buộc trên mọi fact (`nghìn tỷ đồng`, `tỷ đồng`, `triệu đồng`, `%`, ...), kèm nhãn, kỳ, cấp dòng, trang. Thiếu đơn vị thì build thất bại.
+7. *Chunk và embed:* mỗi chunk thuộc đúng một trang in (trừ bảng vắt gutter), có tiền tố chương và tên khối / công ty con của trang đó (`config/units.json`, vì tên khối chỉ in ở trang đầu mục). Embed bằng `qwen3-embedding:4b` (1024 chiều) qua Ollama, cache theo hash nội dung; BM25 sparse tự tính với tokenizer tiếng Việt.
 
-**API và web** (ngoài phạm vi chấm, có sẵn để xem): `apps/api` (FastAPI, SSE chỉ stream trạng thái, câu trả lời gửi một lần sau verifier, không rò claim bị loại) và `apps/web` (Next.js: chat, thẻ trả lời có chip trích dẫn/phép tính, trình xem trang in tô sáng bằng chứng, cần PDF trong `data/`; lịch sử chat lưu trong DB, mở lại phiên cũ thấy đúng các claim đã gửi; một người dùng, không đăng nhập). Cách chạy: mục "API và Web" trong `README.md`. Chưa đo gì thêm cho phần này ngoài test offline và các lần chạy thử tay (xem `docs/worklog.md`).
+Kết quả ship trong `index/`: `chunks.jsonl` (1.145), `facts.jsonl` (2.974), `vectors.parquet`, `glossary.json`, `page_map.json`, `manifest.json` (model, số chiều, phiên bản). Lần chạy đầu, hệ thống nạp artefact vào Qdrant và SQL mà không embed lại; manifest lệch thì nạp lại.
 
-Hai chế độ chạy cùng code: chấm bài (Qdrant embedded + SQLite, không Docker) và production local (`docker-compose.yml`: Qdrant server + PostgreSQL + API + web), cả hai đều query `exact=True` và gộp RRF phía client theo thứ tự cố định, nên top-k trùng nhau (test tích hợp trên tập dev đã chạy với Docker).
+**Lưu trữ và truy hồi:**
+- Qdrant có hai collection (`chunks`, `facts`), mỗi điểm có vector dense và vector BM25. **Giá trị số của fact chỉ nằm trong SQL** (SQLite hoặc PostgreSQL, lưu Decimal chính xác); payload Qdrant chỉ có nhãn, kỳ, đơn vị, text. Như vậy con số mà verifier đối chiếu luôn là con số trích từ PDF, không qua vector store.
+- Tìm kiếm hybrid: nhánh dense và nhánh BM25 chạy riêng (`exact=True`), cắt top-k theo thứ tự cố định rồi gộp bằng RRF phía client; truy vấn được mở rộng bằng glossary. Mỗi câu lấy 8 chunk và 8 fact.
+
+**Trả lời một câu hỏi** (code lấy dữ liệu trước, LLM gọi một lần, không agent loop):
+1. *Period guard* (không LLM): câu hỏi về một năm không có trong báo cáo (ví dụ dự báo 2027) bị từ chối ngay, kèm trang gợi ý. Năm nằm trong một giai đoạn được in (ví dụ "2026–2030") vẫn được hỏi về định hướng, nhưng hỏi con số của năm đó thì từ chối.
+2. *Rewriter* (LLM): biến câu hỏi nối tiếp thành câu độc lập dựa trên 3 lượt gần nhất và trạng thái có cấu trúc của lượt trước (`metrics`, `periods`, `entity`). Đây là chỗ xử lý đa lượt: "Còn năm trước thì sao?" sau câu tổng tài sản 2025 thành "Tổng tài sản tại 31/12/2024". Period guard chạy lại trên kết quả.
+3. *Prefetch:* một request embedding, tìm hybrid chunk và tra fact cho từng cặp chỉ tiêu × kỳ.
+4. *Score gate:* không có hit nào đủ gần (top-1 của nhánh nào cũng dưới `REFUSAL_THRESHOLD` và không được cả hai nhánh cùng tìm thấy) thì từ chối.
+5. *Generator* (LLM, một lần gọi, JSON theo schema): mỗi claim là một câu kèm nguồn `fact:<id>` hoặc `chunk:<id>` và đoạn bằng chứng trích nguyên văn. Phép tính (tăng trưởng, tỷ lệ, chênh lệch) được *khai báo* bằng tham chiếu tới fact, câu chỉ chứa chỗ trống `{c1}`; model không tự tính và không bao giờ thấy kết quả. Thiếu số liệu thì được xin thêm đúng một lần (`need_fact`). Không có thông tin thì trả `not_found`.
+6. *Calc executor:* tính bằng Decimal, kiểm kỳ (không tính tăng trưởng ngược chiều thời gian), điền kết quả và từ chỉ chiều vào chỗ trống.
+7. *Verifier* (deterministic, fail-closed), kiểm từng claim:
+   - nguồn có thật trong ngữ cảnh đã lấy; bằng chứng là chuỗi con nguyên văn của chunk;
+   - mọi con số trong câu khớp giá trị nguồn sau quy đổi đơn vị và thang (`nghìn tỷ` ↔ `tỷ` ↔ `triệu`), không làm tròn thô hơn nguồn; năm/ngày phải có trong nguồn;
+   - từ chỉ chiều ("tăng", "giảm") gắn với đúng chủ ngữ và khớp chiều của nguồn; nguồn không có chiều thì không được viết "tăng";
+   - phép tính đã chạy thành công.
+   Claim sai bị loại. Còn claim đúng thì câu trả lời là `partial`, kèm một câu cố định chỉ nêu trang, **không lặp lại nội dung claim bị loại**. Hết claim thì từ chối.
+8. *Renderer:* số trang lấy từ metadata của nguồn, không do model viết; ghi `[tr. N]` hoặc `[tr. N, M]` sau từng câu.
+
+**Khi hai nguồn mâu thuẫn:** generator phân loại `rounding` (cùng một số, làm tròn khác nhau: viết một lần, cite mọi trang), `definition` (khác định nghĩa chỉ tiêu) hoặc `genuine` (hai số thật sự khác nhau). Ghi chú tự do của model không bao giờ được hiển thị vì chưa kiểm chứng; renderer thêm một câu cố định theo loại, ví dụ "Hai nguồn trong báo cáo cho số liệu khác nhau — cần kiểm tra."
+
+**Phần nào riêng cho tài liệu này:** quy tắc page map của spread, `config/sections.json` (chương, đơn vị mặc định), `config/units.json` (trang của từng khối), `config/images.json` và vị trí glossary. Phần còn lại (trích bảng có QA độ phủ, parser KPI, chuẩn hóa số và đơn vị tiếng Việt, hybrid retrieval, calc khai báo, verifier) không phụ thuộc vào báo cáo này. Nhiều tài liệu hơn cần page map tổng quát và lọc theo `doc_id` (xem "With 10x").
+
+**Giao diện:** kênh chấm bài là CLI: `ircb chat` (REPL đa lượt) và `ircb batch` (chạy danh sách câu hỏi, câu có `turns` chạy như hội thoại). Có thêm `apps/api` (FastAPI, SSE chỉ stream trạng thái; câu trả lời gửi một lần sau verifier, không rò claim bị loại) và `apps/web` (Next.js: chat, chip trích dẫn, trình xem trang in highlight bằng chứng, nút mở toàn bộ PDF, lịch sử chat). Một người dùng, không đăng nhập. Lõi (`packages/core`) không import web/API (import-linter canh).
+
+**Hai chế độ chạy, cùng code:** chấm bài (Qdrant embedded + SQLite, không Docker) và production local (`docker compose`: Qdrant server + PostgreSQL + API + web). Cả hai truy vấn `exact=True` và gộp RRF phía client theo thứ tự cố định, nên trả về cùng top-k (test tích hợp trên tập dev đã chạy với Docker).
 
 ## What I tried that did not work
 Ghi lại trong lúc làm (xem thêm `docs/worklog.md`). Mỗi mục: đã thử gì, hỏng ra sao, đã đổi gì.
 
-1. **pdfplumber với chiến lược `lines`:** bảng BCTC gần như không có đường kẻ dọc nên pdfplumber trả `None` cho cả cột 31/12/2024 mà không báo lỗi (thử trên PDF 150). Đây là loại lỗi nguy hiểm nhất vì kết quả trông như đúng. Đổi sang PyMuPDF `find_tables` làm mặc định, kèm bộ kiểm tra độ phủ con số (D4).
+1. **pdfplumber với chiến lược `lines`:** bảng BCTC gần như không có đường kẻ dọc nên pdfplumber trả `None` cho cả cột 31/12/2024 mà không báo lỗi (thử trên PDF 150). Đây là loại lỗi nguy hiểm nhất vì kết quả trông như đúng. Đổi sang PyMuPDF `find_tables` làm mặc định, kèm bộ kiểm tra độ phủ con số.
 2. **pdfplumber với chiến lược `text`:** băm vụn chữ ("NỢ PHẢ | I TRẢ"). Bỏ.
 3. **`sort=True` khi đọc văn xuôi:** làm xen kẽ hai cột (so sánh trên PDF 8). Dùng thứ tự stream mặc định của InDesign, vốn đúng cho văn bản nhiều cột.
 4. **Đọc ô KPI theo stream order:** số, mô tả và đơn vị bị tách và xáo trộn, kiểu "Dư nợ vay · Nghìn tỷ đồng ×4 · 328,1 · 26,9% N/N · Thu nhập lãi thuần · 9,4% N/N" (tr. 59), không biết 9,4% thuộc chỉ tiêu nào. Viết parser riêng theo tọa độ; có golden test.
-5. **OCR ảnh để tìm số bị mất khỏi text layer:** thử OCR 272 ảnh lớn, không tìm được ảnh raster nào chứa số liệu vắng mặt trong text layer. Bỏ OCR hàng loạt (D8); text layer đã sạch (Unicode NFC, ToUnicode tốt).
-6. **Heuristic gần kề cho từ chỉ chiều trong verifier:** bản đầu kiểm "tăng/giảm" bằng khoảng cách tới một tín hiệu trong nguồn (cửa sổ từ), nhưng nó rò rỉ giữa các chỉ tiêu: một "giảm" của chỉ tiêu này được chứng nhận bởi tín hiệu của chỉ tiêu bên cạnh (ví dụ ROA, "tổng tài sản có rủi ro"). Sau 5 vòng review, thay bằng ràng buộc theo chủ ngữ mệnh đề: mỗi từ chỉ chiều gắn với chủ ngữ của mệnh đề chứa nó; tín hiệu nguồn chỉ tính khi nhãn fact (hoặc chủ ngữ bằng chứng) khớp chủ ngữ đó; phủ định ("không", "chưa") thì chặn; thiếu hẳn tín hiệu cũng chặn. Cái giá: một số câu hợp lệ bị chặn thành `partial` (xem giới hạn đã biết ở Evaluation).
+5. **OCR ảnh để tìm số bị mất khỏi text layer:** thử OCR 272 ảnh lớn, không tìm được ảnh raster nào chứa số liệu vắng mặt trong text layer. Bỏ OCR hàng loạt; text layer đã sạch (Unicode NFC, ToUnicode tốt).
+6. **Heuristic gần kề cho từ chỉ chiều trong verifier:** bản đầu kiểm "tăng/giảm" bằng khoảng cách tới một tín hiệu trong nguồn (cửa sổ từ), nhưng nó rò rỉ giữa các chỉ tiêu: một "giảm" của chỉ tiêu này được chứng nhận bởi tín hiệu của chỉ tiêu bên cạnh (ví dụ ROA, "tổng tài sản có rủi ro"). Sau 5 vòng review, thay bằng ràng buộc theo chủ ngữ mệnh đề: mỗi từ chỉ chiều gắn với chủ ngữ của mệnh đề chứa nó; tín hiệu nguồn chỉ tính khi nhãn fact (hoặc chủ ngữ bằng chứng) khớp chủ ngữ đó; phủ định ("không", "chưa") thì chặn; thiếu hẳn tín hiệu cũng chặn. Cái giá: một số câu hợp lệ bị chặn thành `partial` (xem mục 3 của "With 10x").
 7. **RAGAS 0.3 trở lên:** kéo `instructor` có giới hạn `rich<15`, làm hạ cấp ngăn xếp CLI. Ghim `ragas==0.2.15` trong nhóm phụ thuộc tùy chọn `eval` (`uv sync --group eval`); đổi lại là API metric cũ hơn, và RAGAS kéo LangChain gián tiếp (chỉ trong nhóm eval, mã của dự án không dùng LangChain).
 8. **"13 ô KPI trên tr. 5":** thiết kế ban đầu (và prototype) đếm 13 ô, nhưng test golden chỉ khớp 12: ô thứ 13 là tiêu đề mục "Điểm nhấn 2025" bị luật "span lớn chứa chữ số" nhận nhầm. Parser nay loại tiêu đề mục.
 9. **Luật nhãn dòng tổng của kế hoạch ("Tổng ({cha})" cho mọi dòng tổng không nhãn):** gán sai nhãn cho tổng cuối bảng (tr. 329). Thay bằng gán nhãn theo kiểm chứng tổng Decimal: dòng nào thật sự bằng tổng các dòng trên mới được gọi là "Tổng".
 10. **Duyệt ảnh:** thiết kế ước tính khoảng 40 ảnh cần xem tay; luật tự động (lặp > 2 lần, > 60% trang, < 1% trang) chỉ loại 64/251 ảnh, còn 187 phải duyệt qua 16 contact sheet. Kết quả: 186 trang trí, đúng 1 ảnh có thông tin (sơ đồ "Customer Brain", tr. 10 PDF, không chứa số). Ghi chú: lượt duyệt là của model và cần người rà lại `config/images.json`.
 11. **Bắt năm bằng regex thô trong period guard:** một số lượng như "2027 tỷ" bị coi là năm và gây từ chối nhầm. Thêm điều kiện: không dính dấu phân cách số, không đi liền từ chỉ đại lượng (tỷ, triệu, khách hàng, %, ...). Vẫn còn lọt một số danh từ không nằm trong danh sách (xem "deferred" trong `docs/worklog.md`).
 
-Số đo offline liên quan: độ phủ con số của bảng BCTC là 2.124/2.154 = 98,6% ở baseline (`find_tables` thuần), lên **2.148/2.154 = 99,72%** sau bước fallback tọa độ (Task 7).
+Số đo offline liên quan: độ phủ con số của bảng BCTC là 2.124/2.154 = 98,6% ở baseline (`find_tables` thuần), lên **2.148/2.154 = 99,72%** sau bước fallback tọa độ.
 
 ## Evaluation
-- Method: 10 câu mẫu chấm từng câu Đúng / Một phần / Sai bằng cách so với `gold_answer`: con số và đơn vị sau quy đổi (1.192 nghìn tỷ = 1.192.344 tỷ đồng, nhưng khác 1.192 tỷ), trang trích dẫn có chứa trang gold không, câu ngoài phạm vi có bị từ chối không. Lần chấm hiện tại do trợ lý AI dùng khi làm bài đối chiếu, chưa có người chấm lại. Ngoài 10 câu đó, để có số mà sửa hệ thống, còn ba lớp kiểm tra tự động:
+- Method: 10 câu mẫu chấm từng câu Đúng / Một phần / Sai bằng cách so với `gold_answer`: con số và đơn vị sau quy đổi (1.192 nghìn tỷ = 1.192.344 tỷ đồng, nhưng khác 1.192 tỷ), trang trích dẫn có chứa trang gold không, câu ngoài phạm vi có bị từ chối không. Chấm tay bởi tác giả (đối chiếu từng câu trả lời với `gold_answer` và trang trích dẫn trên PDF). Ngoài 10 câu đó, để có số mà sửa hệ thống, còn ba lớp kiểm tra tự động:
   - *Ingestion:* `ingest_report.json` và golden test trên PDF thật (page map 190/190, ô KPI tr. 5/59/48, CIR ▼ tr. 81, bảng vắt gutter tr. 374–375, bảng BCTC tr. 297/337).
   - *Eval set riêng:* 50 câu tự xây trong `eval/datasets/own_questions.jsonl`, chia 25 dev / 25 test theo 13 category (đa lượt, tính toán lồng, `partial`, 6 câu ngoài phạm vi, ...). Dev dùng để chỉnh prompt và `REFUSAL_THRESHOLD`, test chỉ để báo số. Script tính Recall@8 và MRR theo `gold_printed_pages` (8 chunk cộng 8 fact), citation hit, refusal đúng/sai, khớp số và đơn vị với `gold_values`, và gợi ý Đúng/Một phần/Sai (`suggested_correct`, chưa chấm tay). Gold đối chiếu tay với PDF, không lấy từ output của hệ thống, trừ 5 câu còn chờ người rà lại (own-07, own-09, own-17, own-38, own-49).
   - *Verifier đối nghịch* (chạy trong `uv run pytest`): 64 dòng cố ý sai (sai đơn vị nghìn tỷ ↔ tỷ ↔ triệu, sai dòng cha/con, sai chiều tăng/giảm, số tính toán viết tay thay chỗ trống, đơn vị/tiền tệ lạ, làm tròn thô hơn nguồn như "ROA 2%" khi nguồn ghi 1,5%) **cả 64 đều bị chặn**. Phép tính growth/diff đảo kỳ (a là kỳ trước) bị calc executor loại (`period_order`), nên không còn ra số sai dấu "đã xác minh". Số lọt qua RAGAS judge (faithfulness, ngưỡng 0,5; judge `ollama_chat/nemotron-3-ultra` qua Ollama Cloud, khác `LLM_MODEL`; 2026-10-21, `eval/reports/ragas_20261021T022300Z.json`): **5/64 lọt** (adv-05 chiều không xác định, adv-08 và adv-17 nguồn bịa, adv-09 bằng chứng không nằm trong chunk, adv-24 % không đơn vị lấy từ chunk), verifier chặn cả 64. Ba trong năm lỗi (nguồn bịa, bằng chứng không phải substring) là lỗi cấu trúc mà judge faithfulness không thấy được vì chỉ nhận claim và đoạn bằng chứng; đây là lý do kiểm tra bằng code chứ không bằng LLM judge.
-- Results on the 10 published questions (`uv run ircb batch data/sample_questions.json`, `LLM_MODEL=ollama_chat/gemma4:31b`, index `def472d744b6`, 2026-10-21; chấm theo Method): **10/10 đúng**, 0 claim bị verifier chặn, citation chứa trang gold ở cả 9 câu có gold page, câu ngoài phạm vi bị từ chối đúng.
+- Results on the 10 published questions (`uv run ircb batch data/sample_questions.json`, `LLM_MODEL=ollama_chat/gemma4:31b`, index `def472d744b6`, 2026-10-21; chấm tay theo Method): **10/10 đúng**, 0 claim bị verifier chặn, citation chứa trang gold ở cả 9 câu có gold page, câu ngoài phạm vi bị từ chối đúng.
 
   | Câu | Trạng thái | Câu trả lời (rút gọn) | Trang trích dẫn | Trang gold | Đánh giá |
   |---|---|---|---|---|---|
@@ -134,7 +182,7 @@ Số đo offline liên quan: độ phủ con số của bảng BCTC là 2.124/2.
   7. *Hiệu chỉnh `REFUSAL_THRESHOLD` trên dev (gemma4):* báo cáo gợi ý 0,64, nhưng quét ngưỡng từ 0,1 đến 0,99 cho cùng một kết quả (refusal recall 0,67 trên 3 câu ngoài phạm vi, false refusal 0,27 trên 22 câu trả lời được): cả 25 câu đều có hit top-1 nằm ở cả hai nhánh dense và BM25, mà gate cho qua hit hai nhánh bất kể ngưỡng. Mọi từ chối đến từ period guard hoặc generator ("not_found"). Con số 0,64 chỉ là điểm giữa của một đoạn phẳng, nên **giữ 0,35**; muốn gate có tác dụng thì phải đổi luật hai nhánh, chưa có số để biện minh.
 
 ## Cost and latency
-- Ingestion (đo trên máy dev: Intel i5-13500HX, 16 GB RAM, GPU RTX 4060 Laptop 8 GB): build lại từ PDF kể cả embed (`uv run ircb ingest …`) khoảng 3 phút 13 giây, ra 1.145 chunk và 2.974 fact; embed lại toàn bộ bằng `qwen3-embedding:4b` (`ircb index reembed`) dưới 2 phút (lần đầu dừng sau 1 phút 16 giây vì một lỗi HTTP tạm thời của Ollama, lần chạy lại tiếp từ cache rồi xong; tổng thời gian chưa đo riêng). Embedding chạy trên Ollama local nên chi phí API là 0. Đo offline trước đó (embedder giả): bước extract ~78 giây. Khảo sát M0 mất ~62 giây CPU (container cloud, 1 lõi). Re-embed có cache theo nội dung chunk: chỉ chunk thay đổi mới được embed lại.
+- Ingestion (đo trên máy dev: Intel i5-13500HX, 16 GB RAM, GPU RTX 4060 Laptop 8 GB): build lại từ PDF kể cả embed (`uv run ircb ingest …`) khoảng 3 phút 13 giây, ra 1.145 chunk và 2.974 fact; embed lại toàn bộ bằng `qwen3-embedding:4b` (`ircb index reembed`) dưới 2 phút (lần đầu dừng sau 1 phút 16 giây vì một lỗi HTTP tạm thời của Ollama, lần chạy lại tiếp từ cache rồi xong; tổng thời gian chưa đo riêng). Embedding chạy trên Ollama local nên chi phí API là 0. Đo offline trước đó (embedder giả): bước extract ~78 giây. Khảo sát tài liệu ban đầu mất ~62 giây CPU (container cloud, 1 lõi). Re-embed có cache theo nội dung chunk: chỉ chunk thay đổi mới được embed lại.
 - Per query (10 câu mẫu, `ollama_chat/gemma4:31b` trên Ollama Cloud, 2026-10-21): tổng độ trễ p50 5,9 giây, p95 24,0 giây (n = 10, nên p95 gần như là câu chậm nhất, 28,3 giây). Theo bước, p50 trên 9 câu có gọi LLM: rewriter 2,3 giây, prefetch (gồm embed câu hỏi trên GPU) 0,4 giây, generator 2,5 giây, verifier dưới 1 ms. Câu ngoài phạm vi (sq-10) bị period guard từ chối trong vài mili giây, không gọi LLM. Độ trễ của Ollama Cloud dao động: một lần chạy trước, một câu chờ 290 giây ở bước rewriter (gói miễn phí chỉ cho 1 request cùng lúc), lần chạy lại câu đó mất 5 giây. Trên eval cùng ngày (cùng cấu hình): dev p50 6,5 giây, p95 16,2 giây; test p50 9,7 giây, p95 19,1 giây (25 câu mỗi split). Chi phí: 0 USD (`cost_usd` = 0, nằm trong hạn mức miễn phí của Ollama Cloud). Số token mỗi câu chưa đo; nếu trả phí, bảng giá Ollama Cloud cho `gemma4` là 0,14 USD / 1M token vào và 0,40 USD / 1M token ra. Mỗi câu gồm một lần rewriter, một request embedding và một lần generator; hiếm khi thêm một lần do `need_fact`.
 - Models used: embedding `ollama/qwen3-embedding:4b` (1024 chiều, cắt từ 2560; cosine; trước đây `openai/text-embedding-3-large` rồi `qwen3-embedding:0.6b`, xem ADR 0022 và 0023). Generation và rewriter: cấu hình đã đo là `ollama_chat/gemma4:31b` trên Ollama Cloud (gọi bằng API key); `.env.example` để cấu hình này làm mặc định, `openai/gpt-4o` là phương án thay thế. Đã chạy thật trước đó với `openai/gpt-4o` và `ollama_chat/gpt-oss:120b-cloud`. RAGAS judge (chỉ cho bộ đối nghịch): `ollama_chat/nemotron-3-ultra`, khác `LLM_MODEL`.
 
@@ -143,12 +191,12 @@ Theo thiết kế:
 - **Web UI và API là bản gọn:** đề không chấm web nên chỉ làm phần cần để kiểm chứng trích dẫn (chat, thẻ trả lời, trình xem trang). Lõi vẫn không import `fastapi` (import-linter canh).
 - **Xác thực, nhiều người dùng, deploy, CI** (mục 4 của đề, "Do NOT build"): không có. Không đăng nhập, không tài khoản: web và API phục vụ một người dùng trên máy local, mọi phiên chat đều hiện trong lịch sử. Không deploy cloud, không orchestration (`docker-compose.yml` chỉ để chạy chế độ production trên máy local), không CI. Bản trước có đăng nhập Clerk, tách lịch sử theo trình duyệt/tài khoản và một workflow CI đẩy image lên ghcr.io; đã gỡ cả ba cho đúng phạm vi đề (migration `0003` bỏ cột `sessions.owner`).
 - **OCR hàng loạt:** thử rồi, không tìm ra số mới (xem trên).
-- **Reranker:** chỉ thêm nếu eval cho thấy `R-miss` cao; chưa có số để biện minh.
+- **Reranker:** chỉ thêm nếu eval cho thấy nhiều lỗi do không truy hồi được trang đúng; chưa có số để biện minh.
 - **Mô tả ảnh bằng VLM:** chỉ 1 ảnh có thông tin (sơ đồ, không chứa số); `VLM_MODEL` là tùy chọn, chưa dùng.
-- **BCTC riêng lẻ:** tài liệu chỉ có BCTC hợp nhất (`TCTD-HN`); câu hỏi về riêng lẻ bị từ chối (D11).
-- **Agent loop:** có chủ ý, xem ADR 0018.
+- **BCTC riêng lẻ:** tài liệu chỉ có BCTC hợp nhất (`TCTD-HN`); câu hỏi về riêng lẻ bị từ chối.
+- **Agent loop:** có chủ ý. Đa số câu hỏi cần những thứ đoán trước được (vài chunk, một hai fact theo chỉ tiêu × kỳ), nên code lấy trước rồi gọi LLM một lần: số lần gọi cố định (rewriter + generator, hiếm khi thêm một vòng `need_fact`), độ trễ dự đoán được, kết quả ít dao động giữa các lần chạy, lỗi quy được về từng bước, và chạy được với model local không giỏi tool calling. Đánh đổi: kém linh hoạt với câu hỏi lạ mà rewriter không đoán đúng chỉ tiêu.
 - **Stream token:** không cần cho CLI; với web, SSE chỉ nên stream trạng thái để người dùng không thấy số chưa qua verifier.
-- Ghi chú giấy phép: PyMuPDF theo AGPL (D4); chấp nhận được cho bài take-home, cần cân nhắc nếu đưa lên sản phẩm.
+- Ghi chú giấy phép: PyMuPDF theo AGPL; chấp nhận được cho bài take-home, cần cân nhắc nếu đưa lên sản phẩm.
 
 ## With 10x time and budget
 Theo thứ tự ưu tiên:
@@ -157,9 +205,9 @@ Theo thứ tự ưu tiên:
 3. Giảm chặn nhầm của verifier dựa trên số liệu eval: thêm danh từ đếm được (khách hàng, thẻ, tài khoản) làm đơn vị đếm; đưa ngữ cảnh KPI (chương/mục, ví dụ "TCBS") vào mô tả fact; xử lý nốt các điểm đã ghi trong "deferred" của worklog (qualifier của phân đoạn, nội dung sau từ chỉ chiều).
 4. Eval lớn hơn và chấm bởi người thứ hai, thêm alt-pages cho gold nhiều trang hợp lệ; chạy lại cạnh Anthropic để có số cho mục "đổi provider".
 5. Chạy test tích hợp hai chế độ trên toàn bộ index thật trong CI (hiện CI chạy trên index tổng hợp và phần so sánh dùng index ship sẵn).
-6. Reranker nếu `R-miss` còn cao (benchmark embedding đã làm trên 22 câu dev, xem ADR 0023; cần tập lớn hơn); mô tả ảnh bằng VLM.
+6. Reranker nếu lỗi truy hồi còn cao (benchmark embedding đã làm trên 22 câu dev, xem ADR 0023; cần tập lớn hơn); mô tả ảnh bằng VLM.
 7. Đo thời gian kiểm chứng trích dẫn của người dùng trên trình xem trang.
-8. Scale lên nhiều tài liệu: page map tổng quát, Table QA thành cổng bắt buộc, Qdrant có replication/quantization, Postgres partition theo `doc_id`, ingestion thành worker xếp hàng (spec §11).
+8. Scale lên nhiều tài liệu: page map tổng quát, Table QA thành cổng bắt buộc, Qdrant có replication/quantization, Postgres partition theo `doc_id`, ingestion thành worker xếp hàng.
 
 ## Demo video
-**[CHƯA CÓ — link video 3–5 phút, quay liền không cắt, trả lời 10 câu mẫu]**
+https://www.youtube.com/watch?v=IvEhkcR8lDU (quay liền một lần, không cắt, trên web chạy bằng Docker: 10 câu mẫu, rồi một câu hỏi nối tiếp "Còn năm trước thì sao?" trong cuộc trò chuyện mới).
