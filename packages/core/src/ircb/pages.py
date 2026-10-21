@@ -15,9 +15,8 @@ from ircb.domain.models import PageInfo
 _EVIDENCE_CHARS = 120
 _NGRAM = 6  # words per run when the whole quote is not on this page
 _EDGE_PUNCT = ",.;:!?()\"'“”"
-_STYLE = "red-text-3"  # part of the cache key: a new highlight style never serves old PNGs
-_RED = np.array([200.0, 0.0, 0.0])
-_GREY_SPREAD = 60  # max - min channel of a black/grey text pixel; coloured ink is left as it is
+_STYLE = "yellow-marker-1"  # part of the cache key: a new highlight style never serves old PNGs
+_YELLOW = np.array([1.0, 0.92, 0.3])  # multiplied in: white paper turns yellow, dark ink stays dark
 
 
 def _evidence_hits(page: fitz.Page, clip: fitz.Rect, evidence: str) -> list[fitz.Rect]:
@@ -105,35 +104,29 @@ class PageRenderer:
                     hits = [inter]
             pix = page.get_pixmap(matrix=fitz.Matrix(self._zoom, self._zoom), clip=clip, alpha=False)  # type: ignore[no-untyped-call]
             if hits:
-                pix = self._redden(pix, clip, hits)
+                pix = self._highlight(pix, clip, hits)
             png: bytes = pix.tobytes("png")  # type: ignore[no-untyped-call]
         finally:
             doc.close()  # type: ignore[no-untyped-call]
         return png
 
-    def _redden(self, pix: fitz.Pixmap, clip: fitz.Rect, hits: list[fitz.Rect]) -> fitz.Pixmap:
-        """Black/grey ink inside the hits turns red, keeping its darkness (anti-aliased edges stay
-        smooth); white paper and coloured ink are unchanged. No box is drawn."""
-        img = (
-            np.frombuffer(pix.samples, dtype=np.uint8)
-            .reshape(pix.height, pix.width, pix.n)
-            .astype(np.float64)
-        )
-        rgb = img[..., :3]
+    def _highlight(self, pix: fitz.Pixmap, clip: fitz.Rect, hits: list[fitz.Rect]) -> fitz.Pixmap:
+        """A yellow marker under the hits, like a highlighter pen: the colour is multiplied in once
+        over the union of the hits, so text stays legible and overlapping hits are not darker. No
+        border is drawn."""
+        img = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.height, pix.width, pix.n)
+        mask = np.zeros((pix.height, pix.width), dtype=bool)
         for r in hits:
             x0 = max(int((r.x0 - clip.x0) * self._zoom), 0)
             y0 = max(int((r.y0 - clip.y0) * self._zoom), 0)
             x1 = min(int((r.x1 - clip.x0) * self._zoom) + 1, pix.width)
             y1 = min(int((r.y1 - clip.y0) * self._zoom) + 1, pix.height)
-            if x0 >= x1 or y0 >= y1:
-                continue
-            box = rgb[y0:y1, x0:x1]
-            grey = (box.max(axis=2) - box.min(axis=2)) <= _GREY_SPREAD
-            ink = (255.0 - box.mean(axis=2)) / 255.0  # 0 paper .. 1 black
-            red = 255.0 * (1.0 - ink[..., None]) + _RED * ink[..., None]
-            box[grey] = red[grey]
-        out = np.clip(img, 0, 255).astype(np.uint8)
-        return fitz.Pixmap(fitz.csRGB, pix.width, pix.height, out.tobytes(), False)  # type: ignore[no-untyped-call]
+            if x0 < x1 and y0 < y1:
+                mask[y0:y1, x0:x1] = True
+        out = img[..., :3].astype(np.float64)
+        out[mask] *= _YELLOW
+        rgb = np.clip(out, 0, 255).astype(np.uint8)
+        return fitz.Pixmap(fitz.csRGB, pix.width, pix.height, rgb.tobytes(), False)  # type: ignore[no-untyped-call]
 
     def _write(self, cached: Path, png: bytes) -> None:
         self._cache_dir.mkdir(parents=True, exist_ok=True)
