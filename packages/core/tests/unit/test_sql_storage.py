@@ -3,13 +3,14 @@ from pathlib import Path
 
 import pytest
 import sqlalchemy as sa
-from factories import fact
 from ircb.domain.models import TurnState
 from ircb.storage.db import make_engine, session_scope, upgrade_db
 from ircb.storage.fact_repo import SqlFactStore
 from ircb.storage.orm import Base
 from ircb.storage.session_repo import SessionRepo
 from sqlalchemy.engine import Engine
+
+from factories import fact
 
 
 @pytest.fixture

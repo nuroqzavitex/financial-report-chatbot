@@ -20,9 +20,10 @@ from ircb.storage.db import make_engine
 from ircb.storage.fact_repo import SqlFactStore
 from ircb.storage.loader import ensure_loaded
 from ircb.storage.vector_store import QdrantStore
-from modes_support import QUERIES, HashEmbedder, build_mini_index, rw_for
 from qdrant_client import QdrantClient
 from sqlalchemy import Engine
+
+from modes_support import QUERIES, HashEmbedder, build_mini_index, rw_for
 
 pytestmark = pytest.mark.integration
 

@@ -4,10 +4,11 @@ import hashlib
 from pathlib import Path
 from typing import Any
 
-from factories import fact
 from ircb.domain.models import Chunk, RewriteResult
 from ircb.storage import artefacts
 from ircb.storage.artefacts import Manifest, VectorRecord
+
+from factories import fact
 
 MINI_DOC = "it-mini-doc"  # never the real doc_id
 DIM = 32

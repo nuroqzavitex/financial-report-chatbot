@@ -4,7 +4,6 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from factories import fact
 from ircb.answering.generator import PROMPT_VERSION
 from ircb.domain.models import (
     CalcSpec,
@@ -21,6 +20,8 @@ from ircb.service import ERROR_TEXT, AnswerService
 from ircb.settings import Settings
 from ircb.storage.vector_store import Hit
 from pydantic import BaseModel
+
+from factories import fact
 
 TTS = fact(
     fact_id="tts25",

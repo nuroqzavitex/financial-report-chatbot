@@ -37,6 +37,11 @@ extend-exclude = ["scripts"]
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
 
+[tool.ruff.lint.isort]
+# test helpers imported by bare name from the test directories: classified the same everywhere
+# (ruff's guess for `conftest` differed between machines and CI)
+known-local-folder = ["conftest", "factories", "modes_support", "cli_helpers"]
+
 [tool.mypy]
 strict = true
 python_version = "3.11"

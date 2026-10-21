@@ -1,4 +1,3 @@
-from factories import gutter_table, table, table_with, tile
 from ircb.ingestion.chunking import (
     chunks_from_glossary,
     chunks_from_kpi,
@@ -8,6 +7,8 @@ from ircb.ingestion.chunking import (
 from ircb.ingestion.glossary import GlossaryEntry
 from ircb.ingestion.prose import ProseBlock
 from ircb.ingestion.tables import Cell, TableRow
+
+from factories import gutter_table, table, table_with, tile
 
 BOX = (0.0, 0.0, 10.0, 10.0)
 

@@ -3,7 +3,6 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from cli_helpers import Backend, FakeService, build_mini_index, read_jsonl, write_input
 from ircb.ingestion.pipeline import GateError
 from ircb.retrieval.embed import Embedder
 from ircb.settings import Settings
@@ -11,6 +10,8 @@ from ircb.storage import artefacts
 from ircb.storage.vector_store import QdrantStore
 from ircb_cli import main
 from typer.testing import CliRunner
+
+from cli_helpers import Backend, FakeService, build_mini_index, read_jsonl, write_input
 
 runner = CliRunner()
 

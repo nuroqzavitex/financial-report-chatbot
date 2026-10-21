@@ -2,9 +2,10 @@ import io
 from collections.abc import Callable
 
 import pytest
-from cli_helpers import FakeService
 from ircb_cli.repl import run_repl
 from rich.console import Console
+
+from cli_helpers import FakeService
 
 
 @pytest.fixture

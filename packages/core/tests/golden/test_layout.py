@@ -1,6 +1,5 @@
 import pymupdf as fitz
 import pytest
-from conftest import half
 from ircb.ingestion.layout import (
     Span,
     footnote_refs,
@@ -9,6 +8,8 @@ from ircb.ingestion.layout import (
     spans_in,
     statement_code,
 )
+
+from conftest import half
 
 pytestmark = pytest.mark.requires_pdf
 

@@ -6,10 +6,11 @@ from decimal import Decimal
 
 import pytest
 import sqlalchemy as sa
-from factories import fact
 from ircb.storage.db import make_engine, upgrade_db
 from ircb.storage.fact_repo import SqlFactStore
 from sqlalchemy import Engine
+
+from factories import fact
 
 pytestmark = pytest.mark.integration
 

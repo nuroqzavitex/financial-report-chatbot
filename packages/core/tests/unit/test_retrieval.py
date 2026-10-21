@@ -2,7 +2,6 @@ from dataclasses import dataclass, field
 from typing import Any
 
 import pytest
-from factories import fact
 from ircb.domain.models import RewriteResult
 from ircb.retrieval.gate import passes_gate
 from ircb.retrieval.glossary_expand import build_glossary, expand_query
@@ -10,6 +9,8 @@ from ircb.retrieval.hybrid import Context, FactLookup, RetrievalDeps
 from ircb.retrieval.prefetch import prefetch
 from ircb.retrieval.sparse_bm25 import SparseVec
 from ircb.storage.vector_store import Hit
+
+from factories import fact
 
 
 def chunk_payload(cid: str, content_type: str = "prose") -> dict[str, Any]:

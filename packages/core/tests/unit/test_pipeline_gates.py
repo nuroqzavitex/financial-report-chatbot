@@ -4,7 +4,6 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from factories import fact
 from ircb.domain.models import Chunk
 from ircb.ingestion import pipeline
 from ircb.ingestion.facts import fact_embed_text
@@ -35,6 +34,8 @@ from ircb.storage.artefacts import (
     write_report,
     write_vectors,
 )
+
+from factories import fact
 
 
 def report(**kw: Any) -> dict[str, Any]:

@@ -1,8 +1,9 @@
 from decimal import Decimal
 
-from factories import fact, table, table_with, tile
 from ircb.ingestion.facts import detect_period, fact_embed_text, facts_from_kpi, facts_from_table, label_norm
 from ircb.ingestion.tables import Cell, TableRow
+
+from factories import fact, table, table_with, tile
 
 
 def test_negative_and_dash() -> None:

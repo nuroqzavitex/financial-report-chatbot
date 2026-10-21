@@ -5,6 +5,7 @@ import uuid
 from pathlib import Path
 
 from ircb.storage import artefacts
+
 from modes_support import QUERIES, HashEmbedder, build_mini_index
 
 GAP = 1e-6

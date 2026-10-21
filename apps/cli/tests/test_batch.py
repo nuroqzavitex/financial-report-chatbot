@@ -2,8 +2,9 @@ import json
 from pathlib import Path
 
 import pytest
-from cli_helpers import FakeService, read_jsonl, write_input
 from ircb_cli.batch import run_batch
+
+from cli_helpers import FakeService, read_jsonl, write_input
 
 
 @pytest.fixture

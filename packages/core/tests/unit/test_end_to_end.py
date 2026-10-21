@@ -13,7 +13,6 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from factories import fact
 from ircb import service as service_mod
 from ircb.domain.models import (
     CalcSpec,
@@ -31,6 +30,8 @@ from ircb.settings import Settings
 from ircb.storage import artefacts
 from ircb.storage.artefacts import Manifest
 from pydantic import BaseModel
+
+from factories import fact
 
 DIM = 16
 KPI_TEXT = "Tổng tài sản: 1.192 nghìn tỷ đồng, tăng 21,8% so với năm trước"

@@ -2,7 +2,6 @@ from collections.abc import Iterator
 from pathlib import Path
 
 import pytest
-from factories import fact
 from ircb.domain.models import Chunk
 from ircb.retrieval.sparse_bm25 import SparseVec
 from ircb.settings import Settings
@@ -13,6 +12,8 @@ from ircb.storage.fact_repo import SqlFactStore
 from ircb.storage.loader import ManifestMismatchError, ensure_loaded, load_index
 from ircb.storage.vector_store import QdrantStore
 from sqlalchemy.engine import Engine
+
+from factories import fact
 
 DIM = 8
 

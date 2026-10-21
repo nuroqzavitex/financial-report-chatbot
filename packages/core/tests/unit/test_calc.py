@@ -1,9 +1,10 @@
 from decimal import Decimal
 
 import pytest
-from factories import fact
 from ircb.answering.calc import execute_calcs, fill_placeholders, operand_facts
 from ircb.domain.models import CalcSpec
+
+from factories import fact
 
 TA25 = fact(
     fact_id="ta25", label_norm="tong tai san", unit="tỷ đồng", period="FY2025", value=Decimal("1192344")

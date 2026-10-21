@@ -4,11 +4,12 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from factories import fact
 from ircb.answering.calc import execute_calcs
 from ircb.answering.verifier import DIRECTION_WORDS, verify_claims
 from ircb.domain.models import CalcResult, CalcSpec, Chunk, ClaimOut
 from ircb.retrieval.hybrid import Context
+
+from factories import fact
 
 ROOT = Path(__file__).resolve().parents[4]
 ADVERSARIAL = ROOT / "eval" / "datasets" / "adversarial.jsonl"

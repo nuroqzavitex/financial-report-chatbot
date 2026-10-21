@@ -4,7 +4,6 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from factories import fact
 from ircb.answering import generator
 from ircb.answering.generator import PROMPT_VERSION, build_messages, generate
 from ircb.answering.renderer import REFUSED_TEXT, render
@@ -19,6 +18,8 @@ from ircb.domain.models import (
 from ircb.llm.client import Usage
 from ircb.retrieval.hybrid import Context
 from pydantic import BaseModel
+
+from factories import fact
 
 PROMPT = Path(generator.__file__).with_name("prompts").joinpath("generator.md")
 
