@@ -118,3 +118,19 @@ def test_kpi_cagr_sentence_shows_the_percent() -> None:
     t = tile(change="Tăng trưởng kép 2018–2025: 16,5%", basis="CAGR 2018–2025", direction="unknown")
     text = chunks_from_kpi([t], 3, "R")[0].text
     assert "tăng trưởng kép (CAGR) 2018–2025: 16,5%" in text and "2018%" not in text
+
+
+def test_prose_prefix_carries_the_business_unit() -> None:
+    """Real p. 71: CIBG is named on p. 68 only; its later pages need the unit in the chunk text."""
+    cibg = "Khối Ngân hàng Doanh nghiệp và Định chế Tài chính (CIBG)"
+    c = chunks_from_prose([_block("Điểm nhấn 2025", 50)], 36, "R", "Thành tựu của Tech", cibg)[0]
+    assert c.text.startswith(f"Thành tựu của Tech > {cibg} > Điểm nhấn 2025\n")
+    opening = chunks_from_prose([_block(cibg, 50)], 34, "L", "Thành tựu của Tech", cibg)[0]
+    assert opening.text.startswith(f"Thành tựu của Tech > {cibg}\n")  # not repeated on its own page
+
+
+def test_table_meta_carries_the_business_unit() -> None:
+    c = chunks_from_table(
+        table_with(["1", "x"]), chapter="Thành tựu của Tech", division="Khối Công nghệ (IT)"
+    )[0]
+    assert c.text.startswith("Khối Công nghệ (IT) · ")

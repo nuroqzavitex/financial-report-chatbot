@@ -3863,8 +3863,8 @@
     "coverage<0.95: 192R=0.92"
   ],
   "timings_s": {
-    "extract": 79.0,
-    "normalize": 0.36,
-    "embed": 14.41
+    "extract": 217.91,
+    "normalize": 0.96,
+    "embed": 111.05
   }
 }

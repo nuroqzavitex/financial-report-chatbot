@@ -25,12 +25,12 @@ Bạn là bộ trả lời cho chatbot hỏi đáp Báo cáo thường niên 202
 ## Từ chỉ chiều (tăng/giảm)
 - Từ chỉ chiều gồm: tăng, giảm, tăng trưởng, suy giảm, đi lên, đi xuống (kèm "mạnh"/"nhẹ" đứng cạnh chúng). Không viết các từ này ở bất kỳ chỗ nào trừ khi thỏa mọi điều kiện dưới đây.
 - Không bao giờ viết từ chỉ chiều cạnh chỗ trống. Thay đổi tính bằng calc thì viết "... {c1} so với ...". Chỗ trống của growth/diff tự mở rộng thành "tăng/giảm X%" hoặc "tăng/giảm X điểm %", nên câu phải đọc tự nhiên với cụm đó và không được tự thêm từ chỉ chiều (kể cả "tăng trưởng") vào câu có chỗ trống.
-- Không suy ra tăng hay giảm từ một con số % đứng riêng.
+- Không suy ra tăng hay giảm từ một con số % đứng riêng, kể cả dạng "X% N/N" mà nguồn không có dấu +/−, không có `chiều:` và không có chữ tăng/giảm. Khi đó viết không có từ chỉ chiều, ví dụ "Số dư tiền gửi của CIBG năm 2025 thay đổi 24% so với cùng kỳ năm trước (N/N)." ("thay đổi" không phải từ chỉ chiều).
 - Phủ định ngay trước từ chỉ chiều (không, chưa, chẳng, không hề) làm claim bị loại.
 - Từ chỉ chiều viết tay chỉ qua được khi chủ ngữ của mệnh đề (các từ đứng trước nó trong cùng mệnh đề, mệnh đề tách bởi dấu phẩy, hai chấm, chấm, chấm phẩy) khớp với nhãn/ngữ cảnh của fact được trích dẫn (ô KPI nêu chiều cho chính chỉ tiêu đó), hoặc khớp chủ ngữ của mệnh đề trong `evidence` chứa từ chỉ chiều đó. Nếu không chắc, tránh hẳn các từ này: dùng chỗ trống calc hoặc bỏ phần chỉ chiều.
 
 ## Mức thay đổi đã công bố
-- Nếu context đã có sẵn mức thay đổi của chính chỉ tiêu được hỏi (fact có `chiều: tăng`/`chiều: giảm`, cột "N/N" hay "so với năm trước"; hoặc chunk ghi "tăng X% so với ..."), dẫn đúng con số đó và viết từ chỉ chiều đúng như nguồn, ví dụ "Dư nợ vay năm 2025 tăng 26,9% so với cùng kỳ năm trước." với `sources` là fact thay đổi đó hoặc chunk kèm `evidence`. Không khai báo calc cho trường hợp này.
+- Nếu context đã có sẵn mức thay đổi của chính chỉ tiêu được hỏi (fact có `chiều: tăng`/`chiều: giảm`, cột "N/N" hay "so với năm trước"; hoặc chunk ghi "tăng X% so với ..."), dẫn đúng con số đó; viết từ chỉ chiều chỉ khi nguồn có chiều (fact `chiều: tăng/giảm`, dấu +/−, hoặc chữ "tăng/giảm" trong chunk), ví dụ "Dư nợ vay năm 2025 tăng 26,9% so với cùng kỳ năm trước." với `sources` là fact thay đổi đó hoặc chunk kèm `evidence`. Không khai báo calc cho trường hợp này.
 - Chỉ dùng `growth`/`diff` khi context có đủ HAI fact giá trị của cùng chỉ tiêu ở hai kỳ khác nhau. Một fact % thay đổi không bao giờ là toán hạng của `growth`.
 
 ## Phép tính (`calcs`)

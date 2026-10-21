@@ -46,7 +46,7 @@
   | `AUTO_LOAD_INDEX` | | `true` | Tự nạp artefact vào DB nếu thiếu hoặc lệch version |
   | `PAGE_CACHE_DIR` | | `./var/page_cache` | Cache ảnh trang của API/web |
   | `PDF_PATH` | | `./data/techcombank-…-update.pdf` | PDF nguồn |
-- Shipped index: `index/` đã được commit (22,4 MB; `index/build/` và `index/.tmp/` gitignore), `index_version` `def472d744b6`, embedding `ollama/qwen3-embedding:4b` 1024 chiều (embed lại toàn bộ trên GPU RTX 4060 mất khoảng 1 phút), 1.145 chunk, 2.974 fact. `index/manifest.json` được kiểm tra lúc khởi động; đổi `EMBED_MODEL` / `EMBED_DIMENSIONS` thì chạy `uv run ircb index reembed`. Build lại từ PDF: `uv run ircb ingest data/techcombank-bao-cao-thuong-nien-2025-vie-update.pdf`.
+- Shipped index: `index/` đã được commit (22,4 MB; `index/build/` và `index/.tmp/` gitignore), `index_version` `d75e895c3b5d` (chunk mang tên khối, xem `config/units.json`; các số đo ở Evaluation chạy trên `def472d744b6`, cùng chunk nhưng chưa có tên khối), embedding `ollama/qwen3-embedding:4b` 1024 chiều (embed lại toàn bộ trên GPU RTX 4060 mất khoảng 1 phút), 1.145 chunk, 2.974 fact. `index/manifest.json` được kiểm tra lúc khởi động; đổi `EMBED_MODEL` / `EMBED_DIMENSIONS` thì chạy `uv run ircb index reembed`. Build lại từ PDF: `uv run ircb ingest data/techcombank-bao-cao-thuong-nien-2025-vie-update.pdf`.
 
 ## Depth track(s) chosen
 **Chính: Document Intelligence. Phụ: Retrieval & Reasoning (gọn).**
@@ -155,7 +155,7 @@ Theo thiết kế:
 ## With 10x time and budget
 Theo thứ tự ưu tiên:
 1. Hoàn thiện số liệu với cấu hình hiện tại (`gemma4:31b` + `qwen3-embedding:4b`): chấm tay đủ ~40 câu, kiểm định RAGAS (agreement, κ), xem lại luật hai nhánh của gate để `REFUSAL_THRESHOLD` có tác dụng. Đây là phần còn thiếu lớn nhất của bài nộp hiện tại.
-2. Hai lỗi trích xuất đã biết: bảng fallback của QA độ phủ dựng "bảng" từ trang infographic (101 chunk trên 39 trang, 16 fact phần lớn sai nhãn); tên khối (ví dụ CIBG) không được mang sang các trang sau của khối, nên own-07 vẫn không truy hồi được.
+2. Lỗi trích xuất còn lại: bảng fallback của QA độ phủ dựng "bảng" từ trang infographic (101 chunk trên 39 trang, 16 fact phần lớn sai nhãn). (Lỗi tên khối không theo sang trang sau đã sửa: `config/units.json` gắn tên khối vào chunk prose/bảng; retrieval dev Recall@8 0,818 → 0,864, test 0,682 → 0,773; own-07 nay trả lời đúng tr. 71. Chưa chạy lại eval đầy đủ sau sửa.)
 3. Giảm chặn nhầm của verifier dựa trên số liệu eval: thêm danh từ đếm được (khách hàng, thẻ, tài khoản) làm đơn vị đếm; đưa ngữ cảnh KPI (chương/mục, ví dụ "TCBS") vào mô tả fact; xử lý nốt các điểm đã ghi trong "deferred" của worklog (qualifier của phân đoạn, nội dung sau từ chỉ chiều).
 4. Eval lớn hơn và chấm bởi người thứ hai, thêm alt-pages cho gold nhiều trang hợp lệ; chạy lại cạnh Anthropic để có số cho mục "đổi provider".
 5. Đưa test tích hợp Qdrant server + PostgreSQL (đã chạy với Docker) vào CI và chạy trên toàn bộ index thật mỗi lần build lại.

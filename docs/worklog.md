@@ -165,3 +165,10 @@ LLM đổi sang `ollama_chat/gemma4:31b` qua `https://ollama.com` (API key); emb
 - **Eval** (`suggested_correct`, chưa chấm tay): dev 14 / 3 / 8 (gpt-4o 13 / 4 / 7, gpt-oss 9 / 2 / 13), claim bị chặn 18,5%; test 16 / 1 / 5, 3 câu chưa chấm được.
 - **`REFUSAL_THRESHOLD`:** quét 0,1–0,99 trên dev không đổi kết quả câu nào vì mọi hit top-1 đều nằm ở cả hai nhánh. Giữ 0,35; giá trị gợi ý 0,64 chỉ là điểm giữa của đoạn phẳng.
 - **RAGAS đối nghịch:** `ragas_eval.py` nhận judge `ollama_chat/<model>` qua endpoint `/v1` của Ollama. Judge `nemotron-3-ultra` cho lọt 5/64 claim cố ý sai (verifier chặn 64/64); 22 phút cho 64 claim.
+
+## 2026-10-21 - Tên khối trên chunk, chiều của "X% N/N", ảnh trang chữ đỏ
+
+- **Tên khối không theo sang trang sau** (own-07): tên CIBG chỉ in ở tr. 68, nên chunk tr. 71 ("Số dư tiền gửi: 24% N/N") không có chữ CIBG. Model lấy nhầm số của RBG (15,7%, tr. 59) và verifier chặn. `config/units.json` ghi khoảng trang của 11 khối/công ty con (tiêu đề quá không đều để tự nhận diện: tách nhiều span, cỡ chữ khác nhau); chunk prose và bảng mang tên khối (154 chunk). Index `d75e895c3b5d`. Retrieval (câu viết lại đã trace, không gọi LLM): dev Recall@8 0,818 → 0,864, MRR 0,657 → 0,686; test 0,682 → 0,773, MRR 0,492 → 0,576; không câu nào tụt.
+- **"X% N/N" không dấu:** verifier chặn "tăng" (đúng thiết kế, adv-05). Prompt nay bảo viết "thay đổi X% so với cùng kỳ năm trước (N/N)" khi nguồn không có chiều; own-07 trả lời đúng tr. 71. Chưa chạy lại eval dev/test sau thay đổi prompt.
+- **Ảnh trang:** bằng chứng tô chữ đỏ thay vì khung vàng; không thấy nguyên câu trên trang thì tìm từng cụm 6 chữ (claim nhiều trang chỉ trích một chunk). `Cache-Control: no-cache` + ETag thay cho max-age một ngày (trình duyệt từng hiện ảnh khung cũ).
+- **Docker:** câu hỏi đầu tiên lỗi vì deadlock import LiteLLM giữa luồng worker và bộ lọc log trên event loop; API import LiteLLM lúc khởi động.

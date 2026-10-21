@@ -54,9 +54,10 @@ def _pieces(text: str) -> list[tuple[str, bool]]:
 
 
 def chunks_from_prose(
-    blocks: list[ProseBlock], pdf_page: int, half: Half, chapter: str | None
+    blocks: list[ProseBlock], pdf_page: int, half: Half, chapter: str | None, division: str | None = None
 ) -> list[Chunk]:
-    """Pack prose into 300-500 token chunks within one half page, prepending ``chapter > heading``."""
+    """Pack prose into 300-500 token chunks within one half page, prepending
+    ``chapter > division > heading`` (``division``: the business unit of the page, ``units.unit_of``)."""
     chunks: list[Chunk] = []
     lines: list[str] = []
     words = 0
@@ -67,7 +68,8 @@ def chunks_from_prose(
     def flush() -> None:
         nonlocal lines, words, first_heading, used
         if lines:
-            prefix = " > ".join(p for p in (chapter, first_heading) if p)
+            unit_name = division if division and division not in (first_heading or "") else None
+            prefix = " > ".join(p for p in (chapter, unit_name, first_heading) if p)
             body = "\n".join(lines)
             chunks.append(
                 Chunk(
@@ -120,10 +122,12 @@ def chunks_from_prose(
 # ---------------------------------------------------------------- table
 
 
-def chunks_from_table(t: ExtractedTable, chapter: str | None = None) -> list[Chunk]:
+def chunks_from_table(
+    t: ExtractedTable, chapter: str | None = None, division: str | None = None
+) -> list[Chunk]:
     """One chunk per table, or per row group (header repeated) when the table is long."""
     meta = " · ".join(
-        p for p in (t.statement, t.note_no, t.title, f"Đơn vị: {t.unit}" if t.unit else None) if p
+        p for p in (division, t.statement, t.note_no, t.title, f"Đơn vị: {t.unit}" if t.unit else None) if p
     )
     starts = list(range(0, max(len(t.rows), 1), MAX_TABLE_ROWS))
     out: list[Chunk] = []

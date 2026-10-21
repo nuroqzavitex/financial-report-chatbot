@@ -41,6 +41,7 @@ from ircb.ingestion.prose import ProseBlock, extract_prose
 from ircb.ingestion.spread import HalfPage, split_halves, verify_page_map
 from ircb.ingestion.table_qa import MIN_RATIO, qa_tables
 from ircb.ingestion.tables import Cell, ExtractedTable, TableRow, chapter_default_unit
+from ircb.ingestion.units import unit_of
 from ircb.retrieval.embed import Embedder, LiteLLMEmbedBackend
 from ircb.retrieval.sparse_bm25 import encode_doc
 from ircb.retrieval.tokenize_vi import TOKENIZER_VERSION, tokenize
@@ -333,7 +334,9 @@ def run_normalize(out_dir: Path) -> None:
         blocks = [
             ProseBlock(b["heading"], b["text"], _bbox(b["bbox"]), b["printed_page"]) for b in p["prose"]
         ]
-        chunks += chunks_from_prose(blocks, p["pdf_page"], p["half"], p["chapter"])
+        chunks += chunks_from_prose(
+            blocks, p["pdf_page"], p["half"], p["chapter"], unit_of(p["printed_page"])
+        )
 
     kpi_rows = read_jsonl(build / "kpi.jsonl")
     groups: dict[tuple[int, str], list[KpiTile]] = {}
@@ -354,7 +357,8 @@ def run_normalize(out_dir: Path) -> None:
     for t in tables:
         chapter = chapter_of.get((t.pdf_page, "L" if t.half == "G" else t.half))
         # a gutter-spanning table ("G") covers the whole spread; Chunk.half has no "G" -> "S"
-        chunks += chunks_from_table(replace(t, half="S") if t.half == "G" else t, chapter)
+        division = unit_of(t.printed_pages[0])
+        chunks += chunks_from_table(replace(t, half="S") if t.half == "G" else t, chapter, division)
         if t.unit is None:
             tables_without_unit += 1  # chunks only, no facts
             continue

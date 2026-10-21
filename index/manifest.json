@@ -1,5 +1,5 @@
 {
-  "index_version": "def472d744b6",
+  "index_version": "d75e895c3b5d",
   "doc_id": "tcb-ar-2025",
   "pdf_sha256": "2db3dfe6e7a05f889ec2e93bf16dda4b6a7f3334df440b7cb0761df2e89344d9",
   "embed_provider": "ollama",
@@ -57,5 +57,5 @@
   ],
   "n_chunks": 1145,
   "n_facts": 2974,
-  "created_at": "2026-10-20T16:15:51+00:00"
+  "created_at": "2026-10-21T03:43:51+00:00"
 }
